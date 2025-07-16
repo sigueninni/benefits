@@ -1,0 +1,117 @@
+<mvc:View
+    controllerName="com.un.zhrbenefrequests.controller.Master"
+    xmlns:mvc="sap.ui.core.mvc"
+    displayBlock="true"
+    busy="{masterView>/busy}"
+    busyIndicatorDelay="{masterView>/delay}"
+    xmlns="sap.m"
+    xmlns:semantic="sap.f.semantic"
+>
+    <semantic:SemanticPage
+        id="mySemanticPage"
+        headerPinnable="false"
+        toggleHeaderOnTitleClick="false"
+        preserveHeaderStateOnScroll="false"
+        showFooter="true"
+    >
+        <!-- Title Heading-->
+        <semantic:titleHeading>
+            <Title text="{masterView>/title}" />
+        </semantic:titleHeading>
+
+        <semantic:content>
+            <List
+                id="list"
+                inset="false"
+                width="auto"
+                class="sapFDynamicPageAlignContent"
+                items="{ path: '/RequestHeaderSet', sorter: { path: 'RequestKey', descending: false } }"
+                busyIndicatorDelay="{masterView>/delay}"
+                noDataText="{masterView>/noDataText}"
+                mode="{= ${device>/system/phone} ? 'None' : 'SingleSelectMaster'}"
+                growing="true"
+                growingScrollToLoad="true"
+                updateFinished="onUpdateFinished"
+                selectionChange="onSelectionChange"
+            >
+                <!-- items="{ path: '/RequestSet', sorter: { path: 'Title', descending: false }, filters: [{ path: 'RequestSettings/IsStudentOffice', operator: 'EQ', value1: 'false' }], groupHeaderFactory: '.createGroupHeader' }" -->
+                <headerToolbar>
+                    <Toolbar>
+                        <SearchField
+                            id="searchField"
+                            showRefreshButton="{= !${device>/support/touch} }"
+                            tooltip="{i18n>masterSearchTooltip}"
+                            width="100%"
+                            search="onSearch"
+                        />
+                        <Button
+                            id="createAction"
+                            icon="sap-icon://add"
+                            tooltip="{i18n>add}"
+                            press="onCreateButtonPress"
+                        />
+                    </Toolbar>
+                </headerToolbar>
+                <infoToolbar>
+                    <Toolbar
+                        active="true"
+                        id="filterBar"
+                        visible="{masterView>/isFilterBarVisible}"
+                        press="onOpenViewSettings"
+                    >
+                        <Title
+                            id="filterBarLabel"
+                            text="{masterView>/filterBarLabel}"
+                        />
+                    </Toolbar>
+                </infoToolbar>
+                <items>
+                    <ObjectListItem
+                        id="listItem"
+                        type="{= ${device>/system/phone} ? 'Active' : 'Inactive'}"
+                        press="onSelectionChange"
+                        title="{Title}"
+                    >
+                        <firstStatus>
+                            <ObjectStatus
+                                text="{ path: 'Status', formatter: '.formatter.statusText' }"
+                                state="{ path: 'Status', formatter: '.formatter.statusStateText' }"
+                            />
+                        </firstStatus>
+                        <attributes>
+                            <ObjectAttribute
+                                text="{path: 'CreatedOn', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy' }}"
+                            />
+                            <ObjectAttribute
+                                text="{ path: 'ReqFlow', formatter: '.formatter.flowText' } - { path: 'ReqType', formatter: '.formatter.typeText' }"
+                            />
+                            <ObjectAttribute text="{RequestKey}" />
+                            <ObjectAttribute text="{RequestType}" />
+                            <!--                <ObjectAttribute
+                                text="{path: 'ContractType', formatter: '.formatter.contractTypeText'} {i18n>dot} {path: 'InternshipType', formatter: '.formatter.internshipTypeText'}"
+                            />
+                            <ObjectAttribute
+                                text="{path: 'ForeseenStartDate', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy' }} - {path: 'EndDate', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy' }}"
+                            />  -->
+                        </attributes>
+                    </ObjectListItem>
+                </items>
+            </List>
+        </semantic:content>
+        <semantic:footerCustomActions>
+            <Button
+                icon="sap-icon://sort"
+                press="onSort"
+            />
+            <Button
+                icon="sap-icon://filter"
+                press="onOpenViewSettings"
+            />
+            <Button
+                icon="sap-icon://group-2"
+                press="onGroup"
+            />
+        </semantic:footerCustomActions>
+    </semantic:SemanticPage>
+</mvc:View>
+

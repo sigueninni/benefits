@@ -1,0 +1,1024 @@
+<mvc:View
+    controllerName="com.un.zhrbenefrequests.controller.Detail"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:commons="sap.suite.ui.commons"
+    xmlns:c="sap.suite.ui.commons"
+    xmlns:uxap="sap.uxap"
+    xmlns:l="sap.ui.layout"
+    xmlns:form="sap.ui.layout.form"
+    xmlns:core="sap.ui.core"
+    xmlns:viz="sap.viz.ui5.controls"
+    xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"
+    busy="{detailView>/busy}"
+    busyIndicatorDelay="{detailView>/delay}"
+    displayBlock="true"
+>
+    <uxap:ObjectPageLayout
+        showTitleInHeaderContent="true"
+        showHeaderContent="true"
+        showAnchorBar="true"
+        showFooter="true"
+        subSectionLayout="TitleOnTop"
+    >
+        <uxap:headerTitle>
+            <uxap:ObjectPageHeader
+                objectTitle="{Title}"
+                objectSubtitle="{ path: 'ReqFlow', formatter: '.formatter.flowText' } - { path: 'ReqType', formatter: '.formatter.typeText' }"
+                objectImageShape="Square"
+                isObjectIconAlwaysVisible="false"
+                isObjectTitleAlwaysVisible="false"
+                isObjectSubtitleAlwaysVisible="false"
+                isActionAreaAlwaysVisible="true"
+            >
+                <uxap:actions>
+                    <!--                     <Button
+                        text="{i18n>complete}"
+                        type="Default"
+                        visible="{RequestSettings/IsEditEnabled}"
+                        press="onCompleteButtonPress"
+                    />
+                    <Button
+                        text="{i18n>edit}"
+                        type="Emphasized"
+                        visible="{RequestSettings/IsEditEnabled}"
+                        press="onEditButtonPress"
+                    /> -->
+                    <Button
+                        text="{i18n>submit}"
+                        type="Emphasized"
+                        visible="{RequestSettings/IsSubmitEnabled}"
+                        press="onSubmitButtonPress"
+                    />
+                    <Button
+                        text="{i18n>delete}"
+                        type="Default"
+                        visible="{RequestSettings/IsDeleteEnabled}"
+                        press="onDeleteButtonPress"
+                    />
+                    <Button
+                        icon="sap-icon://expense-report"
+                        tooltip="{i18n>costSimulation}"
+                        type="Emphasized"
+                    />
+                    <Button
+                        icon="sap-icon://expense-report"
+                        text="{i18n>triggerRecruitment}"
+                        tooltip="{i18n>triggerRecruitment}"
+                        enabled="false"
+                        type="Default"
+                    />
+                    <!--                     <Button
+                        icon="sap-icon://workflow-tasks"
+                        tooltip="{i18n>sendToHRControlling}"
+                        type="Emphasized"
+                        enabled="{RequestSettings/IsTransferEnabled}"
+                        visible="{RequestSettings/IsStudentOffice}"
+                        press="onSendToHRControllingButtonPress"
+                    />
+                    <Button
+                        icon="sap-icon://workflow-tasks"
+                        tooltip="{i18n>sendToHRStudentOffice}"
+                        type="Emphasized"
+                        enabled="{RequestSettings/IsTransferEnabled}"
+                        visible="{RequestSettings/IsHRControlling}"
+                        press="onSendToHRStudentOfficeButtonPress"
+                    />
+                    <Button
+                        icon="sap-icon://generate-shortcut"
+                        tooltip="{i18n>generateConventionTooltip}"
+                        type="Emphasized"
+                        enabled="{RequestSettings/IsGenerateConventionEnabled}"
+                        visible="{RequestSettings/IsStudentOffice}"
+                        press="onGenerateConventionDocumentButtonPress"
+                    />
+                    <Button
+                        icon="sap-icon://paper-plane"
+                        tooltip="{i18n>notifyRequestor}"
+                        type="Emphasized"
+                        enabled="{RequestSettings/IsEditEnabled}"
+                        visible="{RequestSettings/IsStudentOffice}"
+                        press="onNotifyRequestorButtonPress"
+                    />
+                    <Button
+                        text="{i18n>extend}"
+                        type="Emphasized"
+                        visible="{RequestSettings/IsInternshipExtensionEnabled}"
+                        press="onExtendButtonPress"
+                    /> -->
+                </uxap:actions>
+            </uxap:ObjectPageHeader>
+        </uxap:headerTitle>
+        <uxap:headerContent>
+            <l:VerticalLayout>
+                <ObjectAttribute text="{Requid}" />
+                <ObjectAttribute
+                    title="{i18n>createdOn}"
+                    text="{path: 'CreatedOn', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy', UTC: true }}"
+                />
+                <ObjectAttribute
+                    title="{i18n>createdBy}"
+                    text="{CreatedBy}"
+                />
+            </l:VerticalLayout>
+            <l:VerticalLayout>
+                <ObjectStatus
+                    title="{i18n>status}"
+                    text="{ path: 'Status', formatter: '.formatter.statusText'}"
+                    id="status"
+                    state="{ path: 'Status', formatter: '.formatter.statusStateText'}"
+                />
+            </l:VerticalLayout>
+
+            <l:VerticalLayout>
+                <Label text="" />
+            </l:VerticalLayout>
+
+            <l:VerticalLayout>
+                <VBox height="63px">
+                    <Label text="Completeness" />
+                    <ProgressIndicator
+                        percentValue="30"
+                        displayValue="30%"
+                        showValue="true"
+                        state="None"
+                    />
+                </VBox>
+            </l:VerticalLayout>
+
+            <!--      <ObjectStatus
+                    title="{i18n>step}"
+                    text="{ path: 'SubStatus', formatter: '.formatter.subStatusText'}"
+                    id="subStatus"
+                    visible="{ path: 'SubStatus', formatter: '.formatter.subStatusVisibility' }"
+                /> -->
+        </uxap:headerContent>
+        <!-- Section and forms -->
+        <uxap:sections>
+            <uxap:ObjectPageSection
+                id="positionRequestFormSection"
+                showTitle="true"
+                title="{i18n>requestForm}"
+                titleUppercase="true"
+                visible="true"
+            >
+                <uxap:subSections>
+                    <!-- Identification -->
+                    <uxap:ObjectPageSubSection
+                        id="typeDateSubSection"
+                        title="{i18n>identification}"
+                    >
+                        <uxap:blocks>
+                            <form:SimpleForm
+                                layout="ResponsiveGridLayout"
+                                labelSpanXL="4"
+                                labelSpanL="4"
+                                labelSpanM="12"
+                                labelSpanS="12"
+                                adjustLabelSpan="false"
+                                emptySpanXL="0"
+                                emptySpanL="0"
+                                emptySpanM="0"
+                                emptySpanS="0"
+                                columnsXL="2"
+                                columnsL="2"
+                                columnsM="2"
+                                editable="true"
+                            >
+                                <form:content>
+                                    <core:Title text="{i18n>requestFlowType}" />
+                                    <!-- Begin : Dynamic type of position Request-->
+                                    <!-- <l:VerticalLayout> -->
+                                    <Label
+                                        text="{i18n>requestType}"
+                                        required="true"
+                                        labelFor="positionRequestType"
+                                    />
+
+                                    <Select
+                                        fieldGroupIds="positionRequestType"
+                                        forceSelection="false"
+                                        items="{
+                                        path : '/RequestTypeSet',
+                                        sorter: {
+                                            path: 'Type',
+                                            descending: true
+                                        },
+                                        filters : [
+                                            { path : 'ReqFlow', operator : 'EQ', value1 :'c' }
+                                        ]
+                                        }"
+                                        selectedKey="{ReqType}"
+                                        enabled="{RequestSettings/IsFormEditable}"
+                                        visible="{= ${ReqFlow} === 'c' }"
+                                    >
+                                        <core:Item
+                                            text="{Description}"
+                                            key="{Type}"
+                                        />
+                                    </Select>
+
+                                    <Select
+                                        fieldGroupIds="positionRequestType"
+                                        forceSelection="false"
+                                        items="{
+                                        path : '/RequestTypeSet',
+                                        sorter: {
+                                            path: 'Type',
+                                            descending: true
+                                        },  
+                                        filters : [
+                                            { path : 'ReqFlow', operator : 'EQ', value1 :'u' }
+                                        ]
+                                    }"
+                                        selectedKey="{ReqType}"
+                                        enabled="{RequestSettings/IsFormEditable}"
+                                        change=""
+                                        visible="{= ${ReqFlow} === 'u' }"
+                                    >
+                                        <core:Item
+                                            text="{Description}"
+                                            key="{Type}"
+                                        />
+                                    </Select>
+                                    <!-- </l:VerticalLayout> -->
+                                    <Label
+                                        text="{i18n>contractType}"
+                                        required="true"
+                                        labelFor="contractType"
+                                    />
+                                    <Select
+                                        id="contractType"
+                                        forceSelection="false"
+                                        items="{/ContratTypeSet}"
+                                        selectedKey="{ContractType}"
+                                        enabled="{RequestSettings/IsFormEditable}"
+                                        change=".onContractTypeChange"
+                                    >
+                                        <core:Item
+                                            text="{Description}"
+                                            key="{Type}"
+                                        />
+                                    </Select>
+                                    <Label
+                                        text="{i18n>durationMonths}"
+                                        wrapping="true"
+                                    />
+                                    <StepInput
+                                        min="0"
+                                        max="99"
+                                        step="0.5"
+                                        value="{DurationInMonths}"
+                                        displayValuePrecision="1"
+                                        visible="{= ${ContractType} === 'CDD' }"
+                                        change=".onDurationMonthsChange"
+                                    />
+                                    <!-- End Dynamic type of position Request-->
+                                    <core:Title text="{i18n>Dates}" />
+                                    <!-- <l:VerticalLayout> -->
+                                    <Label
+                                        text="{i18n>startDate}"
+                                        required="true"
+                                        labelFor="startDate"
+                                    />
+                                    <DatePicker
+                                        id="startDate"
+                                        value="{ path: 'StartDate', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy', UTC: true }}"
+                                        editable="{RequestSettings/IsFormEditable}"
+                                        required="true"
+                                        minDate="{datesModel>/MinDate}"
+                                        maxDate="{datesModel>/MaxDate}"
+                                        change=".onStartDateChange"
+                                    />
+                                    <Label
+                                        text="{i18n>endDate}"
+                                        required="true"
+                                        labelFor="endDate"
+                                    />
+                                    <DatePicker
+                                        id="endDate"
+                                        value="{ path: 'EndDate', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy', UTC: true }}"
+                                        editable="false"
+                                        required="true"
+                                        change="updateAmounts"
+                                    />
+                                    <!-- job Part -->
+                                    <core:Title text="{i18n>JobAssignment}" />
+                                    <Label
+                                        text="{i18n>jobArea}"
+                                        required="true"
+                                        labelFor="jobArea"
+                                    />
+                                    <Select
+                                        id="jobArea"
+                                        forceSelection="false"
+                                        items="{/JobAreaSet}"
+                                        selectedKey="{JobArea}"
+                                        enabled="{RequestSettings/IsFormEditable}"
+                                        change=".onJobAreaChange"
+                                    >
+                                        <core:Item
+                                            text="{Description}"
+                                            key="{Type}"
+                                        />
+                                    </Select>
+
+                                    <Label
+                                        text="{i18n>jobGroup}"
+                                        labelFor="jobGroup"
+                                    />
+                                    <Input
+                                        id="jobGroup"
+                                        type="Text"
+                                        value="{JobGroup}"
+                                        maxLength="8"
+                                        showValueHelp="true"
+                                        valueHelpOnly="true"
+                                        valueHelpRequest=".onJobGroupValueHelpPress"
+                                        editable="{RequestSettings/IsFormEditable}"
+                                        visible="{= ${JobArea} !== '' }"
+                                        required="true"
+                                    />
+
+                                    <Label
+                                        text="{i18n>job}"
+                                        labelFor="job"
+                                    />
+                                    <Input
+                                        id="job"
+                                        type="Text"
+                                        value="{Job}"
+                                        maxLength="8"
+                                        showValueHelp="true"
+                                        valueHelpOnly="true"
+                                        valueHelpRequest=".onJobValueHelpPress"
+                                        editable="{RequestSettings/IsFormEditable}"
+                                        visible="{= ${JobGroup} !== '' }"
+                                        required="true"
+                                    />
+                                    <Label
+                                        text="{i18n>range}"
+                                        required="true"
+                                        labelFor="range"
+                                    />
+                                    <Select
+                                        id="range"
+                                        forceSelection="false"
+                                        items="{/RangeTypeSet}"
+                                        selectedKey="{Range}"
+                                        enabled="{RequestSettings/IsFormEditable}"
+                                        visible="{= ${Job} !== '' &amp;&amp;  ${uiSettings>/rangeVisible}  }"
+                                        change=".onRangeChange"
+                                    >
+                                        <core:Item
+                                            text="{Description}"
+                                            key="{Type}"
+                                        />
+                                    </Select>
+                                    <core:Title
+                                        text="{i18n>CandidateInformations}"
+                                    />
+                                    <Label
+                                        text="{i18n>candidateName}"
+                                        labelFor="candiateName"
+                                    />
+                                    <Input
+                                        id="candidateName"
+                                        type="Text"
+                                        value="{NameCandidate}"
+                                    />
+                                </form:content>
+                            </form:SimpleForm>
+                        </uxap:blocks>
+                    </uxap:ObjectPageSubSection>
+
+                    <!-- Begin of Employee Group/SubGroup Form -->
+                    <uxap:ObjectPageSubSection
+                        id="empGroupSubGroupSubSection"
+                        title="{i18n>empGroupSubGroupAndWorkingTime}"
+                    >
+                        <uxap:blocks>
+                            <form:SimpleForm
+                                layout="ResponsiveGridLayout"
+                                labelSpanXL="4"
+                                labelSpanL="4"
+                                labelSpanM="12"
+                                labelSpanS="12"
+                                adjustLabelSpan="false"
+                                emptySpanXL="0"
+                                emptySpanL="0"
+                                emptySpanM="0"
+                                emptySpanS="0"
+                                columnsXL="2"
+                                columnsL="2"
+                                columnsM="2"
+                                singleContainerFullSize="false"
+                                editable="true"
+                            >
+                                <form:content>
+                                    <core:Title
+                                        text="{i18n>EmployeeGroupSubgroup}"
+                                    />
+                                    <Label
+                                        text="{i18n>employeeGroup}"
+                                        labelFor="employeeGroup"
+                                    />
+                                    <Input
+                                        id="employeeGroup"
+                                        type="Text"
+                                        value="{Persg}"
+                                        editable="false"
+                                        required="false"
+                                    />
+                                    <Label
+                                        text="{i18n>employeeSubGroup}"
+                                        labelFor="employeeSubGroup"
+                                    />
+                                    <Input
+                                        id="employeeSubGroup"
+                                        type="Text"
+                                        value="{Persk}"
+                                        editable="false"
+                                        required="false"
+                                    />
+                                    <core:Title text="{i18n>workingTime}" />
+                                    <Label
+                                        text="{i18n>percentage}"
+                                        labelFor="posAllocPercentage"
+                                        required="true"
+                                    />
+                                    <Input
+                                        id="posAllocPercentage"
+                                        type="Number"
+                                        description="%"
+                                        value="{
+                                        path:'PosAllocPercent',
+                                            type : 'sap.ui.model.type.Float',
+                                            constraints : {
+                                                minimum: '0',
+                                                maximum: '100'
+                                        }
+                                        }"
+                                        editable="true"
+                                        required="true"
+                                        change=".onPosAllocPercentageChange"
+                                    />
+                                    <Label
+                                        text="{i18n>nbHoursYear}"
+                                        labelFor="nbHoursYear"
+                                    />
+
+                                    <Input
+                                        id="nbHoursYear"
+                                        value="{
+                                            path: 'PosAllocPercent',
+                                            formatter: '.formatter.calculateNbHoursYear'
+                                        }"
+                                        type="Number"
+                                        editable="false"
+                                        required="false"
+                                    />
+                                    <Label
+                                        text="{i18n>nbHoursMonth}"
+                                        labelFor="nbHoursMonth"
+                                    />
+
+                                    <Input
+                                        id="nbHoursMonth"
+                                        value="{
+                                            path: 'PosAllocPercent',
+                                            formatter: '.formatter.calculateNbHoursMonth'
+                                        }"
+                                        type="Number"
+                                        editable="false"
+                                        required="false"
+                                    />
+                                </form:content>
+                            </form:SimpleForm>
+                        </uxap:blocks>
+                        <uxap:moreBlocks />
+                        <uxap:actions />
+                    </uxap:ObjectPageSubSection>
+                    <!-- End of Employee Group/SubGroup Form -->
+
+                    <!-- Begin of Position Charatertistic Form -->
+                    <uxap:ObjectPageSubSection
+                        id="positionCharacteristicSubSection"
+                        title="{i18n>positionCharacteristic}"
+                    >
+                        <uxap:blocks>
+                            <form:SimpleForm
+                                layout="ResponsiveGridLayout"
+                                labelSpanXL="4"
+                                labelSpanL="4"
+                                labelSpanM="12"
+                                labelSpanS="12"
+                                adjustLabelSpan="false"
+                                emptySpanXL="0"
+                                emptySpanL="0"
+                                emptySpanM="0"
+                                emptySpanS="0"
+                                columnsXL="2"
+                                columnsL="2"
+                                columnsM="2"
+                                singleContainerFullSize="false"
+                                editable="true"
+                            >
+                                <core:Title text="" />
+                                <Label
+                                    text="{i18n>initiativeStrat}"
+                                    labelFor="initiativeStrat"
+                                />
+                                <Input
+                                    id="justifCDI"
+                                    type="Text"
+                                    value="{Justifcdi}"
+                                    showValueHelp="true"
+                                    valueHelpOnly="true"
+                                    valueHelpRequest="onJustifCDIValueHelpPress"
+                                    editable="{RequestSettings/IsFormEditable}"
+                                    visible="{uiSettings>/justifCDIVisible}"
+                                    required="false"
+                                />
+
+                                <Label
+                                    text="{i18n>justifCDD}"
+                                    required="true"
+                                    labelFor="justifCDD"
+                                />
+
+                                <Select
+                                    id="justifCDD"
+                                    forceSelection="false"
+                                    items="{/JustifcddTypeSet}"
+                                    selectedKey="{Poscharac}"
+                                    enabled="{RequestSettings/IsFormEditable}"
+                                    visible="{uiSettings>/justifCDDVisible}"
+                                    change=".onjustifCDDTypeChange"
+                                >
+                                    <core:Item
+                                        text="{Description}"
+                                        key="{Type}"
+                                    />
+                                </Select>
+                                <Label text="" />
+                                <CheckBox
+                                    text="{i18n>externallyFunded}"
+                                    selected="{ExternallyFunded}"
+                                />
+
+                                <Label
+                                    text="{i18n>workCapacityApproved}"
+                                    labelFor="workCapacityApproved"
+                                />
+                                <Input
+                                    id="workCapacityApproved"
+                                    type="Number"
+                                    description="%"
+                                    value="{
+                                        path:'Workcappapp',
+                                            type : 'sap.ui.model.type.Float',
+                                            constraints : {
+                                                minimum: '0',
+                                                maximum: '100'
+                                        }
+                                        }"
+                                    editable="true"
+                                />
+
+                                <Label
+                                    text="{i18n>relatedPernr}"
+                                    labelFor="relatedPernr"
+                                />
+                                <Input
+                                    id="relatedPernr"
+                                    type="Text"
+                                    value="{RelatedPernr}"
+                                    showValueHelp="true"
+                                    valueHelpOnly="true"
+                                    valueHelpRequest="onRelatedPernrValueHelpPress"
+                                    editable="{RequestSettings/IsFormEditable}"
+                                />
+
+                                <core:Title text="" />
+
+                                <Label
+                                    text="{i18n>replacedPernr}"
+                                    labelFor="replacedPernr"
+                                />
+                                <Input
+                                    id="replacedPernr"
+                                    type="Text"
+                                    value="{ReplacedPernr}"
+                                    showValueHelp="true"
+                                    valueHelpOnly="true"
+                                    valueHelpRequest="onReplacedPernrValueHelpPress"
+                                    editable="{RequestSettings/IsFormEditable}"
+                                />
+
+                                <Label
+                                    text="{i18n>replacedpos}"
+                                    labelFor="Replacedpos"
+                                />
+                                <Input
+                                    id="replacedpos"
+                                    type="Text"
+                                    value="{Replacedpos}"
+                                    editable="false"
+                                />
+                            </form:SimpleForm>
+                        </uxap:blocks>
+                    </uxap:ObjectPageSubSection>
+                    <!-- End of Position Charatertistic Form -->
+
+                    <!-- Begin of Assignment Form -->
+                    <uxap:ObjectPageSubSection
+                        id="assignmentSubSection"
+                        title="{i18n>assignment}"
+                    >
+                        <uxap:blocks>
+                            <form:SimpleForm
+                                layout="ResponsiveGridLayout"
+                                labelSpanXL="4"
+                                labelSpanL="4"
+                                labelSpanM="12"
+                                labelSpanS="12"
+                                adjustLabelSpan="false"
+                                emptySpanXL="0"
+                                emptySpanL="0"
+                                emptySpanM="0"
+                                emptySpanS="0"
+                                columnsXL="2"
+                                columnsL="2"
+                                columnsM="2"
+                                singleContainerFullSize="false"
+                                editable="true"
+                            >
+                                <form:content>
+                                    <Label
+                                        text="{i18n>assignedOrgUnit}"
+                                        labelFor="assignedOrgUnit"
+                                    />
+                                    <Input
+                                        id="assignedOrgUnit"
+                                        type="Text"
+                                        value="{Orgeh}"
+                                        showValueHelp="true"
+                                        valueHelpOnly="true"
+                                        valueHelpRequest="onOrgUnitValueHelpPress"
+                                        editable="{RequestSettings/IsFormEditable}"
+                                        required="true"
+                                    />
+                                </form:content>
+                            </form:SimpleForm>
+                        </uxap:blocks>
+                    </uxap:ObjectPageSubSection>
+                    <!-- End of Assignment Form -->
+
+                    <uxap:ObjectPageSubSection
+                        title="{i18n>costsAssignment}"
+                        mode="Expanded"
+                    >
+                        <uxap:blocks>
+                            <Table
+                                id="costAssignmentsTable"
+                                width="100%"
+                                noDataText="{i18n>noCosts}"
+                                mode="{RequestSettings/ListMode}"
+                                items="{CostAssignments}"
+                                delete="onDeleteCostAssignmentButtonPress"
+                            >
+                                <headerToolbar>
+                                    <OverflowToolbar
+                                        width="auto"
+                                        height="auto"
+                                        design="Transparent"
+                                        visible="true"
+                                        enabled="true"
+                                    >
+                                        <content>
+                                            <ToolbarSpacer width="" />
+                                            <Button
+                                                type="Default"
+                                                icon="sap-icon://add"
+                                                iconFirst="true"
+                                                width="auto"
+                                                enabled="{RequestSettings/IsFormEditable}"
+                                                visible="true"
+                                                iconDensityAware="false"
+                                                tooltip="{i18n>add}"
+                                                press="onAddCostAssignmentButtonPress"
+                                            />
+                                        </content>
+                                    </OverflowToolbar>
+                                </headerToolbar>
+                                <columns>
+                                    <Column width="auto">
+                                        <Text text="{i18n>entity}" />
+                                    </Column>
+                                    <Column width="auto">
+                                        <Text text="{i18n>wbsElement}" />
+                                    </Column>
+                                    <Column
+                                        demandPopin="true"
+                                        hAlign="Right"
+                                        width="15%"
+                                    >
+                                        <Text
+                                            text="{i18n>assignmentPercentage}"
+                                        />
+                                    </Column>
+                                </columns>
+                                <items>
+                                    <ColumnListItem>
+                                        <cells>
+                                            <Text text="{Entity}" />
+                                            <ObjectIdentifier
+                                                title="{WBSElementId}"
+                                                text="{WBSElementShortDescription}"
+                                            />
+                                            <ObjectNumber
+                                                number="{AssignmentPercentage}"
+                                                unit="%"
+                                            />
+                                        </cells>
+                                    </ColumnListItem>
+                                </items>
+                            </Table>
+                        </uxap:blocks>
+                        <uxap:moreBlocks />
+                        <uxap:actions />
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
+
+            <!-- FC Note Section -->
+            <uxap:ObjectPageSection
+                id="fcNoteSection"
+                title="Position notes"
+            >
+                <uxap:subSections>
+                    <uxap:ObjectPageSubSection id="fcNotesSubSection">
+                        <VBox>
+                            <FeedInput
+                                post="onFeedInputPosted"
+                                showIcon="false"
+                                visible="{RequestSettings/IsCommentsEnabled}"
+                            />
+                            <!-- items="{ path: 'Comments', sorter: { path: 'CreatedOn' } }" TODO -->
+                            <List
+                                showSeparators="Inner"
+                                mode="Delete"
+                                delete="onDeleteFeedItemBtnPressed"
+                            >
+                                <FeedListItem
+                                    sender="{CreatorName}"
+                                    showIcon="false"
+                                    senderActive="false"
+                                    timestamp="{ path: 'CreatedOn', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd MMM yyyy', UTC: true } } { path: 'CreatedAt', formatter: '.formatter.formatTime'}"
+                                    text="{Note}"
+                                />
+                            </List>
+                        </VBox>
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
+
+            <!-- Comment Section -->
+            <uxap:ObjectPageSection
+                id="commentsSection"
+                title="Comments"
+            >
+                <uxap:subSections>
+                    <uxap:ObjectPageSubSection id="commentSubSection">
+                        <VBox>
+                            <FeedInput
+                                post="onFeedInputPosted"
+                                showIcon="false"
+                                visible="{RequestSettings/IsCommentsEnabled}"
+                            />
+                            <!-- items="{ path: 'Comments', sorter: { path: 'CreatedOn' } }" TODO -->
+                            <List
+                                showSeparators="Inner"
+                                mode="Delete"
+                                delete="onDeleteFeedItemBtnPressed"
+                            >
+                                <FeedListItem
+                                    sender="{CreatorName}"
+                                    showIcon="false"
+                                    senderActive="false"
+                                    timestamp="{ path: 'CreatedOn', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd MMM yyyy', UTC: true } } { path: 'CreatedAt', formatter: '.formatter.formatTime'}"
+                                    text="{Note}"
+                                />
+                            </List>
+                        </VBox>
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
+
+            <!-- Cost Simulation Section -->
+            <uxap:ObjectPageSection
+                id="costSimulationSection"
+                title="Cost Simulation"
+            >
+                <uxap:subSections>
+                    <uxap:ObjectPageSubSection id="costSimulationSubSection">
+                        <!--        <viz:VizFrame
+                            vizProperties="{ title: {text : 'Position cost simulation', visible : true}}"
+                            id="chartContainer"
+                            vizType="column"
+                            width="600px"
+                            height="400px"
+                        /> -->
+                        <commons:ChartContainer
+                            id="idChartContainer"
+                            showFullScreen="true"
+                            showPersonalization="true"
+                            autoAdjustHeight="false"
+                            title="Cost Simulation"
+                        >
+                            <commons:content>
+                                <commons:ChartContainerContent
+                                    icon="sap-icon://column-chart-dual-axis"
+                                    title="Column Chart - Cost simulation"
+                                >
+                                    <commons:content>
+                                        <viz:VizFrame
+                                            uiConfig="{applicationSet:'fiori'}"
+                                            vizProperties="{ title: {text : 'Position cost simulation', visible : true}}"
+                                            id="chartContainer"
+                                            vizType="column"
+                                            width="600px"
+                                            height="400px"
+                                        />
+                                    </commons:content>
+                                </commons:ChartContainerContent>
+                                <commons:ChartContainerContent
+                                    icon="sap-icon://table-view"
+                                    title="Table"
+                                >
+                                    <commons:content>
+                                        <!-- <Table id="idTable" /> -->
+
+                                        <Table
+                                            id="tableId"
+                                            inset="false"
+                                            items="{/CostSimulationSet}"
+                                        >
+                                            <columns>
+                                                <Column width="12em">
+                                                    <ObjectIdentifier
+                                                        text="OTP"
+                                                    />
+                                                </Column>
+                                                <Column>
+                                                    <Text text="Year" />
+                                                </Column>
+                                                <Column>
+                                                    <Text text="Cost" />
+                                                </Column>
+                                                <!--            <Column>
+                                                    <ObjectNumber
+                                                        number="Other?"
+                                                    />
+                                                </Column> -->
+                                            </columns>
+                                            <items>
+                                                <ColumnListItem>
+                                                    <cells>
+                                                        <ObjectIdentifier
+                                                            title="{OtpId}"
+                                                        />
+                                                        <Text text="{Year}" />
+                                                        <Text
+                                                            text="{AmountPro}"
+                                                        />
+                                                        <!--  <ObjectNumber
+                                                            number="{numberOfLegs}"
+                                                        /> -->
+                                                    </cells>
+                                                </ColumnListItem>
+                                            </items>
+                                        </Table>
+                                    </commons:content>
+                                </commons:ChartContainerContent>
+                            </commons:content>
+                            <!--                            <commons:customIcons>
+                                <core:Icon
+                                    id="customIcon"
+                                    src="sap-icon://print"
+                                    tooltip="Custom Content Print"
+                                    press="onCustomActionPress"
+                                />
+                            </commons:customIcons> -->
+                            <!--         <commons:toolbar>
+                                <OverflowToolbar id="appToolbar">
+                                    <Button
+                                        id="btnAction1"
+                                        text="CustomAction"
+                                        type="Transparent"
+                                        press="onCustomActionPress"
+                                    />
+                                    <ToolbarSpacer />
+                                    <Button
+                                        id="btnAction2"
+                                        text="CustomAction"
+                                        type="Transparent"
+                                        press="onCustomActionPress"
+                                    />
+                                    <commons:ChartContainerToolbarPlaceholder />
+                                </OverflowToolbar>
+                            </commons:toolbar> -->
+                            <!--                            <commons:dimensionSelectors>
+                                <Select id="idSelector">
+                                    <core:Item
+                                        key="0"
+                                        text="Sales by Country"
+                                    />
+                                </Select>
+                            </commons:dimensionSelectors> -->
+                        </commons:ChartContainer>
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
+            <!-- TimeLine Section -->
+            <uxap:ObjectPageSection
+                id="timeLineSection"
+                title="TimeLine"
+            >
+                <uxap:subSections>
+                    <uxap:ObjectPageSubSection id="timeLineSubSection">
+                        <c:Timeline
+                            id="idTimeline"
+                            enableDoubleSided="true"
+                            groupBy="HireDate"
+                            growingThreshold="0"
+                            filterTitle="Job Title"
+                            sortOldestFirst="true"
+                            content="{commentsModel>/Employees}"
+                            enableScroll="false"
+                        >
+                            <c:content>
+                                <c:TimelineItem
+                                    id="idTemplateItem"
+                                    dateTime="{commentsModel>HireDate}"
+                                    title="{commentsModel>JobTitle}"
+                                    userNameClickable="true"
+                                    userPicture="{commentsModel>Photo}"
+                                    text="test"
+                                    userName="{commentsModel>Name}"
+                                    filterValue="{commentsModel>JobTitle}"
+                                    icon="{commentsModel>Icon}"
+                                />
+                            </c:content>
+                        </c:Timeline>
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
+        </uxap:sections>
+        <uxap:footer>
+            <OverflowToolbar>
+                <content>
+                    <Button
+                        id="messagePopoverBtn"
+                        icon="sap-icon://message-popup"
+                        type="Emphasized"
+                        text="{=${message>/}.length}"
+                        visible="{=!!${message>/}.length}"
+                        press="onMessagesButtonPress"
+                    />
+                    <DraftIndicator
+                        id="draftIndicator"
+                        state="Saved"
+                        minDisplayTime="1500"
+                        visible="{RequestSettings/IsDraftHandlingEnabled}"
+                    />
+                    <ToolbarSpacer width="" />
+                    <Button
+                        text="{i18n>save}"
+                        press="onSaveButtonPress"
+                        type="Emphasized"
+                        visible="{RequestSettings/IsDraftHandlingEnabled}"
+                    />
+                    <Button
+                        text="{i18n>cancel}"
+                        press="onCancelButtonPress"
+                        visible="{RequestSettings/IsDraftHandlingEnabled}"
+                    />
+                    <!--                     <Button
+                        text="{i18n>saveAndClose}"
+                        type="Emphasized"
+                        visible="{RequestSettings/IsEditionActionsEnabled}"
+                        press="onSaveEditionButtonPress"
+                    />
+                    <Button
+                        text="{i18n>cancelAndClose}"
+                        type="Default"
+                        visible="{RequestSettings/IsEditionActionsEnabled}"
+                        press="onCancelEditButtonPress"
+                    /> -->
+                </content>
+            </OverflowToolbar>
+        </uxap:footer>
+    </uxap:ObjectPageLayout>
+</mvc:View>

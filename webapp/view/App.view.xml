@@ -1,0 +1,18 @@
+
+<mvc:View
+    controllerName="com.un.zhrbenefrequests.controller.App"
+    xmlns:html="http://www.w3.org/1999/xhtml"
+    xmlns:mvc="sap.ui.core.mvc"
+    displayBlock="true"
+    xmlns="sap.m"
+    xmlns:f="sap.f"
+    busy="{appView>/busy}"
+    busyIndicatorDelay="{appView>/delay}"
+>
+    <App>
+        <f:FlexibleColumnLayout
+            id="idAppControl"
+            backgroundDesign="Translucent"
+        />
+    </App>
+</mvc:View>
