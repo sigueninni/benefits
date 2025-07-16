@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=https://sap.github.io/ui5-tooling/schema/ui5.yaml.json
+
+specVersion: "3.1"
+metadata:
+  name: com.un.zhrbenefrequests
+type: application
+builder:
+  resources:
+    excludes:
+      - /test/**
+      - /localService/**
+  customTasks:
+    - name: deploy-to-abap
+      afterTask: generateCachebusterInfo
+      configuration:
+        log: 3
+        target:
+          url: http://hq-sap-d01.hq.int.unesco.org:80/
+          client: '350'
+        app:
+          name: ZHRBENEFREQ
+          description: Benefit Requests
+          package: ZHRBENEFITS_FIORI
+          transport: D01K9B0D5B
+        exclude:
+          - /test/
