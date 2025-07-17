@@ -2,102 +2,46 @@ sap.ui.define([], function () {
     "use strict";
     return {
 
-        statusText: function (iStatus) {
+        /* 
+        00 F        Brouillon
+        01 F        Demande soumise par l'employé
+        02 F        Demande approuvée par HRA
+        03 F        Demande rejetée par HRA
+        04 F        Demande renvoyée vers l'employé
+        05 F        Demande approuvée par HRA et envoyée vers HRO
+        06 F        Demande approuvée par HRO, fin du processus
+        07 F        Demande renvoyée vers HRA 
+        */
+
+
+        requestStatusStateText: function (iStatus) {
             if (iStatus) {
                 switch (iStatus) {
-                    case 1:
-                        return "Draft";
-                    case 2:
-                        return "Saved as draft";
-                    case 3:
-                        return "Submitted";
-                    case 4:
-                        return "In process";
-                    case 5:
-                        return "Rejected";
-                    case 6:
-                        return "Approved";
-                    case 7:
-                        return "Completed";
-                    default:
-                        return "";
-                }
-            } else {
-                return "";
-            }
-        },
-
-        statusStateText: function (iStatus) {
-            if (iStatus) {
-                switch (iStatus) {
-                    case 1:
+                    case '00':
                         return "None";
-                    case 2:
-                        return "None";
-                    case 3:
-                        return "Success";
-                    case 4:
-                        return "Warning";
-                    case 5:
-                        return "Error";
-                    case 7:
-                        return "None";
-                    default:
-                        return "None";
-                }
-            } else {
-                return "None";
-            }
-        },
-        flowText: function (iFlow) {
-            if (iFlow) {
-                switch (iFlow) {
-                    case 'c':
-                        return "Create";
-                    case 'u':
-                        return "Update";
-                    default:
-                        return "None";
-                }
-            } else {
-                return "None";
-            }
-
-        },
-
-        typeText: function (iType) {
-            if (iType) {
-                switch (iType) {
                     case '01':
-                        return "position creation";
+                        return "None";
                     case '02':
-                        return "position creation(temporary leave)";
-                    case '21':
-                        return "trigger recruitment";
-                    case '22':
-                        return "position extension";
-                    case '23':
-                        return "working time change";
-                    case '24':
-                        return "type of contract change";
-                    case '25':
-                        return "job/level change";
-                    case '26':
-                        return "range change";
-                    case '27':
-                        return "assignment change";
-                    case '28':
-                        return "on hold";
-                    case '29':
-                        return "otp change";
+                        return "Success";
+                    case '03':
+                        return "Error";
+                    case '04':
+                        return "Warning";
+                    case '05':
+                        return "None";
+                    case '06':
+                        return "Success";
+
+                    case '07':
+                        return "Warning";
                     default:
                         return "None";
                 }
             } else {
                 return "None";
             }
-
         },
+
         formatTime: function (oTime) {
             if (oTime) {
                 const oDate = new Date(oTime.ms);
@@ -111,31 +55,6 @@ sap.ui.define([], function () {
             }
             return null;
         },
-
-        calculateNbHoursYear: function (oPercentage) {
-            return (2080 * oPercentage / 100)
-
-        },
-
-        calculateNbHoursMonth: function (oPercentage) {
-            const nbHoursMonth = 173.60 * oPercentage / 100;
-            return nbHoursMonth;
-        },
-
-        joinDatesJustifCDI: function (begda, endda) {
-            if (!begda && !endda) {
-                return ""; // Si aucune date n'est fournie
-            }
-            if (!begda) {
-                return endda; // Si seule la fin est présente
-            }
-            if (!endda) {
-                return begda; // Si seul le début est présent
-            }
-            return `${begda} - ${endda}`; // Concatène avec un séparateur
-        }
-
-
 
     };
 

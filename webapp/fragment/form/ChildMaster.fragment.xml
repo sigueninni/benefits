@@ -1,0 +1,87 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+    xmlns:form="sap.ui.layout.form"
+    xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+>
+    <form:SimpleForm
+        layout="ResponsiveGridLayout"
+        labelSpanXL="4"
+        labelSpanL="4"
+        labelSpanM="12"
+        labelSpanS="12"
+        adjustLabelSpan="false"
+        emptySpanXL="0"
+        emptySpanL="0"
+        emptySpanM="0"
+        emptySpanS="0"
+        columnsXL="2"
+        columnsL="2"
+        columnsM="2"
+        editable="true"
+    >
+        <form:content>
+            <core:Title text="{i18n>childMasterData}" />
+
+            <Label
+                text="{i18n>lastName}"
+                required="true"
+                labelFor="lastName"
+            />
+
+               <Input
+                id="lastName"
+                type="Text"
+                value="{JobGroup}"
+                editable="{RequestSettings/IsFormEditable}"
+
+            />
+    
+          <Label
+                text="{i18n>birthName}"
+                required="true"
+                labelFor="birthName"
+            />
+
+               <Input
+                id="birthName"
+                type="Text"
+                value="{JobGroup}"
+                editable="{RequestSettings/IsFormEditable}"
+
+            />
+
+          <Label
+                text="{i18n>firstName}"
+                required="true"
+                labelFor="firstName"
+            />
+
+               <Input
+                id="firstName"
+                type="Text"
+                value="{JobGroup}"
+                editable="{RequestSettings/IsFormEditable}"
+
+            />
+            <!-- End Dynamic type of position Request-->
+            <core:Title text="" />
+            <!-- <l:VerticalLayout> -->
+            <Label
+                text="{i18n>dateOfBirth}"
+                required="true"
+                labelFor="dateOfBirth"
+            />
+            <DatePicker
+                id="startDate"
+                value="{ path: 'StartDate', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy', UTC: true }}"
+                editable="{RequestSettings/IsFormEditable}"
+                required="true"
+                minDate="{datesModel>/MinDate}"
+                maxDate="{datesModel>/MaxDate}"
+                change=".onStartDateChange"
+            />
+          
+        </form:content>
+    </form:SimpleForm>
+</core:FragmentDefinition>

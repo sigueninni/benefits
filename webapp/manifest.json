@@ -7,7 +7,7 @@
     "title": "{{appTitle}}",
     "description": "{{appDescription}}",
     "applicationVersion": {
-    "version": "1.0.0"
+      "version": "1.0.0"
     },
     "resources": "resources.json",
     "sourceTemplate": {
@@ -48,11 +48,11 @@
     "dependencies": {
       "minUI5Version": "1.71.58",
       "libs": {
-                "sap.f": {},
-                "sap.m": {},
-                "sap.ui.core": {},
-                "sap.ui.layout": {},
-                "sap.uxap": {}
+        "sap.f": {},
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.ui.layout": {},
+        "sap.uxap": {}
       }
     },
     "contentDensities": {
@@ -68,14 +68,14 @@
       },
       "": {
         "dataSource": "mainService",
-                "settings": {
-                    "metadataUrlParams": {
-                        "sap-documentation": "heading"
-                    },
-                    "defaultBindingMode": "TwoWay",
-                    "defaultCountMode": "Inline"
-                },
-                "preload": true
+        "settings": {
+          "metadataUrlParams": {
+            "sap-documentation": "heading"
+          },
+          "defaultBindingMode": "TwoWay",
+          "defaultCountMode": "Inline"
+        },
+        "preload": true
       }
     },
     "resources": {
@@ -92,12 +92,12 @@
         "async": true,
         "viewPath": "com.un.zhrbenefrequests.view",
         "controlAggregation": "pages",
-        "controlId": "idAppControl",      
-                "bypassed": {
-                    "target": [
-                        "notFound"
-                    ]
-                }
+        "controlId": "idAppControl",
+        "bypassed": {
+          "target": [
+            "notFound"
+          ]
+        }
       },
       "routes": [
         {
@@ -108,69 +108,69 @@
           ]
         }
       ],
- "routes": [
-                {
-                    "name": "RouteMaster",
-                    "pattern": "",
-                    "target": [
-                        "TargetMaster"
-                    ],
-                    "layout": "OneColumn"
-                },
-                {
-                    "name": "RouteDetail",
-                    "pattern": "Requests/{positionRequestId}",
-                    "target": [
-                        "TargetMaster",
-                        "TargetDetail"
-                    ],
-                    "layout": "TwoColumnsMidExpanded"
-                }
-            ],
-            "targets": {
-                "TargetMaster": {
-                    "viewType": "XML",
-                    "transition": "slide",
-                    "clearControlAggregation": false,
-                    "viewId": "master",
-                    "viewName": "Master",
-                    "viewLevel": 1,
-                    "controlAggregation": "beginColumnPages"
-                },
-                "TargetDetail": {
-                    "viewType": "XML",
-                    "transition": "slide",
-                    "clearControlAggregation": false,
-                    "viewId": "detail",
-                    "viewName": "Detail",
-                    "viewLevel": 2,
-                    "controlAggregation": "midColumnPages"
-                },
-                "detailNoObjectsAvailable": {
-                    "viewName": "DetailNoObjectsAvailable",
-                    "viewId": "detailNoObjectsAvailable",
-                    "viewLevel": 2,
-                    "controlAggregation": "midColumnPages"
-                },
-                "notFound": {
-                    "viewName": "NotFound",
-                    "viewId": "notFound",
-                    "viewLevel": 1,
-                    "controlAggregation": "beginColumnPages"
-                },
-                "detailObjectNotFound": {
-                    "viewName": "DetailObjectNotFound",
-                    "viewId": "detailObjectNotFound",
-                    "viewLevel": 2,
-                    "controlAggregation": "midColumnPages"
-                }
-            }
+      "routes": [
+        {
+          "name": "RouteMaster",
+          "pattern": "",
+          "target": [
+            "TargetMaster"
+          ],
+          "layout": "OneColumn"
         },
-        "rootView": {
-            "viewName": "com.un.zhrbenefrequests.view.App",
-            "type": "XML",
-            "async": true,
-            "id": "App"
+        {
+          "name": "RouteDetail",
+          "pattern": "Requests/{positionRequestId}",
+          "target": [
+            "TargetMaster",
+            "TargetDetail"
+          ],
+          "layout": "TwoColumnsMidExpanded"
         }
+      ],
+      "targets": {
+        "TargetMaster": {
+          "viewType": "XML",
+          "transition": "slide",
+          "clearControlAggregation": false,
+          "viewId": "master",
+          "viewName": "Master",
+          "viewLevel": 1,
+          "controlAggregation": "beginColumnPages"
+        },
+        "TargetDetail": {
+          "viewType": "XML",
+          "transition": "slide",
+          "clearControlAggregation": false,
+          "viewId": "detail",
+          "viewName": "Detail",
+          "viewLevel": 2,
+          "controlAggregation": "midColumnPages"
+        },
+        "detailNoObjectsAvailable": {
+          "viewName": "DetailNoObjectsAvailable",
+          "viewId": "detailNoObjectsAvailable",
+          "viewLevel": 2,
+          "controlAggregation": "midColumnPages"
+        },
+        "notFound": {
+          "viewName": "NotFound",
+          "viewId": "notFound",
+          "viewLevel": 1,
+          "controlAggregation": "beginColumnPages"
+        },
+        "detailObjectNotFound": {
+          "viewName": "DetailObjectNotFound",
+          "viewId": "detailObjectNotFound",
+          "viewLevel": 2,
+          "controlAggregation": "midColumnPages"
+        }
+      }
+    },
+    "rootView": {
+      "viewName": "com.un.zhrbenefrequests.view.App",
+      "type": "XML",
+      "async": true,
+      "id": "App"
+    }
   }
 }

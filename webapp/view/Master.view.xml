@@ -70,23 +70,22 @@
                         id="listItem"
                         type="{= ${device>/system/phone} ? 'Active' : 'Inactive'}"
                         press="onSelectionChange"
-                        title="{Title}"
+                        title="{RequestDesc}"
                     >
                         <firstStatus>
-                            <ObjectStatus
-                                text="{ path: 'Status', formatter: '.formatter.statusText' }"
-                                state="{ path: 'Status', formatter: '.formatter.statusStateText' }"
-                            />
+
+                        <ObjectStatus
+                            text="{Info1}"
+                             state="{ path: 'RequestStatus', formatter: '.formatter.requestStatusStateText' }"
+                           />
+             
                         </firstStatus>
                         <attributes>
                             <ObjectAttribute
-                                text="{path: 'CreatedOn', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy' }}"
+                                text="{path: 'Begda', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy' }}"
                             />
-                            <ObjectAttribute
-                                text="{ path: 'ReqFlow', formatter: '.formatter.flowText' } - { path: 'ReqType', formatter: '.formatter.typeText' }"
-                            />
-                            <ObjectAttribute text="{RequestKey}" />
-                            <ObjectAttribute text="{RequestType}" />
+                            <ObjectAttribute text="{Info2}" />
+                            <ObjectAttribute text="{Info3}" />
                             <!--                <ObjectAttribute
                                 text="{path: 'ContractType', formatter: '.formatter.contractTypeText'} {i18n>dot} {path: 'InternshipType', formatter: '.formatter.internshipTypeText'}"
                             />

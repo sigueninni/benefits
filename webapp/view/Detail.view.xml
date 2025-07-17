@@ -56,7 +56,7 @@
                         visible="{RequestSettings/IsDeleteEnabled}"
                         press="onDeleteButtonPress"
                     />
-<!--                     <Button
+                    <!--                     <Button
                         icon="sap-icon://expense-report"
                         tooltip="{i18n>costSimulation}"
                         type="Emphasized"
@@ -68,7 +68,6 @@
                         enabled="false"
                         type="Default"
                     /> -->
-                  
                 </uxap:actions>
             </uxap:ObjectPageHeader>
         </uxap:headerTitle>
@@ -126,372 +125,112 @@
                 visible="true"
             >
                 <uxap:subSections>
-                    <!-- Identification -->
+                    <!-- Child Master Data -->
                     <uxap:ObjectPageSubSection
-                        id="typeDateSubSection"
-                        title="{i18n>identification}"
+                        id="childMasterSubSection"
+                        title="{i18n>childMasterData}"
                     >
                         <uxap:blocks>
-                            <core:Fragment fragmentName="com.un.zhrbenefrequests.fragment.form.SchoolData" type="XML" xmlns:core="sap.ui.core"/> 
+                            <core:Fragment
+                                fragmentName="com.un.zhrbenefrequests.fragment.form.ChildMaster"
+                                type="XML"
+                                xmlns:core="sap.ui.core"
+                            />
                         </uxap:blocks>
                     </uxap:ObjectPageSubSection>
 
-                    <!-- Begin of Employee Group/SubGroup Form -->
+                    <!-- Eligibility -->
                     <uxap:ObjectPageSubSection
-                        id="empGroupSubGroupSubSection"
-                        title="{i18n>empGroupSubGroupAndWorkingTime}"
+                        id="eligibilitySubSection"
+                        title="{i18n>eligibilityData}"
                     >
                         <uxap:blocks>
-                            <form:SimpleForm
-                                layout="ResponsiveGridLayout"
-                                labelSpanXL="4"
-                                labelSpanL="4"
-                                labelSpanM="12"
-                                labelSpanS="12"
-                                adjustLabelSpan="false"
-                                emptySpanXL="0"
-                                emptySpanL="0"
-                                emptySpanM="0"
-                                emptySpanS="0"
-                                columnsXL="2"
-                                columnsL="2"
-                                columnsM="2"
-                                singleContainerFullSize="false"
-                                editable="true"
-                            >
-                                <form:content>
-                                    <core:Title
-                                        text="{i18n>EmployeeGroupSubgroup}"
-                                    />
-                                    <Label
-                                        text="{i18n>employeeGroup}"
-                                        labelFor="employeeGroup"
-                                    />
-                                    <Input
-                                        id="employeeGroup"
-                                        type="Text"
-                                        value="{Persg}"
-                                        editable="false"
-                                        required="false"
-                                    />
-                                    <Label
-                                        text="{i18n>employeeSubGroup}"
-                                        labelFor="employeeSubGroup"
-                                    />
-                                    <Input
-                                        id="employeeSubGroup"
-                                        type="Text"
-                                        value="{Persk}"
-                                        editable="false"
-                                        required="false"
-                                    />
-                                    <core:Title text="{i18n>workingTime}" />
-                                    <Label
-                                        text="{i18n>percentage}"
-                                        labelFor="posAllocPercentage"
-                                        required="true"
-                                    />
-                                    <Input
-                                        id="posAllocPercentage"
-                                        type="Number"
-                                        description="%"
-                                        value="{
-                                        path:'PosAllocPercent',
-                                            type : 'sap.ui.model.type.Float',
-                                            constraints : {
-                                                minimum: '0',
-                                                maximum: '100'
-                                        }
-                                        }"
-                                        editable="true"
-                                        required="true"
-                                        change=".onPosAllocPercentageChange"
-                                    />
-                                    <Label
-                                        text="{i18n>nbHoursYear}"
-                                        labelFor="nbHoursYear"
-                                    />
-
-                                    <Input
-                                        id="nbHoursYear"
-                                        value="{
-                                            path: 'PosAllocPercent',
-                                            formatter: '.formatter.calculateNbHoursYear'
-                                        }"
-                                        type="Number"
-                                        editable="false"
-                                        required="false"
-                                    />
-                                    <Label
-                                        text="{i18n>nbHoursMonth}"
-                                        labelFor="nbHoursMonth"
-                                    />
-
-                                    <Input
-                                        id="nbHoursMonth"
-                                        value="{
-                                            path: 'PosAllocPercent',
-                                            formatter: '.formatter.calculateNbHoursMonth'
-                                        }"
-                                        type="Number"
-                                        editable="false"
-                                        required="false"
-                                    />
-                                </form:content>
-                            </form:SimpleForm>
-                        </uxap:blocks>
-                        <uxap:moreBlocks />
-                        <uxap:actions />
-                    </uxap:ObjectPageSubSection>
-                    <!-- End of Employee Group/SubGroup Form -->
-
-                    <!-- Begin of Position Charatertistic Form -->
-                    <uxap:ObjectPageSubSection
-                        id="positionCharacteristicSubSection"
-                        title="{i18n>positionCharacteristic}"
-                    >
-                        <uxap:blocks>
-                            <form:SimpleForm
-                                layout="ResponsiveGridLayout"
-                                labelSpanXL="4"
-                                labelSpanL="4"
-                                labelSpanM="12"
-                                labelSpanS="12"
-                                adjustLabelSpan="false"
-                                emptySpanXL="0"
-                                emptySpanL="0"
-                                emptySpanM="0"
-                                emptySpanS="0"
-                                columnsXL="2"
-                                columnsL="2"
-                                columnsM="2"
-                                singleContainerFullSize="false"
-                                editable="true"
-                            >
-                                <core:Title text="" />
-                                <Label
-                                    text="{i18n>initiativeStrat}"
-                                    labelFor="initiativeStrat"
-                                />
-                                <Input
-                                    id="justifCDI"
-                                    type="Text"
-                                    value="{Justifcdi}"
-                                    showValueHelp="true"
-                                    valueHelpOnly="true"
-                                    valueHelpRequest="onJustifCDIValueHelpPress"
-                                    editable="{RequestSettings/IsFormEditable}"
-                                    visible="{uiSettings>/justifCDIVisible}"
-                                    required="false"
-                                />
-
-                                <Label
-                                    text="{i18n>justifCDD}"
-                                    required="true"
-                                    labelFor="justifCDD"
-                                />
-
-                                <Select
-                                    id="justifCDD"
-                                    forceSelection="false"
-                                    items="{/JustifcddTypeSet}"
-                                    selectedKey="{Poscharac}"
-                                    enabled="{RequestSettings/IsFormEditable}"
-                                    visible="{uiSettings>/justifCDDVisible}"
-                                    change=".onjustifCDDTypeChange"
-                                >
-                                    <core:Item
-                                        text="{Description}"
-                                        key="{Type}"
-                                    />
-                                </Select>
-                                <Label text="" />
-                                <CheckBox
-                                    text="{i18n>externallyFunded}"
-                                    selected="{ExternallyFunded}"
-                                />
-
-                                <Label
-                                    text="{i18n>workCapacityApproved}"
-                                    labelFor="workCapacityApproved"
-                                />
-                                <Input
-                                    id="workCapacityApproved"
-                                    type="Number"
-                                    description="%"
-                                    value="{
-                                        path:'Workcappapp',
-                                            type : 'sap.ui.model.type.Float',
-                                            constraints : {
-                                                minimum: '0',
-                                                maximum: '100'
-                                        }
-                                        }"
-                                    editable="true"
-                                />
-
-                                <Label
-                                    text="{i18n>relatedPernr}"
-                                    labelFor="relatedPernr"
-                                />
-                                <Input
-                                    id="relatedPernr"
-                                    type="Text"
-                                    value="{RelatedPernr}"
-                                    showValueHelp="true"
-                                    valueHelpOnly="true"
-                                    valueHelpRequest="onRelatedPernrValueHelpPress"
-                                    editable="{RequestSettings/IsFormEditable}"
-                                />
-
-                                <core:Title text="" />
-
-                                <Label
-                                    text="{i18n>replacedPernr}"
-                                    labelFor="replacedPernr"
-                                />
-                                <Input
-                                    id="replacedPernr"
-                                    type="Text"
-                                    value="{ReplacedPernr}"
-                                    showValueHelp="true"
-                                    valueHelpOnly="true"
-                                    valueHelpRequest="onReplacedPernrValueHelpPress"
-                                    editable="{RequestSettings/IsFormEditable}"
-                                />
-
-                                <Label
-                                    text="{i18n>replacedpos}"
-                                    labelFor="Replacedpos"
-                                />
-                                <Input
-                                    id="replacedpos"
-                                    type="Text"
-                                    value="{Replacedpos}"
-                                    editable="false"
-                                />
-                            </form:SimpleForm>
+                            <core:Fragment
+                                fragmentName="com.un.zhrbenefrequests.fragment.form.Eligibility"
+                                type="XML"
+                                xmlns:core="sap.ui.core"
+                            />
                         </uxap:blocks>
                     </uxap:ObjectPageSubSection>
-                    <!-- End of Position Charatertistic Form -->
 
-                    <!-- Begin of Assignment Form -->
+                    <!-- School Location -->
                     <uxap:ObjectPageSubSection
-                        id="assignmentSubSection"
-                        title="{i18n>assignment}"
+                        id="schoolLocationSubSection"
+                        title="{i18n>schoolLocationData}"
                     >
                         <uxap:blocks>
-                            <form:SimpleForm
-                                layout="ResponsiveGridLayout"
-                                labelSpanXL="4"
-                                labelSpanL="4"
-                                labelSpanM="12"
-                                labelSpanS="12"
-                                adjustLabelSpan="false"
-                                emptySpanXL="0"
-                                emptySpanL="0"
-                                emptySpanM="0"
-                                emptySpanS="0"
-                                columnsXL="2"
-                                columnsL="2"
-                                columnsM="2"
-                                singleContainerFullSize="false"
-                                editable="true"
-                            >
-                                <form:content>
-                                    <Label
-                                        text="{i18n>assignedOrgUnit}"
-                                        labelFor="assignedOrgUnit"
-                                    />
-                                    <Input
-                                        id="assignedOrgUnit"
-                                        type="Text"
-                                        value="{Orgeh}"
-                                        showValueHelp="true"
-                                        valueHelpOnly="true"
-                                        valueHelpRequest="onOrgUnitValueHelpPress"
-                                        editable="{RequestSettings/IsFormEditable}"
-                                        required="true"
-                                    />
-                                </form:content>
-                            </form:SimpleForm>
+                            <core:Fragment
+                                fragmentName="com.un.zhrbenefrequests.fragment.form.SchoolLocation"
+                                type="XML"
+                                xmlns:core="sap.ui.core"
+                            />
                         </uxap:blocks>
                     </uxap:ObjectPageSubSection>
-                    <!-- End of Assignment Form -->
 
+                    <!-- Attendance -->
                     <uxap:ObjectPageSubSection
-                        title="{i18n>costsAssignment}"
-                        mode="Expanded"
+                        id="attendanceSubSection"
+                        title="{i18n>attendanceData}"
                     >
                         <uxap:blocks>
-                            <Table
-                                id="costAssignmentsTable"
-                                width="100%"
-                                noDataText="{i18n>noCosts}"
-                                mode="{RequestSettings/ListMode}"
-                                items="{CostAssignments}"
-                                delete="onDeleteCostAssignmentButtonPress"
-                            >
-                                <headerToolbar>
-                                    <OverflowToolbar
-                                        width="auto"
-                                        height="auto"
-                                        design="Transparent"
-                                        visible="true"
-                                        enabled="true"
-                                    >
-                                        <content>
-                                            <ToolbarSpacer width="" />
-                                            <Button
-                                                type="Default"
-                                                icon="sap-icon://add"
-                                                iconFirst="true"
-                                                width="auto"
-                                                enabled="{RequestSettings/IsFormEditable}"
-                                                visible="true"
-                                                iconDensityAware="false"
-                                                tooltip="{i18n>add}"
-                                                press="onAddCostAssignmentButtonPress"
-                                            />
-                                        </content>
-                                    </OverflowToolbar>
-                                </headerToolbar>
-                                <columns>
-                                    <Column width="auto">
-                                        <Text text="{i18n>entity}" />
-                                    </Column>
-                                    <Column width="auto">
-                                        <Text text="{i18n>wbsElement}" />
-                                    </Column>
-                                    <Column
-                                        demandPopin="true"
-                                        hAlign="Right"
-                                        width="15%"
-                                    >
-                                        <Text
-                                            text="{i18n>assignmentPercentage}"
-                                        />
-                                    </Column>
-                                </columns>
-                                <items>
-                                    <ColumnListItem>
-                                        <cells>
-                                            <Text text="{Entity}" />
-                                            <ObjectIdentifier
-                                                title="{WBSElementId}"
-                                                text="{WBSElementShortDescription}"
-                                            />
-                                            <ObjectNumber
-                                                number="{AssignmentPercentage}"
-                                                unit="%"
-                                            />
-                                        </cells>
-                                    </ColumnListItem>
-                                </items>
-                            </Table>
+                            <core:Fragment
+                                fragmentName="com.un.zhrbenefrequests.fragment.form.Attendance"
+                                type="XML"
+                                xmlns:core="sap.ui.core"
+                            />
                         </uxap:blocks>
-                        <uxap:moreBlocks />
-                        <uxap:actions />
+                    </uxap:ObjectPageSubSection>
+
+                    <!-- Entitlement -->
+                    <uxap:ObjectPageSubSection
+                        id="entitlementSubSection"
+                        title="{i18n>entitlementData}"
+                    >
+                        <uxap:blocks>
+                            <core:Fragment
+                                fragmentName="com.un.zhrbenefrequests.fragment.form.Entitlement"
+                                type="XML"
+                                xmlns:core="sap.ui.core"
+                            />
+                        </uxap:blocks>
+                    </uxap:ObjectPageSubSection>
+
+                    <!-- Others -->
+                    <uxap:ObjectPageSubSection
+                        id="othersSubSection"
+                        title="{i18n>othersData}"
+                    >
+                        <uxap:blocks>
+                            <core:Fragment
+                                fragmentName="com.un.zhrbenefrequests.fragment.form.Others"
+                                type="XML"
+                                xmlns:core="sap.ui.core"
+                            />
+                        </uxap:blocks>
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
+
+            <!-- Claims Section -->
+            <uxap:ObjectPageSection
+                id="claimsSection"
+                title="{i18n>Claims}"
+            >
+                <uxap:subSections>
+                    <uxap:ObjectPageSubSection id="claimsSubSection">
+                        <VBox />
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
+
+            <!-- Advances Section -->
+            <uxap:ObjectPageSection
+                id="advancesSection"
+                title="{i18n>Advances}"
+            >
+                <uxap:subSections>
+                    <uxap:ObjectPageSubSection id="advancesSubSection">
+                        <VBox />
                     </uxap:ObjectPageSubSection>
                 </uxap:subSections>
             </uxap:ObjectPageSection>
@@ -527,7 +266,6 @@
                     </uxap:ObjectPageSubSection>
                 </uxap:subSections>
             </uxap:ObjectPageSection>
-
 
             <!-- TimeLine Section -->
             <uxap:ObjectPageSection
