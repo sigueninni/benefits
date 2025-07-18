@@ -22,14 +22,100 @@
     >
         <form:content>
             <core:Title text="{i18n>schoolLocationData}" />
-            <!-- Begin : Dynamic type of position Request-->
-            <!-- <l:VerticalLayout> -->
-          
+            <!-- 
+ 
+
+
+
+
+
+ -->
+
+            <Label
+                text="{i18n>school}"
+                required="true"
+                labelFor="school"
+            />
+            <Select
+                id="school"
+                forceSelection="false"
+                items="{/SchoolSet}"
+                selectedKey="{school}"
+                enabled="{RequestSettings/IsFormEditable}"
+                change=".onSchoolChange"
+            >
+                <core:Item
+                    text="{Description}"
+                    key="{Type}"
+                />
+            </Select>
+
+            <Label
+                text="{i18n>schoolName}"
+                required="true"
+                labelFor="schoolName"
+            />
+            <Input
+                id="schoolName"
+                type="Text"
+                value="{schoolName}"
+                editable="{RequestSettings/IsFormEditable}"
+            />
+
+            <Label
+                text="{i18n>schoolType}"
+                required="true"
+                labelFor="schoolName"
+            />
+            <Input
+                id="schoolType"
+                type="Text"
+                value="{schoolType}"
+                editable="{RequestSettings/IsFormEditable}"
+            />
+
+
+<!-- Application N°
+Starting from 
+Grade-->
+          <core:Title text="" />
+            <Label
+                text="{i18n>schoolCountry}"
+                required="true"
+                labelFor="schoolName"
+            />
+            <Input
+                id="schoolCountry"
+                type="Text"
+                value="{schoolCountry}"
+                editable="{RequestSettings/IsFormEditable}"
+            />
+
+           <Label
+                text="{i18n>schoolCity}"
+                required="true"
+                labelFor="schoolCity"
+            />
+            <Input
+                id="schoolCity"
+                type="Text"
+                value="{schoolCity}"
+                editable="{RequestSettings/IsFormEditable}"
+            />
+
+           <Label
+                text="{i18n>commutingDistance}"
+                required="true"
+                labelFor="commutingDistance"
+            />
+            <Input
+                id="commutingDistance"
+                type="Text"
+                value="{commutingDistance}"
+                editable="{RequestSettings/IsFormEditable}"
+            />
+            
+
         </form:content>
     </form:SimpleForm>
 </core:FragmentDefinition>
-
-
-
-
-  

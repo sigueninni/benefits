@@ -21,6 +21,7 @@
         editable="true"
     >
         <form:content>
+            <!-- Name .. -->
             <core:Title text="{i18n>childMasterData}" />
 
             <Label
@@ -29,44 +30,41 @@
                 labelFor="lastName"
             />
 
-               <Input
+            <Input
                 id="lastName"
                 type="Text"
                 value="{JobGroup}"
                 editable="{RequestSettings/IsFormEditable}"
-
             />
-    
-          <Label
+
+            <Label
                 text="{i18n>birthName}"
                 required="true"
                 labelFor="birthName"
             />
 
-               <Input
+            <Input
                 id="birthName"
                 type="Text"
                 value="{JobGroup}"
                 editable="{RequestSettings/IsFormEditable}"
-
             />
 
-          <Label
+            <Label
                 text="{i18n>firstName}"
                 required="true"
                 labelFor="firstName"
             />
 
-               <Input
+            <Input
                 id="firstName"
                 type="Text"
                 value="{JobGroup}"
                 editable="{RequestSettings/IsFormEditable}"
-
             />
-            <!-- End Dynamic type of position Request-->
+
+            <!-- Age .. -->
             <core:Title text="" />
-            <!-- <l:VerticalLayout> -->
             <Label
                 text="{i18n>dateOfBirth}"
                 required="true"
@@ -81,7 +79,76 @@
                 maxDate="{datesModel>/MaxDate}"
                 change=".onStartDateChange"
             />
-          
+
+            <Label
+                text="{i18n>computedAge}"
+                required="true"
+                labelFor="computedAge"
+            />
+
+            <Input
+                id="computedAge"
+                type="Text"
+                value="{JobGroup}"
+                editable="{RequestSettings/IsFormEditable}"
+            />
+
+            <Label
+                text="{i18n>Nationality}"
+                required="true"
+                labelFor="Nationality"
+            />
+
+            <Input
+                id="Nationality"
+                type="Text"
+                value="{JobGroup}"
+                editable="{RequestSettings/IsFormEditable}"
+            />
+
+            <Label
+                text="{i18n>gender}"
+                required="true"
+                labelFor="gender"
+            />
+
+            <Input
+                id="gender"
+                type="Text"
+                value="{JobGroup}"
+                editable="{RequestSettings/IsFormEditable}"
+            />
+
+            <!-- Technical Fields -->
+            <core:Title text="" />
+
+                        <Label
+                text="{i18n>egNumber}"
+                required="true"
+                labelFor="egNumber"
+            />
+
+            <Input
+                id="egNumber"
+                type="Text"
+                value="{JobGroup}"
+                editable="{RequestSettings/IsFormEditable}"
+            />
+
+            <Label
+                text="{i18n>itRecordNumber}"
+                required="true"
+                labelFor="itRecordNumber"
+            />
+
+            <Input
+                id="itRecordNumber"
+                type="Text"
+                value="{JobGroup}"
+                editable="{RequestSettings/IsFormEditable}"
+            />
+
+            <core:Title text="" />
         </form:content>
     </form:SimpleForm>
 </core:FragmentDefinition>
