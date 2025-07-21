@@ -2,7 +2,6 @@
     xmlns:core="sap.ui.core"
     xmlns="sap.m"
     xmlns:form="sap.ui.layout.form"
-    xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
 >
     <form:SimpleForm
         layout="ResponsiveGridLayout"
@@ -15,116 +14,176 @@
         emptySpanL="0"
         emptySpanM="0"
         emptySpanS="0"
-        columnsXL="2"
-        columnsL="2"
-        columnsM="2"
+        columnsXL="3"
+        columnsL="3"
+        columnsM="3"
         editable="true"
     >
         <form:content>
-            <core:Title text="{i18n>eligibilityData}" />
-            <!-- Colonne 1: Statuts et éducation spéciale -->
-            <Label
-                text="{i18n>egSystemStatus}"
-                required="true"
-                labelFor="egSystemStatus"
-            />
+            <!-- Eligibility core Fields -->
+            <core:Title text="{i18n>eligibilitySubtab}" />
+            <Label text="{i18n>dependencyStatus}" />
+            <Select id="dependencyStatus">
+                <core:Item
+                    key="1"
+                    text="{i18n>eligible}"
+                />
+                <core:Item
+                    key="2"
+                    text="{i18n>notEligible}"
+                />
+            </Select>
+            <Label text="{i18n>eligibility}" />
             <Input
-                id="egSystemStatus"
-                type="Text"
-                value="{egSystemStatus}"
-                editable="{RequestSettings/IsFormEditable}"
+                id="eligibilityInput"
+                type="Number"
+                value=""
+                editable="true"
             />
-            <Label
-                text="{i18n>egCustomerStatus}"
-                required="true"
-                labelFor="egCustomerStatus"
-            />
-            <Input
-                id="egCustomerStatus"
-                type="Text"
-                value="{egCustomerStatus}"
-                editable="{RequestSettings/IsFormEditable}"
-            />
-            <Label
-                text="{i18n>specialEducationGrant}"
-                labelFor="specialEducationGrant"
-            />
-            <Input
-                id="specialEducationGrant"
-                type="Text"
-                value="{specialEducationGrant}"
-                editable="{RequestSettings/IsFormEditable}"
-            />
-            <Label
-                text="{i18n>specialArrangement}"
-                labelFor="specialArrangement"
-            />
+            <Label text="{i18n>egSystemStatus}" />
+            <Select id="egSystemStatus">
+                <core:Item
+                    key="1"
+                    text="{i18n>active}"
+                />
+                <core:Item
+                    key="2"
+                    text="{i18n>inactive}"
+                />
+            </Select>
+            <Label text="{i18n>egCustomerStatus}" />
+            <Select id="egCustomerStatus">
+                <core:Item
+                    key="1"
+                    text="{i18n>approved}"
+                />
+                <core:Item
+                    key="2"
+                    text="{i18n>rejected}"
+                />
+            </Select>
+            <Label text="{i18n>specialEducationGrant}" />
+            <Switch id="specialEducationGrant" state="false" customTextOn="{i18n>yes}" customTextOff="{i18n>no}" enabled="true" />
+            <Label text="{i18n>specialArrangement}" />
             <Input
                 id="specialArrangement"
                 type="Text"
-                value="{specialArrangement}"
-                editable="{RequestSettings/IsFormEditable}"
+                value=""
+                editable="true"
             />
-            <core:Title text="{i18n>eligibilityLocation}" />
-            <!-- Colonne 2: Localisation et contrat -->
-            <Label
-                text="{i18n>changeReason}"
-                labelFor="changeReason"
-            />
-            <Input
-                id="changeReason"
-                type="Text"
-                value="{changeReason}"
-                editable="{RequestSettings/IsFormEditable}"
-            />
-            <Label
-                text="{i18n>dutyStationSM}"
-                labelFor="dutyStationSM"
-            />
+            <Label text="{i18n>changeReason}" />
+            <Select id="changeReason">
+                <core:Item
+                    key="1"
+                    text="{i18n>reason1}"
+                />
+                <core:Item
+                    key="2"
+                    text="{i18n>reason2}"
+                />
+            </Select>
+            <Label text="{i18n>dutyStationSM}" />
             <Input
                 id="dutyStationSM"
                 type="Text"
-                value="{dutyStationSM}"
-                editable="{RequestSettings/IsFormEditable}"
+                value=""
+                editable="true"
+                showValueHelp="true"
             />
-            <Label
-                text="{i18n>designatedDS}"
-                labelFor="designatedDS"
-            />
-            <Input
-                id="designatedDS"
-                type="Text"
-                value="{designatedDS}"
-                editable="{RequestSettings/IsFormEditable}"
-            />
-            <Label
-                text="{i18n>nationalitySM}"
-                labelFor="nationalitySM"
-            />
+            <Label text="{i18n>designatedDS}" />
+            <Switch id="designatedDS" state="false" customTextOn="{i18n>yes}" customTextOff="{i18n>no}" enabled="true" />
+            <Label text="{i18n>nationalitySM}" />
             <Input
                 id="nationalitySM"
                 type="Text"
-                value="{nationalitySM}"
-                editable="{RequestSettings/IsFormEditable}"
+                value=""
+                editable="true"
+                showValueHelp="true"
             />
-            <Label
-                text="{i18n>contractType}"
-                labelFor="contractType"
-            />
+            <Label text="{i18n>contractType}" />
             <Input
                 id="contractType"
                 type="Text"
-                value="{contractType}"
-                editable="{RequestSettings/IsFormEditable}"
+                value=""
+                editable="true"
+                showValueHelp="true"
             />
-            <Label
-                text="{i18n>validTo}"
-                labelFor="validTo"
-            />
+            <Label text="{i18n>validTo}" />
             <DatePicker
                 id="validTo"
-                value="{validTo}"
-                editable="{RequestSettings/IsFormEditable}"
+                value=""
+                editable="true"
+            />
+
+            <!-- Attendance Fields -->
+            <core:Title text="{i18n>attendanceSubtab}" />
+            <Label text="{i18n>prorationFactor}" />
+            <Input
+                id="prorationFactor"
+                type="Number"
+                value=""
+                editable="true"
+            />
+            <Label text="{i18n>changeProrationFactor}" />
+            <CheckBox
+                id="changeProrationFactor"
+                selected="false"
+            />
+            <Label text="{i18n>overrideProrationFactor}" />
+            <CheckBox
+                id="overrideProrationFactor"
+                selected="false"
+            />
+
+            <!-- Entitlment Fields -->
+            <core:Title text="{i18n>entitlementSubtab}" />
+            <Label text="{i18n>currency}" />
+            <Input
+                id="currency"
+                type="Text"
+                value=""
+                editable="true"
+                showValueHelp="true"
+            />
+            <Label text="{i18n>eligibilityBoarding}" />
+            <Switch id="eligibilityBoarding" state="false" customTextOn="{i18n>yes}" customTextOff="{i18n>no}" enabled="true" />
+            <Label text="{i18n>reasonBoarding}" />
+            <Select id="reasonBoarding">
+                <core:Item
+                    key="1"
+                    text="{i18n>reason1}"
+                />
+                <core:Item
+                    key="2"
+                    text="{i18n>reason2}"
+                />
+            </Select>
+            <Label text="{i18n>boardingProrationFactor}" />
+            <Input
+                id="boardingProrationFactor"
+                type="Text"
+                value=""
+                editable="true"
+            />
+            <Label text="{i18n>overrideBoardProration}" />
+            <CheckBox
+                id="overrideBoardProration"
+                selected="false"
+            />
+            <Label text="{i18n>overrideCAFProration}" />
+            <CheckBox
+                id="overrideCAFProration"
+                selected="false"
+            />
+            <Label text="{i18n>multipleAttendance}" />
+            <CheckBox
+                id="multipleAttendance"
+                selected="false"
+            />
+            <Label text="{i18n>applyTwoThirdRule}" />
+            <CheckBox
+                id="applyTwoThirdRule"
+                selected="false"
             />
         </form:content>
     </form:SimpleForm>

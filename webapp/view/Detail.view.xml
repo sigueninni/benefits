@@ -125,14 +125,14 @@
                 visible="true"
             >
                 <uxap:subSections>
-                    <!-- Child Master Data -->
+                    <!-- Child Information -->
                     <uxap:ObjectPageSubSection
-                        id="childMasterSubSection"
-                        title="{i18n>childMasterData}"
+                        id="ChildInformationSubSection"
+                        title="{i18n>Child Information}"
                     >
                         <uxap:blocks>
                             <core:Fragment
-                                fragmentName="com.un.zhrbenefrequests.fragment.form.educationGrant.ChildMaster"
+                                fragmentName="com.un.zhrbenefrequests.fragment.form.educationGrant.ChildInformation"
                                 type="XML"
                                 xmlns:core="sap.ui.core"
                             />
@@ -153,48 +153,21 @@
                         </uxap:blocks>
                     </uxap:ObjectPageSubSection>
 
-                    <!-- School Location -->
+                    <!-- SchoolInformation -->
                     <uxap:ObjectPageSubSection
-                        id="schoolLocationSubSection"
-                        title="{i18n>schoolLocationData}"
+                        id="SchoolInformationSubSection"
+                        title="{i18n>SchoolInformationData}"
                     >
                         <uxap:blocks>
                             <core:Fragment
-                                fragmentName="com.un.zhrbenefrequests.fragment.form.educationGrant.SchoolLocation"
+                                fragmentName="com.un.zhrbenefrequests.fragment.form.educationGrant.SchoolInformation"
                                 type="XML"
                                 xmlns:core="sap.ui.core"
                             />
                         </uxap:blocks>
                     </uxap:ObjectPageSubSection>
 
-                    <!-- Attendance -->
-                    <uxap:ObjectPageSubSection
-                        id="attendanceSubSection"
-                        title="{i18n>attendanceData}"
-                    >
-                        <uxap:blocks>
-                            <core:Fragment
-                                fragmentName="com.un.zhrbenefrequests.fragment.form.educationGrant.Attendance"
-                                type="XML"
-                                xmlns:core="sap.ui.core"
-                            />
-                        </uxap:blocks>
-                    </uxap:ObjectPageSubSection>
-
-                    <!-- Entitlement -->
-                    <uxap:ObjectPageSubSection
-                        id="entitlementSubSection"
-                        title="{i18n>entitlementData}"
-                    >
-                        <uxap:blocks>
-                            <core:Fragment
-                                fragmentName="com.un.zhrbenefrequests.fragment.form.educationGrant.Entitlement"
-                                type="XML"
-                                xmlns:core="sap.ui.core"
-                            />
-                        </uxap:blocks>
-                    </uxap:ObjectPageSubSection>
-
+   
                     <!-- Others -->
                     <uxap:ObjectPageSubSection
                         id="othersSubSection"

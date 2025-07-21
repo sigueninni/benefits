@@ -120,9 +120,9 @@
             />
 
             <!-- Technical Fields -->
-            <core:Title text="" />
+            <core:Title text="{i18n>childIndormationtechnicalFields}" />
 
-                        <Label
+            <Label
                 text="{i18n>egNumber}"
                 required="true"
                 labelFor="egNumber"

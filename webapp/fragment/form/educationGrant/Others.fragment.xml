@@ -33,9 +33,6 @@
 
             <Label text="{i18n>comments}" labelFor="comments"/>
             <TextArea id="comments" value="{comments}" editable="{RequestSettings/IsFormEditable}" rows="3"/>
-
-            <Label text="{i18n>line3}" labelFor="line3"/>
-            <Input id="line3" type="Text" value="{line3}" editable="{RequestSettings/IsFormEditable}"/>
         </form:content>
     </form:SimpleForm>
 </core:FragmentDefinition>
