@@ -1,0 +1,55 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:form="sap.ui.layout.form"
+    xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+>
+    <form:SimpleForm
+        id="claimAddForm"
+        editable="true"
+        layout="ResponsiveGridLayout"
+        labelSpanXL="4"
+        labelSpanL="3"
+        labelSpanM="4"
+        labelSpanS="12"
+        adjustLabelSpan="false"
+        emptySpanXL="0"
+        emptySpanL="4"
+        emptySpanM="0"
+        emptySpanS="0"
+        columnsXL="2"
+        columnsL="1"
+        columnsM="1"
+        singleContainerFullSize="false"
+    >
+        <form:content>
+            <core:Title text="{i18n>claimDetails}" />
+            <Label text="{i18n>expenseType}" />
+            <Select id="expenseTypeAdd" selectedKey="{ExpenseType}">
+                <core:Item key="tuition" text="{i18n>tuitionFees}" />
+                <core:Item key="admission" text="{i18n>admissionFee}" />
+                <core:Item key="registration" text="{i18n>registrationFee}" />
+                <core:Item key="examination" text="{i18n>examinationFee}" />
+                <core:Item key="capital" text="{i18n>capitalLevy}" />
+                <core:Item key="languages" text="{i18n>languagesMotherTongue}" />
+                <core:Item key="specialEquipment" text="{i18n>specialEquipment}" />
+                <core:Item key="specialTraining" text="{i18n>specialTraining}" />
+                <core:Item key="boarding" text="{i18n>boardingExpenses}" />
+                <core:Item key="distanceTuition" text="{i18n>distanceTuition}" />
+                <core:Item key="meals" text="{i18n>meals}" />
+                <core:Item key="transportation" text="{i18n>transportation}" />
+                <core:Item key="books" text="{i18n>books}" />
+            </Select>
+            <Label text="{i18n>amount}" />
+            <Input id="amountAdd" type="Number" value="{Amount}" required="true" />
+            <Label text="{i18n>currency}" />
+            <Select id="currencyAdd" selectedKey="{Currency}">
+                <core:Item key="USD" text="USD" />
+                <core:Item key="EUR" text="EUR" />
+                <core:Item key="CHF" text="CHF" />
+            </Select>
+            <Label text="{i18n>comments}" />
+            <TextArea id="commentsAdd" value="{Comments}" rows="2" />
+        </form:content>
+    </form:SimpleForm>
+</core:FragmentDefinition>
