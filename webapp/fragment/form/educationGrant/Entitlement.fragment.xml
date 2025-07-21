@@ -1,0 +1,151 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+    xmlns:form="sap.ui.layout.form"
+    xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+>
+    <form:SimpleForm
+        layout="ResponsiveGridLayout"
+        labelSpanXL="4"
+        labelSpanL="4"
+        labelSpanM="12"
+        labelSpanS="12"
+        adjustLabelSpan="false"
+        emptySpanXL="0"
+        emptySpanL="0"
+        emptySpanM="0"
+        emptySpanS="0"
+        columnsXL="2"
+        columnsL="2"
+        columnsM="2"
+        editable="true"
+    >
+        <form:content>
+            <core:Title text="{i18n>entitlmentData}" />
+            <!-- Begin : Dynamic type of position Request-->
+            <!-- <l:VerticalLayout> -->
+          
+            <Label text="{i18n>currency}" required="true" labelFor="currency"/>
+<Select id="currencyEntitlement1" selectedKey="{currency}" editable="{RequestSettings/IsFormEditable}">
+    <core:Item key="USD" text="USD" />
+    <core:Item key="EUR" text="EUR" />
+    <core:Item key="CHF" text="CHF" />
+    <!-- Ajoute d'autres devises si besoin -->
+</Select>
+
+<Label text="{i18n>tuitionCurrency}" required="true" labelFor="tuitionCurrency"/>
+<Select id="tuitionCurrency1" selectedKey="{tuitionCurrency}" editable="{RequestSettings/IsFormEditable}">
+    <core:Item key="USD" text="USD" />
+    <core:Item key="EUR" text="EUR" />
+    <core:Item key="CHF" text="CHF" />
+</Select>
+
+<Label text="{i18n>eligibilityForBoarding}" required="true" labelFor="eligibilityForBoarding"/>
+<Select id="eligibilityForBoarding1" selectedKey="{eligibilityForBoarding}" editable="{RequestSettings/IsFormEditable}">
+    <core:Item key="Y" text="{i18n>yes}" />
+    <core:Item key="N" text="{i18n>no}" />
+</Select>
+
+<Label text="{i18n>childBoarder}" required="true" labelFor="childBoarder"/>
+<RadioButtonGroup id="childBoarder1" selectedIndex="{childBoarderIndex}" columns="2">
+    <buttons>
+        <RadioButton text="{i18n>yes}" />
+        <RadioButton text="{i18n>no}" />
+    </buttons>
+</RadioButtonGroup>
+
+<Label text="{i18n>reasonForBoarding}" labelFor="reasonForBoarding"/>
+<Input id="reasonForBoarding1" type="Text" value="{reasonForBoarding}" editable="{RequestSettings/IsFormEditable}"/>
+
+<Label text="{i18n>boardingProrationFactor}" labelFor="boardingProrationFactor"/>
+<Input id="boardingProrationFactor1" type="Number" value="{boardingProrationFactor}" editable="{RequestSettings/IsFormEditable}"/>
+
+<Label text="{i18n>overrideBoardProration}" labelFor="overrideBoardProration"/>
+<CheckBox id="overrideBoardProration1" selected="{overrideBoardProration}" editable="{RequestSettings/IsFormEditable}"/>
+
+<Label text="{i18n>overrideCAFProration}" labelFor="overrideCAFProration"/>
+<CheckBox id="overrideCAFProration1" selected="{overrideCAFProration}" editable="{RequestSettings/IsFormEditable}"/>
+
+<Label text="{i18n>multipleAttendance}" labelFor="multipleAttendance"/>
+<CheckBox id="multipleAttendance1" selected="{multipleAttendance}" editable="{RequestSettings/IsFormEditable}"/>
+
+<Label text="{i18n>applyTwoThirdRule}" labelFor="applyTwoThirdRule"/>
+<CheckBox id="applyTwoThirdRule1" selected="{applyTwoThirdRule}" editable="{RequestSettings/IsFormEditable}"/>
+            <!-- </l:VerticalLayout> -->
+        </form:content>
+    </form:SimpleForm>
+    <form:SimpleForm
+        layout="ResponsiveGridLayout"
+        labelSpanXL="4"
+        labelSpanL="4"
+        labelSpanM="12"
+        labelSpanS="12"
+        adjustLabelSpan="false"
+        emptySpanXL="0"
+        emptySpanL="0"
+        emptySpanM="0"
+        emptySpanS="0"
+        columnsXL="2"
+        columnsL="2"
+        columnsM="2"
+        editable="true"
+    >
+        <form:content>
+            <core:Title text="{i18n>entitlmentData}" />
+            <!-- Begin : Dynamic type of position Request-->
+            <!-- <l:VerticalLayout> -->
+          
+            <Label text="{i18n>currency}" required="true" labelFor="currency"/>
+<Select id="currencyEntitlement2" selectedKey="{currency}" editable="{RequestSettings/IsFormEditable}">
+    <core:Item key="USD" text="USD" />
+    <core:Item key="EUR" text="EUR" />
+    <core:Item key="CHF" text="CHF" />
+    <!-- Ajoute d'autres devises si besoin -->
+</Select>
+
+<Label text="{i18n>tuitionCurrency}" required="true" labelFor="tuitionCurrency"/>
+<Select id="tuitionCurrency2" selectedKey="{tuitionCurrency}" editable="{RequestSettings/IsFormEditable}">
+    <core:Item key="USD" text="USD" />
+    <core:Item key="EUR" text="EUR" />
+    <core:Item key="CHF" text="CHF" />
+</Select>
+
+<Label text="{i18n>eligibilityForBoarding}" required="true" labelFor="eligibilityForBoarding"/>
+<Select id="eligibilityForBoarding2" selectedKey="{eligibilityForBoarding}" editable="{RequestSettings/IsFormEditable}">
+    <core:Item key="Y" text="{i18n>yes}" />
+    <core:Item key="N" text="{i18n>no}" />
+</Select>
+
+<Label text="{i18n>childBoarder}" required="true" labelFor="childBoarder"/>
+<RadioButtonGroup id="childBoarder2" selectedIndex="{childBoarderIndex}" columns="2">
+    <buttons>
+        <RadioButton text="{i18n>yes}" />
+        <RadioButton text="{i18n>no}" />
+    </buttons>
+</RadioButtonGroup>
+
+<Label text="{i18n>reasonForBoarding}" labelFor="reasonForBoarding"/>
+<Input id="reasonForBoarding2" type="Text" value="{reasonForBoarding}" editable="{RequestSettings/IsFormEditable}"/>
+
+<Label text="{i18n>boardingProrationFactor}" labelFor="boardingProrationFactor"/>
+<Input id="boardingProrationFactor2" type="Number" value="{boardingProrationFactor}" editable="{RequestSettings/IsFormEditable}"/>
+
+<Label text="{i18n>overrideBoardProration}" labelFor="overrideBoardProration"/>
+<CheckBox id="overrideBoardProration2" selected="{overrideBoardProration}" editable="{RequestSettings/IsFormEditable}"/>
+
+<Label text="{i18n>overrideCAFProration}" labelFor="overrideCAFProration"/>
+<CheckBox id="overrideCAFProration2" selected="{overrideCAFProration}" editable="{RequestSettings/IsFormEditable}"/>
+
+<Label text="{i18n>multipleAttendance}" labelFor="multipleAttendance"/>
+<CheckBox id="multipleAttendance2" selected="{multipleAttendance}" editable="{RequestSettings/IsFormEditable}"/>
+
+<Label text="{i18n>applyTwoThirdRule}" labelFor="applyTwoThirdRule"/>
+<CheckBox id="applyTwoThirdRule2" selected="{applyTwoThirdRule}" editable="{RequestSettings/IsFormEditable}"/>
+            <!-- </l:VerticalLayout> -->
+        </form:content>
+    </form:SimpleForm>
+</core:FragmentDefinition>
+
+
+
+

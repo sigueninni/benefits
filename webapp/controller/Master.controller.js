@@ -134,12 +134,32 @@ sap.ui.define([
                 //  }
             },
 
+            onCreateButtonPress: function() {
+                if (!this._oTypeReqDialog) {
+                    this._oTypeReqDialog = sap.ui.xmlfragment(
+                        "com.un.zhrbenefrequests.fragment.TypeReq",
+                        this
+                    );
+                    this.getView().addDependent(this._oTypeReqDialog);
+                }
+                this._oTypeReqDialog.open();
+            },
 
+            onConfirmTypeFlowButtonPress: function() {
+                if (this._oTypeReqDialog) {
+                    this._oTypeReqDialog.close();
+                }
+                // Naviguer vers la page detail avec un nouvel id
+                this.getRouter().navTo("RouteDetail", {
+                    positionRequestId: "new"
+                }, !Device.system.phone);
+            },
 
-
-
-
-
+            onCancel: function() {
+                if (this._oTypeReqDialog) {
+                    this._oTypeReqDialog.close();
+                }
+            },
 
         });
     });

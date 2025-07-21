@@ -65,7 +65,7 @@
             <Label
                 text="{i18n>schoolType}"
                 required="true"
-                labelFor="schoolName"
+                labelFor="schoolType"
             />
             <Input
                 id="schoolType"
@@ -73,6 +73,15 @@
                 value="{schoolType}"
                 editable="{RequestSettings/IsFormEditable}"
             />
+            <core:Title text="{i18n>schoolLocationAdditional}" />
+            <Label text="{i18n>firstPostSecondaryDegree}" labelFor="firstPostSecondaryDegree"/>
+            <Switch id="firstPostSecondaryDegree" state="false" customTextOn="Yes" customTextOff="No" enabled="true"/>
+            <Label text="{i18n>yearOfEntryPostSecondary}" labelFor="yearOfEntryPostSecondary"/>
+            <Input id="yearOfEntryPostSecondary" type="Text" value="" editable="true"/>
+            <Label text="{i18n>grade}" labelFor="grade"/>
+            <Input id="grade" type="Text" value="" editable="true"/>
+            <Label text="{i18n>typeOfAttendance}" labelFor="typeOfAttendance"/>
+            <Input id="typeOfAttendance" type="Text" value="" editable="true"/>
 
 
 <!-- Application N°

@@ -132,7 +132,7 @@
                     >
                         <uxap:blocks>
                             <core:Fragment
-                                fragmentName="com.un.zhrbenefrequests.fragment.form.ChildMaster"
+                                fragmentName="com.un.zhrbenefrequests.fragment.form.educationGrant.ChildMaster"
                                 type="XML"
                                 xmlns:core="sap.ui.core"
                             />
@@ -146,7 +146,7 @@
                     >
                         <uxap:blocks>
                             <core:Fragment
-                                fragmentName="com.un.zhrbenefrequests.fragment.form.Eligibility"
+                                fragmentName="com.un.zhrbenefrequests.fragment.form.educationGrant.Eligibility"
                                 type="XML"
                                 xmlns:core="sap.ui.core"
                             />
@@ -160,7 +160,7 @@
                     >
                         <uxap:blocks>
                             <core:Fragment
-                                fragmentName="com.un.zhrbenefrequests.fragment.form.SchoolLocation"
+                                fragmentName="com.un.zhrbenefrequests.fragment.form.educationGrant.SchoolLocation"
                                 type="XML"
                                 xmlns:core="sap.ui.core"
                             />
@@ -174,7 +174,7 @@
                     >
                         <uxap:blocks>
                             <core:Fragment
-                                fragmentName="com.un.zhrbenefrequests.fragment.form.Attendance"
+                                fragmentName="com.un.zhrbenefrequests.fragment.form.educationGrant.Attendance"
                                 type="XML"
                                 xmlns:core="sap.ui.core"
                             />
@@ -188,7 +188,7 @@
                     >
                         <uxap:blocks>
                             <core:Fragment
-                                fragmentName="com.un.zhrbenefrequests.fragment.form.Entitlement"
+                                fragmentName="com.un.zhrbenefrequests.fragment.form.educationGrant.Entitlement"
                                 type="XML"
                                 xmlns:core="sap.ui.core"
                             />
@@ -202,7 +202,7 @@
                     >
                         <uxap:blocks>
                             <core:Fragment
-                                fragmentName="com.un.zhrbenefrequests.fragment.form.Others"
+                                fragmentName="com.un.zhrbenefrequests.fragment.form.educationGrant.Others"
                                 type="XML"
                                 xmlns:core="sap.ui.core"
                             />
@@ -218,7 +218,13 @@
             >
                 <uxap:subSections>
                     <uxap:ObjectPageSubSection id="claimsSubSection">
-                        <VBox />
+                        <uxap:blocks>
+                            <core:Fragment
+                                fragmentName="com.un.zhrbenefrequests.fragment.form.educationGrant.Claim"
+                                type="XML"
+                                xmlns:core="sap.ui.core"
+                            />
+                        </uxap:blocks>
                     </uxap:ObjectPageSubSection>
                 </uxap:subSections>
             </uxap:ObjectPageSection>

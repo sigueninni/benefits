@@ -1,0 +1,58 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+    xmlns:form="sap.ui.layout.form"
+>
+    <VBox>
+        <form:SimpleForm
+            layout="ResponsiveGridLayout"
+            labelSpanXL="4"
+            labelSpanL="4"
+            labelSpanM="12"
+            labelSpanS="12"
+            adjustLabelSpan="false"
+            emptySpanXL="0"
+            emptySpanL="0"
+            emptySpanM="0"
+            emptySpanS="0"
+            columnsXL="2"
+            columnsL="2"
+            columnsM="2"
+            editable="true"
+        >
+            <form:content>
+                <Label text="{i18n>expenseType}" required="true" labelFor="expenseTypeSelect"/>
+                <Select
+                    id="expenseTypeSelect"
+                    selectedKey="{expenseType}"
+                    items="{/ExpenseTypeSet}"
+                    change=".onExpenseTypeChange"
+                >
+                    <core:Item key="tuition" text="{i18n>tuitionFees}" />
+                    <core:Item key="admission" text="{i18n>admissionFee}" />
+                    <core:Item key="registration" text="{i18n>registrationFee}" />
+                    <core:Item key="examination" text="{i18n>examinationFee}" />
+                    <core:Item key="capital" text="{i18n>capitalLevy}" />
+                    <core:Item key="languages" text="{i18n>languagesMotherTongue}" />
+                    <core:Item key="specialEquipment" text="{i18n>specialEquipment}" />
+                    <core:Item key="specialTraining" text="{i18n>specialTraining}" />
+                    <core:Item key="boarding" text="{i18n>boardingExpenses}" />
+                    <core:Item key="distanceTuition" text="{i18n>distanceTuition}" />
+                    <core:Item key="meals" text="{i18n>meals}" />
+                    <core:Item key="transportation" text="{i18n>transportation}" />
+                    <core:Item key="books" text="{i18n>books}" />
+                </Select>
+
+                <Label text="{i18n>amount}" required="true" labelFor="amount"/>
+                <Input id="amount" type="Number" value="{amount}" editable="{RequestSettings/IsFormEditable}"/>
+
+                <Label text="{i18n>currency}" required="true" labelFor="currency"/>
+                <Select id="currencyClaim" selectedKey="{currency}" editable="{RequestSettings/IsFormEditable}">
+                    <core:Item key="USD" text="USD" />
+                    <core:Item key="EUR" text="EUR" />
+                    <core:Item key="CHF" text="CHF" />
+                </Select>
+            </form:content>
+        </form:SimpleForm>
+    </VBox>
+</core:FragmentDefinition>

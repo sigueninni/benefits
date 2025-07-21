@@ -9,31 +9,41 @@
         type="Message"
     >
         <content>
-            <FlexBox
-                alignContent="Center"
-                justifyContent="Start"
-            >
-                <RadioButtonGroup
-                    id="rgbFlowType"
-                    valueState="Information"
-                    select=".setFlowTypeAtCreation"
+            <VBox>
+                <Label text="{i18n>requestType}" required="true" labelFor="requestTypeSelect"/>
+                <Select
+                    id="requestTypeSelect"
+                    selectedKey="{TypeReq}"
+                    change=".onRequestTypeChange"
                 >
-                    <RadioButton
-                        id="c"
-                        text="{i18n>creation}"
-                    />
+                    <core:Item key="rental" text="{i18n>rentalSubsidy}" />
+                    <core:Item key="education" text="{i18n>educationGrant}" />
+                </Select>
 
-                    <RadioButton
-                        id="u"
-                        text="{i18n>change}"
-                    />
-                </RadioButtonGroup>
-                <ObjectStatus
-                    class="sapUiSmallMargin"
-                    icon="sap-icon://message-information"
-                    state="Information"
-                />
-            </FlexBox>
+                <VBox visible="{= ${TypeReq} === 'education' }">
+                    <Label text="{i18n>child}" required="true" labelFor="childSelect"/>
+                    <Select
+                        id="childSelect"
+                        items="{/ChildSet}"
+                        selectedKey="{SelectedChild}"
+                        change=".onChildChange"
+                    >
+                        <core:Item key="{ChildId}" text="{ChildName}" />
+                    </Select>
+
+                    <Label text="{i18n>chooseOption}" required="true"/>
+                    <RadioButtonGroup
+                        id="claimAdvanceGroup"
+                        selectedIndex="{ClaimAdvanceIndex}"
+                        columns="2"
+                    >
+                        <buttons>
+                            <RadioButton text="{i18n>claim}" />
+                            <RadioButton text="{i18n>advance}" />
+                        </buttons>
+                    </RadioButtonGroup>
+                </VBox>
+            </VBox>
         </content>
         <beginButton>
             <Button

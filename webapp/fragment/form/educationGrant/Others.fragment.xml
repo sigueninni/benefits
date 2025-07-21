@@ -1,0 +1,41 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+    xmlns:form="sap.ui.layout.form"
+    xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+>
+    <form:SimpleForm
+        layout="ResponsiveGridLayout"
+        labelSpanXL="4"
+        labelSpanL="4"
+        labelSpanM="12"
+        labelSpanS="12"
+        adjustLabelSpan="false"
+        emptySpanXL="0"
+        emptySpanL="0"
+        emptySpanM="0"
+        emptySpanS="0"
+        columnsXL="2"
+        columnsL="2"
+        columnsM="2"
+        editable="true"
+    >
+        <form:content>
+            <core:Title text="{i18n>othersData}" />
+          
+            <Label text="{i18n>currencyOfPayment}" required="true" labelFor="currencyOfPayment"/>
+            <Select id="currencyOfPayment" selectedKey="{currencyOfPayment}" editable="{RequestSettings/IsFormEditable}">
+                <core:Item key="USD" text="USD" />
+                <core:Item key="EUR" text="EUR" />
+                <core:Item key="CHF" text="CHF" />
+                <!-- Ajoute d'autres devises si besoin -->
+            </Select>
+
+            <Label text="{i18n>comments}" labelFor="comments"/>
+            <TextArea id="comments" value="{comments}" editable="{RequestSettings/IsFormEditable}" rows="3"/>
+
+            <Label text="{i18n>line3}" labelFor="line3"/>
+            <Input id="line3" type="Text" value="{line3}" editable="{RequestSettings/IsFormEditable}"/>
+        </form:content>
+    </form:SimpleForm>
+</core:FragmentDefinition>
