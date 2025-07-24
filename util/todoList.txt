@@ -1,0 +1,2 @@
+- popup choix type de request 
+- Fragment selon type de request et sous type si applicable

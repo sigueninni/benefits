@@ -119,7 +119,7 @@
         },
         {
           "name": "RouteDetail",
-          "pattern": "Requests/{positionRequestId}",
+          "pattern": "Requests/{benefitRequestId}",
           "target": [
             "TargetMaster",
             "TargetDetail"

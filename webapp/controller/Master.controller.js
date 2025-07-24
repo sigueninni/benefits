@@ -54,8 +54,36 @@ sap.ui.define([
 
             },
 
-
-
+            /* =========================================================== */
+            /* event handlers                                              */
+            /* =========================================================== */
+     /**
+             * Event handler for the bypassed event, which is fired when no routing pattern matched.
+             * If there was an object selected in the master list, that selection is removed.
+             * @public
+             */
+            onBypassed: function () {
+                this._oList.removeSelections(true);
+            },
+            /**
+             * Event handler for the list selection event
+             * @param {sap.ui.base.Event} oEvent the list selectionChange event
+             * @public
+             */
+            onSelectionChange: function (oEvent) {
+                // get the list item, either from the listItem parameter or from the event's source itself (will depend on the device-dependent mode).
+                this._showDetail(oEvent.getParameter("listItem") || oEvent.getSource());
+            },
+            /**
+             * Event handler for the select event TypeFlowChoice.fragment
+             * @param {sap.ui.base.Event} oEvent the select event
+             * @public
+             */
+            onReqTypChange: function (oEvent) {
+                debugger;
+                console.log(oEvent.getParameter("selectedItem"));
+            },
+            
             /* =========================================================== */
             /*  internal methods                                     */
             /* =========================================================== */
@@ -81,7 +109,7 @@ sap.ui.define([
             _showDetail: function (oItem) {
                 const bReplace = !Device.system.phone;
                 this.getRouter().navTo("RouteDetail", {
-                    positionRequestId: oItem.getBindingContext().getProperty("Guid")
+                    benefitRequestId: oItem.getBindingContext().getProperty("Guid")
                 }, bReplace);
 
 
@@ -95,20 +123,6 @@ sap.ui.define([
              */
             _onMasterMatched: function () {
                 // debugger;
-                /*           if (this.getOwnerComponent().getComponentData() && this.getOwnerComponent().getComponentData().startupParameters) {
-          
-                              //TODO check why not working in FLP mode and why undefined in noFlp
-                              const startupParams = this.getOwnerComponent().getComponentData().startupParameters; // get Startup params from Owner Component
-                              if ((startupParams.objectId && startupParams.objectId[0])) {
-          
-                                  this._oList.removeAllItems();
-                                  this.getRouter().navTo("object", {
-                                      objectId: startupParams.objectId[0]  // read Supplier ID. Every parameter is placed in an array therefore [0] holds the value
-                                  }, true);
-                              }
-          
-                          }
-                          else { */
                 this.getOwnerComponent().oListSelector.oWhenListLoadingIsDone.then(
 
                     function (mParams) {
@@ -120,7 +134,7 @@ sap.ui.define([
                         let sObjectId = mParams.firstListitem.getBindingContext().getProperty("Guid");
                         console.log({ sObjectId });
                         this.getRouter().navTo("RouteDetail", {
-                            positionRequestId: sObjectId
+                            benefitRequestId: sObjectId
                         }, true);
                     }.bind(this),
                     function (mParams) {
@@ -135,14 +149,24 @@ sap.ui.define([
             },
 
             onCreateButtonPress: function() {
-                if (!this._oTypeReqDialog) {
+
+                    if (!this.fragments._oTypeReqDialog) {
+                    this.fragments._oTypeReqDialog = sap.ui.xmlfragment("com.un.zhrbenefrequests.fragment.TypeReq", this);
+                    this.getView().addDependent(this.fragments._oTypeReqDialog);
+                    // forward compact/cozy style into Dialog
+                    this.fragments._oTypeReqDialog.addStyleClass(this.getOwnerComponent().getContentDensityClass());
+                }
+                this.fragments._oTypeReqDialog.open();
+
+
+        /*         if (!this._oTypeReqDialog) {
                     this._oTypeReqDialog = sap.ui.xmlfragment(
                         "com.un.zhrbenefrequests.fragment.TypeReq",
                         this
                     );
                     this.getView().addDependent(this._oTypeReqDialog);
                 }
-                this._oTypeReqDialog.open();
+                this._oTypeReqDialog.open(); */
             },
 
             onConfirmTypeFlowButtonPress: function() {
@@ -153,13 +177,7 @@ sap.ui.define([
                 this.getRouter().navTo("RouteDetail", {
                     positionRequestId: "new"
                 }, !Device.system.phone);
-            },
-
-            onCancel: function() {
-                if (this._oTypeReqDialog) {
-                    this._oTypeReqDialog.close();
-                }
-            },
+            }
 
         });
     });

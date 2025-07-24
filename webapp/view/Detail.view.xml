@@ -76,11 +76,11 @@
                 <ObjectAttribute text="{Requid}" />
                 <ObjectAttribute
                     title="{i18n>createdOn}"
-                    text="{path: 'CreatedOn', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy', UTC: true }}"
+                    text="{path: 'CreationDate', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy', UTC: true }}"
                 />
                 <ObjectAttribute
                     title="{i18n>createdBy}"
-                    text="{CreatedBy}"
+                    text="{CreatorLname}"
                 />
             </l:VerticalLayout>
             <l:VerticalLayout>

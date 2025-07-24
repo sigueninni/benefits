@@ -194,3 +194,83 @@
                 type="Text"
                 value="{NameCandidate}"
             /> -->
+
+
+
+            <core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+    xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+>
+    <Dialog
+        id="typeReq"
+        title="{i18n>ChooseReqType}"
+        type="Message"
+    >
+        <content>
+            <VBox>
+                <Label text="{i18n>requestType}" required="true" labelFor="requestTypeSelect"/>
+<!--                 <Select
+                    id="requestTypeSelect"
+                    items="{/RequestTypeVHSet}"
+                    selectedKey="{TypeReq}"
+                    change=".onRequestTypeChange"
+                >
+                    <core:Item key="{Id}" text="{Name}" />
+                </Select> -->
+
+                                <Select
+                                        id="requestTypeSelect"
+                                        forceSelection="false"
+                                        items="{/RequestTypeVHSet}"
+                                        selectedKey="{TypeReq}"
+                                        enabled="{RequestSettings/IsFormEditable}"
+                                        change=".onRequestTypeChange"
+                                    >
+                                        <core:Item
+                                            text="{Id}"
+                                            key="{Name}"
+                                        />
+                                    </Select>
+
+
+                <VBox visible="{= ${TypeReq} === 'education' }">
+                    <Label text="{i18n>child}" required="true" labelFor="childSelect"/>
+                    <Select
+                        id="childSelect"
+                        items="{/ChildSet}"
+                        selectedKey="{SelectedChild}"
+                        change=".onChildChange"
+                    >
+                        <core:Item key="{ChildId}" text="{ChildName}" />
+                    </Select>
+
+                    <Label text="{i18n>chooseOption}" required="true"/>
+                    <RadioButtonGroup
+                        id="claimAdvanceGroup"
+                        selectedIndex="{ClaimAdvanceIndex}"
+                        columns="2"
+                    >                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          ()
+                        <buttons>
+                            <RadioButton text="{i18n>claim}" />
+                            <RadioButton text="{i18n>advance}" />
+                        </buttons>
+                    </RadioButtonGroup>
+                </VBox>
+            </VBox>
+        </content>
+        <beginButton>
+            <Button
+                text="{i18n>confirm}"
+                press="onConfirmTypeFlowButtonPress"
+            />
+        </beginButton>
+        <endButton>
+            <Button
+                customData:name="_oTypeFlowDialog"
+                text="{i18n>cancel}"
+                press="onCancel"
+            />
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

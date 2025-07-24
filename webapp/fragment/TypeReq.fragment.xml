@@ -4,56 +4,62 @@
     xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
 >
     <Dialog
-        id="typeReq"
+        id="typeReqDialog"
         title="{i18n>ChooseReqType}"
         type="Message"
     >
         <content>
-            <VBox>
-                <Label text="{i18n>requestType}" required="true" labelFor="requestTypeSelect"/>
-                <Select
-                    id="requestTypeSelect"
-                    selectedKey="{TypeReq}"
-                    change=".onRequestTypeChange"
+            <FlexBox
+                alignContent="Center"
+                justifyContent="Start"
+            >
+
+             <Select
+                id="reqType"
+                forceSelection="false"
+                items="{/RequestTypeVHSet}"
+                selectedKey="{RequestType}"
+                enabled="{RequestSettings/IsFormEditable}"
+               
+                change=".onReqTypChange"
+            >
+             <!-- visible="{= ${Job} !== '' &amp;&amp;  ${uiSettings>/rangeVisible}  }" -->
+                <core:Item
+                    text="{Name}"
+                    key="{Id}"
+                />
+            </Select>
+               <!--  <RadioButtonGroup
+                    id="rgbReqType"
+                    valueState="Information"
+                    select=".setReqTypeAtCreation"
                 >
-                    <core:Item key="rental" text="{i18n>rentalSubsidy}" />
-                    <core:Item key="education" text="{i18n>educationGrant}" />
-                </Select>
+                    <RadioButton
+                        id="c"
+                        text="{i18n>creation}"
+                    />
 
-                <VBox visible="{= ${TypeReq} === 'education' }">
-                    <Label text="{i18n>child}" required="true" labelFor="childSelect"/>
-                    <Select
-                        id="childSelect"
-                        items="{/ChildSet}"
-                        selectedKey="{SelectedChild}"
-                        change=".onChildChange"
-                    >
-                        <core:Item key="{ChildId}" text="{ChildName}" />
-                    </Select>
-
-                    <Label text="{i18n>chooseOption}" required="true"/>
-                    <RadioButtonGroup
-                        id="claimAdvanceGroup"
-                        selectedIndex="{ClaimAdvanceIndex}"
-                        columns="2"
-                    >
-                        <buttons>
-                            <RadioButton text="{i18n>claim}" />
-                            <RadioButton text="{i18n>advance}" />
-                        </buttons>
-                    </RadioButtonGroup>
-                </VBox>
-            </VBox>
+                    <RadioButton
+                        id="u"
+                        text="{i18n>change}"
+                    />
+                </RadioButtonGroup> -->
+                <ObjectStatus
+                    class="sapUiSmallMargin"
+                    icon="sap-icon://message-information"
+                    state="Information"
+                />
+            </FlexBox>
         </content>
         <beginButton>
             <Button
                 text="{i18n>confirm}"
-                press="onConfirmTypeFlowButtonPress"
+                press="onConfirmTypeReqButtonPress"
             />
         </beginButton>
         <endButton>
             <Button
-                customData:name="_oTypeFlowDialog"
+                customData:name="_oTypeReqDialog"
                 text="{i18n>cancel}"
                 press="onCancel"
             />
