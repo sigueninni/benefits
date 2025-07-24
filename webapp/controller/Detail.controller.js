@@ -1,7 +1,7 @@
 sap.ui.define([
     "com/un/zhrbenefrequests/controller/BaseController",
     "sap/ui/model/json/JSONModel",
-    "com/un/zhrbenefrequests//model/formatter",
+    "com/un/zhrbenefrequests/model/formatter",
     "sap/base/strings/formatMessage",
     "sap/ui/core/ValueState",
     "sap/viz/ui5/data/FlattenedDataset",
