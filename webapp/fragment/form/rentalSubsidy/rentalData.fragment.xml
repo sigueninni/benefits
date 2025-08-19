@@ -4,5 +4,106 @@
     xmlns:form="sap.ui.layout.form"
     xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
 >
- 
+    <form:SimpleForm
+        layout="ResponsiveGridLayout"
+        labelSpanXL="2"
+        labelSpanL="4"
+        labelSpanM="12"
+        labelSpanS="12"
+        adjustLabelSpan="false"
+        emptySpanXL="0"
+        emptySpanL="0"
+        emptySpanM="0"
+        emptySpanS="0"
+        columnsXL="3"
+        columnsL="3"
+        columnsM="3"
+        editable="true"
+    >
+        <form:content>
+            <!-- Rental Subsidy Fields -->
+            <core:Title text="{i18n>rentalSubsidy}" />
+
+            <Label text="{i18n>PREAS}" />
+            <Select id="rental_PREAS" />
+
+            <Label text="{i18n>RSDRT}" />
+            <Select id="rental_RSDRT" />
+
+            <Label text="{i18n>RSREA}" />
+            <Select id="rental_RSREA" />
+
+            <Label text="{i18n>LGART}" />
+            <Select id="rental_LGART" />
+
+            <Label text="{i18n>OPKEN}" />
+            <Select id="rental_OPKEN" />
+
+            <Label text="{i18n>BETRG}" />
+            <Input id="rental_BETRG" type="Number" />
+
+            <Label text="{i18n>WAERS}" />
+            <Select id="rental_WAERS" />
+
+            <Label text="{i18n>RSAMT}" />
+            <Input id="rental_RSAMT" type="Number" />
+
+            <Label text="{i18n>WAAMT}" />
+            <Select id="rental_WAAMT" />
+
+            <Label text="{i18n>RSBFA}" />
+            <Input id="rental_RSBFA" type="Number" />
+
+            <Label text="{i18n>WABFA}" />
+            <Select id="rental_WABFA" />
+
+            <Label text="{i18n>RSFMD}" />
+            <DatePicker id="rental_RSFMD" />
+
+            <Label text="{i18n>DSTXT}" />
+            <Input id="rental_DSTXT" type="Text" showValueHelp="true" />
+
+            <Label text="{i18n>RSADT}" />
+            <DatePicker id="rental_RSADT" />
+
+            <Label text="{i18n>RSEXD}" />
+            <DatePicker id="rental_RSEXD" />
+
+            <Label text="{i18n>RSLBD}" />
+            <DatePicker id="rental_RSLBD" />
+
+            <Label text="{i18n>RSLED}" />
+            <DatePicker id="rental_RSLED" />
+
+            <Label text="{i18n>RSDEP}" />
+            <Input id="rental_RSDEP" type="Number" />
+
+            <Label text="{i18n>RSDAS}" />
+            <Input id="rental_RSDAS" type="Number" />
+
+            <Label text="{i18n>RSEIC}" />
+            <Switch id="rental_RSEIC" customTextOn="{i18n>yes}" customTextOff="{i18n>no}" enabled="true" />
+
+            <Label text="{i18n>RSNBR}" />
+            <Input id="rental_RSNBR" type="Number" />
+
+            <!-- Additional Fields -->
+            <core:Title text="{i18n>additionalFields}" />
+
+            <Label text="{i18n>RSSCR}" />
+            <Switch id="rental_RSSCR" customTextOn="{i18n>yes}" customTextOff="{i18n>no}" enabled="true" />
+
+            <Label text="{i18n>DSYRS}" />
+            <Input id="rental_DSYRS" type="Number" />
+
+            <Label text="{i18n>DSMNT}" />
+            <Input id="rental_DSMNT" type="Number" />
+
+            <Label text="{i18n>DSDAY}" />
+            <Input id="rental_DSDAY" type="Number" />
+
+            <Label text="{i18n>DSCLWOP}" />
+            <Input id="rental_DSCLWOP" type="Number" />
+        </form:content>
+    </form:SimpleForm>
 </core:FragmentDefinition>

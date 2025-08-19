@@ -2,7 +2,34 @@
     xmlns:core="sap.ui.core"
     xmlns="sap.m"
     xmlns:form="sap.ui.layout.form"
-    xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
 >
- 
+    <form:SimpleForm
+        layout="ResponsiveGridLayout"
+        labelSpanXL="4"
+        labelSpanL="4"
+        labelSpanM="12"
+        labelSpanS="12"
+        adjustLabelSpan="false"
+        emptySpanXL="0"
+        emptySpanL="0"
+        emptySpanM="0"
+        emptySpanS="0"
+        columnsXL="3"
+        columnsL="3"
+        columnsM="3"
+        editable="true"
+    >
+        <form:content>
+            <core:Title text="{i18n>householdInfo}" />
+
+            <Label text="{i18n>spouseResidingAtDS}" />
+            <Switch id="spouseResidingAtDS" customTextOn="{i18n>yes}" customTextOff="{i18n>no}" enabled="true" />
+
+            <Label text="{i18n>spouseReceivesSubsidy}" />
+            <Switch id="spouseReceivesSubsidy" customTextOn="{i18n>yes}" customTextOff="{i18n>no}" enabled="true" />
+
+            <Label text="{i18n>childrenResidingAtDS}" />
+            <Switch id="childrenResidingAtDS" customTextOn="{i18n>yes}" customTextOff="{i18n>no}" enabled="true" />
+        </form:content>
+    </form:SimpleForm>
 </core:FragmentDefinition>

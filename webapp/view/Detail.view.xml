@@ -23,8 +23,8 @@
     >
         <uxap:headerTitle>
             <uxap:ObjectPageHeader
-                objectTitle="{Title}"
-                objectSubtitle="{ path: 'ReqFlow', formatter: '.formatter.flowText' } - { path: 'ReqType', formatter: '.formatter.typeText' }"
+                objectTitle="{RequestDesc}"
+                objectSubtitle="{RequestTypeTxt}"
                 objectImageShape="Square"
                 isObjectIconAlwaysVisible="false"
                 isObjectTitleAlwaysVisible="false"
@@ -73,28 +73,38 @@
         </uxap:headerTitle>
         <uxap:headerContent>
             <l:VerticalLayout>
-                <ObjectAttribute text="{Requid}" />
+                <ObjectAttribute text="{RequestKey}" />
+                 <ObjectStatus
+                    title="{i18n>status}"
+                   text="{Info1}"
+                             state="{ path: 'RequestStatus', formatter: '.formatter.requestStatusStateText' }"
+                    id="status"
+                    
+                />
                 <ObjectAttribute
                     title="{i18n>createdOn}"
                     text="{path: 'CreationDate', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy', UTC: true }}"
                 />
-                <ObjectAttribute
+      <!--           <ObjectAttribute
                     title="{i18n>createdBy}"
                     text="{CreatorLname}"
-                />
+                /> -->
             </l:VerticalLayout>
-            <l:VerticalLayout>
+ <!--            <l:VerticalLayout>
                 <ObjectStatus
                     title="{i18n>status}"
-                    text="{ path: 'Status', formatter: '.formatter.statusText'}"
+                   text="{Info1}"
+                             state="{ path: 'RequestStatus', formatter: '.formatter.requestStatusStateText' }"
                     id="status"
-                    state="{ path: 'Status', formatter: '.formatter.statusStateText'}"
+                    
                 />
-            </l:VerticalLayout>
 
-            <l:VerticalLayout>
+            
+            </l:VerticalLayout> -->
+
+    <!--         <l:VerticalLayout>
                 <Label text="" />
-            </l:VerticalLayout>
+            </l:VerticalLayout> -->
 
             <l:VerticalLayout>
                 <VBox height="63px">
@@ -115,14 +125,54 @@
                     visible="{ path: 'SubStatus', formatter: '.formatter.subStatusVisibility' }"
                 /> -->
         </uxap:headerContent>
-        <!-- Section and forms -->
+        <!-- Section and forms  : Rental Subsidy-->
         <uxap:sections>
             <uxap:ObjectPageSection
-                id="positionRequestFormSection"
+                id="educationGrantFormSection"
                 showTitle="true"
-                title="{i18n>requestForm}"
+                title="{i18n>rentalSubsidyRequestForm}"
                 titleUppercase="true"
-                visible="true"
+                visible="{= ${RequestType} === '02' }"
+            >
+                <uxap:subSections>
+                    <!-- Rental Data -->
+                    <uxap:ObjectPageSubSection
+                        id="rentalDataSubSection"
+                        title="{i18n>RentalData}"
+                    >
+                        <uxap:blocks>
+                            <core:Fragment
+                                fragmentName="com.un.zhrbenefrequests.fragment.form.rentalSubsidy.RentalData"
+                                type="XML"
+                                xmlns:core="sap.ui.core"
+                            />
+                        </uxap:blocks>
+                    </uxap:ObjectPageSubSection>
+
+                    <!-- Others Data -->
+                    <uxap:ObjectPageSubSection
+                        id="rentalOthersSubSection"
+                        title="{i18n>rentalOthersData}"
+                    >
+                        <uxap:blocks>
+                            <core:Fragment
+                                fragmentName="com.un.zhrbenefrequests.fragment.form.rentalSubsidy.OtherData"
+                                type="XML"
+                                xmlns:core="sap.ui.core"
+                            />
+                        </uxap:blocks>
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
+
+
+        <!-- Section and forms  : Education Grant-->
+          <uxap:ObjectPageSection
+                id="rentalSubsidyFormSection"
+                showTitle="true"
+                title="{i18n>educationGrantRequestForm}"
+                titleUppercase="true"
+                                visible="{= ${RequestType} === '01' }"
             >
                 <uxap:subSections>
                     <!-- Child Information -->
@@ -183,6 +233,7 @@
                     </uxap:ObjectPageSubSection>
                 </uxap:subSections>
             </uxap:ObjectPageSection>
+
 
             <!-- Claims Section -->
             <uxap:ObjectPageSection

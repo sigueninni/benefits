@@ -346,6 +346,10 @@ sap.ui.define([
                 oViewModel.setProperty("/busy", false);
                 this.getView().bindElement({
                     path: sObjectPath,
+                    parameters: {
+                        expand: "ToEduGrantDetail"   // <-- ToEduGrantDetail
+                        // ,select: "Guid,RequestKey,ReqEducationGrantMain/LongText" // optionnel
+                    },
                     events: {
                         change: this._onBindingChange.bind(this),
                         dataRequested: function () {

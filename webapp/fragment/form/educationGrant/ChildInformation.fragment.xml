@@ -33,7 +33,7 @@
             <Input
                 id="lastName"
                 type="Text"
-                value="{JobGroup}"
+               value="{ToEduGrantDetail/Famsa}"
                 editable="{RequestSettings/IsFormEditable}"
             />
 

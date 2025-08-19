@@ -52,18 +52,31 @@
                 />
             </Select>
             <Label text="{i18n>egCustomerStatus}" />
-            <Select id="egCustomerStatus">
+            <Select
+                id="egCustomerStatus"
+                forceSelection="false"
+                 items="{
+                                        path : '/GenericVHSet',
+                                        filters : [
+                                            { path : 'Method', operator : 'EQ', value1 :'GET_EG_CUSTOMER_STATUS_LIST' }
+                                        ]
+                                        }"
+                selectedKey="{ContractType}"
+                enabled="{RequestSettings/IsFormEditable}"
+            >
                 <core:Item
-                    key="1"
-                    text="{i18n>approved}"
-                />
-                <core:Item
-                    key="2"
-                    text="{i18n>rejected}"
+                    text="{Txt}"
+                    key="{Id}"
                 />
             </Select>
             <Label text="{i18n>specialEducationGrant}" />
-            <Switch id="specialEducationGrant" state="false" customTextOn="{i18n>yes}" customTextOff="{i18n>no}" enabled="true" />
+            <Switch
+                id="specialEducationGrant"
+                state="false"
+                customTextOn="{i18n>yes}"
+                customTextOff="{i18n>no}"
+                enabled="true"
+            />
             <Label text="{i18n>specialArrangement}" />
             <Input
                 id="specialArrangement"
@@ -72,14 +85,27 @@
                 editable="true"
             />
             <Label text="{i18n>changeReason}" />
-            <Select id="changeReason">
+            <!--     <Select  forceSelection="false"
+                items="{/ChangeReasonVHSet}"
+                selectedKey="{ContractType}"
+                enabled="{RequestSettings/IsFormEditable}"
+            > -->
+            <Select
+              id="changeReason"
+                forceSelection="false"
+                items="{
+                                        path : '/GenericVHSet',
+                                        filters : [
+                                            { path : 'Method', operator : 'EQ', value1 :'GET_CHANGE_REASON_LIST' }
+                                        ]
+                                        }"
+                selectedKey="{ReqType}"
+                enabled="{RequestSettings/IsFormEditable}"
+              
+            >
                 <core:Item
-                    key="1"
-                    text="{i18n>reason1}"
-                />
-                <core:Item
-                    key="2"
-                    text="{i18n>reason2}"
+                    text="{Txt}"
+                    key="{Id}"
                 />
             </Select>
             <Label text="{i18n>dutyStationSM}" />
@@ -91,7 +117,13 @@
                 showValueHelp="true"
             />
             <Label text="{i18n>designatedDS}" />
-            <Switch id="designatedDS" state="false" customTextOn="{i18n>yes}" customTextOff="{i18n>no}" enabled="true" />
+            <Switch
+                id="designatedDS"
+                state="false"
+                customTextOn="{i18n>yes}"
+                customTextOff="{i18n>no}"
+                enabled="true"
+            />
             <Label text="{i18n>nationalitySM}" />
             <Input
                 id="nationalitySM"
@@ -146,16 +178,27 @@
                 showValueHelp="true"
             />
             <Label text="{i18n>eligibilityBoarding}" />
-            <Switch id="eligibilityBoarding" state="false" customTextOn="{i18n>yes}" customTextOff="{i18n>no}" enabled="true" />
+            <Switch
+                id="eligibilityBoarding"
+                state="false"
+                customTextOn="{i18n>yes}"
+                customTextOff="{i18n>no}"
+                enabled="true"
+            />
             <Label text="{i18n>reasonBoarding}" />
-            <Select id="reasonBoarding">
+            <Select id="reasonBoarding" forceSelection="false"
+                 items="{
+                    path : '/GenericVHSet',
+                    filters : [
+                        { path : 'Method', operator : 'EQ', value1 :'GET_REASON_BOARDING_LIST' }
+                    ]
+                    }"
+                selectedKey="{ContractType}"
+                enabled="{RequestSettings/IsFormEditable}"
+            >
                 <core:Item
-                    key="1"
-                    text="{i18n>reason1}"
-                />
-                <core:Item
-                    key="2"
-                    text="{i18n>reason2}"
+                    text="{Txt}"
+                    key="{Id}"
                 />
             </Select>
             <Label text="{i18n>boardingProrationFactor}" />

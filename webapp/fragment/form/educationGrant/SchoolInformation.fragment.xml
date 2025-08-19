@@ -38,15 +38,18 @@
             />
             <Select
                 id="school"
-                forceSelection="false"
-                items="{/SchoolSet}"
-                selectedKey="{school}"
+                  items="{
+                    path : '/GenericVHSet',
+                    filters : [
+                        { path : 'Method', operator : 'EQ', value1 :'GET_SCHOOL_LIST' }
+                    ]
+                    }"
+                selectedKey="{ContractType}"
                 enabled="{RequestSettings/IsFormEditable}"
-                change=".onSchoolChange"
             >
                 <core:Item
-                    text="{Description}"
-                    key="{Type}"
+                    text="{Txt}"
+                    key="{Id}"
                 />
             </Select>
 
