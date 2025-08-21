@@ -1,2 +1,8 @@
 - popup choix type de request 
 - Fragment selon type de request et sous type si applicable
+-Clean l'ecran quabd pas de requete
+-filre
+-tri
+-i18n
+- db handler à créer
+- exception coté back a gerer coté front

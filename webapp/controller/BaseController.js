@@ -103,7 +103,7 @@ sap.ui.define([
             if (this.fragments[name]) {
                 let _odialog = this.fragments[name];
                 _odialog.close();
-                //   _odialog.destroy();
+                _odialog.destroy();
                 delete this.fragments[name];
 
             }

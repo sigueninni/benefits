@@ -33,7 +33,7 @@
             <Input
                 id="lastName"
                 type="Text"
-               value="{ToEduGrantDetail/Famsa}"
+               value="{ToEduGrantDetail/Fanam}"
                 editable="{RequestSettings/IsFormEditable}"
             />
 

@@ -7,6 +7,7 @@
     xmlns="sap.m"
     xmlns:semantic="sap.f.semantic"
 >
+
     <semantic:SemanticPage
         id="mySemanticPage"
         headerPinnable="false"
@@ -14,12 +15,17 @@
         preserveHeaderStateOnScroll="false"
         showFooter="true"
     >
+
+
+  
         <!-- Title Heading-->
         <semantic:titleHeading>
             <Title text="{masterView>/title}" />
+            
         </semantic:titleHeading>
 
         <semantic:content>
+        
             <List
                 id="list"
                 inset="false"
@@ -66,6 +72,7 @@
                     </Toolbar>
                 </infoToolbar>
                 <items>
+                
                     <ObjectListItem
                         id="listItem"
                         type="{= ${device>/system/phone} ? 'Active' : 'Inactive'}"
@@ -88,6 +95,7 @@
                             <ObjectAttribute text="{Info2}" />
                             <ObjectAttribute text="{Info3}" />
                             
+                            
                             <!--                <ObjectAttribute
                                 text="{path: 'ContractType', formatter: '.formatter.contractTypeText'} {i18n>dot} {path: 'InternshipType', formatter: '.formatter.internshipTypeText'}"
                             />
@@ -100,6 +108,7 @@
             </List>
         </semantic:content>
         <semantic:footerCustomActions>
+        
             <Button
                 icon="sap-icon://sort"
                 press="onSort"
@@ -113,6 +122,7 @@
                 press="onGroup"
             />
         </semantic:footerCustomActions>
+        
     </semantic:SemanticPage>
 </mvc:View>
 

@@ -15,20 +15,31 @@
             >
 
              <Select
-                id="reqType"
-                forceSelection="false"
-                items="{/RequestTypeVHSet}"
-                selectedKey="{RequestType}"
-                enabled="{RequestSettings/IsFormEditable}"
+                id="requestType"
+
                
-                change=".onReqTypChange"
+                enabled="{RequestSettings/IsFormEditable}"
+                                items="{/RequestTypeVHSet}"
+               
+                
             >
-             <!-- visible="{= ${Job} !== '' &amp;&amp;  ${uiSettings>/rangeVisible}  }" -->
-                <core:Item
+             <!-- change=".onReqTypChange"  visible="{= ${Job} !== '' &amp;&amp;  ${uiSettings>/rangeVisible}  }" -->
+                <core:ListItem
                     text="{Name}"
                     key="{Id}"
                 />
             </Select>
+
+    <!--         				<Select
+					forceSelection="false"
+					selectedKey="{/SelectedProduct}"
+					items="{
+						path: '/ProductCollection',
+						sorter: { path: 'Name' }
+					}">
+					<core:ListItem key="{ProductId}" text="{Name}" icon="{Icon}"/>
+				</Select> -->
+
                <!--  <RadioButtonGroup
                     id="rgbReqType"
                     valueState="Information"
@@ -44,11 +55,11 @@
                         text="{i18n>change}"
                     />
                 </RadioButtonGroup> -->
-                <ObjectStatus
+   <!--              <ObjectStatus
                     class="sapUiSmallMargin"
                     icon="sap-icon://message-information"
                     state="Information"
-                />
+                /> -->
             </FlexBox>
         </content>
         <beginButton>

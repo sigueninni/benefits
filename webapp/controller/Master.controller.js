@@ -169,15 +169,68 @@ sap.ui.define([
                 this._oTypeReqDialog.open(); */
             },
 
-            onConfirmTypeFlowButtonPress: function() {
-                if (this._oTypeReqDialog) {
-                    this._oTypeReqDialog.close();
-                }
-                // Naviguer vers la page detail avec un nouvel id
-                this.getRouter().navTo("RouteDetail", {
-                    positionRequestId: "new"
-                }, !Device.system.phone);
-            }
+            onConfirmTypeReqButtonPress: function (oEvent) {
+             
+                const sGroupId = "benefitRequest" + (new Date().getUTCMilliseconds());
+                const oRouter = this.getRouter();
+                const oModel = this.getView().getModel();
+                let aDeferredGroups = oModel.getDeferredGroups();
+                // set this subset to deferred
+                aDeferredGroups = aDeferredGroups.concat([sGroupId]);
+                oModel.setDeferredGroups(aDeferredGroups);
+
+
+                //Get type Flow
+                debugger;
+              //  let reqFlow = sap.ui.getCore().byId("requestType").getSelectedButton().getId();
+
+                // set busy indicator during view binding
+                let oViewModel = this.getModel("masterView");
+                oViewModel.setProperty("/busy", true);
+                //sap.ui.core.BusyIndicator.show();
+
+                // create a new entry in model
+                oModel.createEntry("/RequestHeaderSet", {
+                    groupId: sGroupId,
+                    properties: {
+                        "Seqnr": "001",
+                        "RequestStatus": "00",
+                        "RequestType" : "01",
+                        "RequestDesc": this.getResourceBundle().getText("newBenefitRequestTitle")
+                    }
+                });
+
+                // initialize the request in backend and then navigate to object page for binding
+                oModel.submitChanges({
+                    groupId: sGroupId,
+                    success: function (oSuccess) {
+                        let oResponse = oSuccess.__batchResponses[0];
+                        if (oResponse.__changeResponses) {
+                            let oNewEntry = oResponse.__changeResponses[0].data;
+                            oViewModel.setProperty("/busy", false);
+                            oRouter.navTo("RouteDetail", {
+                                benefitRequestId: oNewEntry.Guid
+                            }, true);
+                            // setTimeout(function() { 
+                            // 	oViewModel.setProperty("/busy", false);
+                            // 	//sap.ui.core.BusyIndicator.hide();
+                            // 	oRouter.navTo("object", {
+                            // 		"objectId": oNewEntry.Id //object key
+                            // 	});
+                            // }, 1500);
+                        } else {
+                            oViewModel.setProperty("/busy", false);
+                            //sap.ui.core.BusyIndicator.hide();
+                        }
+
+                        this.fragments._oTypeReqDialog.close();
+                        this.fragments._oTypeReqDialog.destroy();
+                        delete this.fragments._oTypeReqDialog;
+
+                    }.bind(this)
+                });
+            },
+
 
         });
     });
