@@ -172,6 +172,7 @@ sap.ui.define([
           * @public
           */
             onDeleteButtonPress: function (oEvent) {
+            
                 const that = this;
                 const oView = this.getView();
                 const oModel = oView.getModel();
@@ -181,6 +182,7 @@ sap.ui.define([
                     actions: [MessageBox.Action.OK, MessageBox.Action.CANCEL],
                     initialFocus: MessageBox.Action.OK,
                     onClose: function (oAction) {
+                            debugger;
                         if (oAction === MessageBox.Action.OK) {
                             // set busy indicator during view binding
                             let oViewModel = that.getModel("detailView");
