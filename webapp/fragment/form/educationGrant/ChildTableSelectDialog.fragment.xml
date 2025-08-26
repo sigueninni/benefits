@@ -11,7 +11,7 @@
 		confirm="handleClose"
 		cancel="handleClose"
 		items="{
-			path : '/ChildVHSet',
+			path : '/ChildsVHSet',
           
 			sorter : {
 				path : 'Fanam',
@@ -24,6 +24,7 @@
 					title="{Name}"
 					text="{ProductId}" /> -->
 				<Text text="{Fanam}" />
+				<Text text="{Favor}" />
 				<!-- <Text text="{Width} x {Depth} x {Height} {DimUnit}" />
 				<ObjectNumber
 					number="{WeightMeasure}"
@@ -42,9 +43,14 @@
 			</cells>
 		</ColumnListItem>
 		<columns>
-			<Column width="12em">
+			<Column width="auto">
 				<header>
 					<Text text="Fanam" />
+				</header>
+			</Column>
+				<Column width="auto">
+				<header>
+					<Text text="Favor" />
 				</header>
 			</Column>
 			<!-- <Column
