@@ -13,9 +13,11 @@ sap.ui.define([
     "com/un/zhrbenefrequests/controller/BaseController",
     "sap/ui/model/json/JSONModel",
     "com/un/zhrbenefrequests/model/formatter",
+    "sap/ui/model/Filter",
+    "sap/ui/model/FilterOperator",
     "sap/ui/Device",
 ],
-    function (BaseController, JSONModel, formatter, Device) {
+    function (BaseController, JSONModel, formatter, Filter, FilterOperator, Device) {
         "use strict";
 
         return BaseController.extend("com.un.zhrbenefrequests.controller.Master", {
@@ -57,11 +59,11 @@ sap.ui.define([
             /* =========================================================== */
             /* event handlers                                              */
             /* =========================================================== */
-     /**
-             * Event handler for the bypassed event, which is fired when no routing pattern matched.
-             * If there was an object selected in the master list, that selection is removed.
-             * @public
-             */
+            /**
+                    * Event handler for the bypassed event, which is fired when no routing pattern matched.
+                    * If there was an object selected in the master list, that selection is removed.
+                    * @public
+                    */
             onBypassed: function () {
                 this._oList.removeSelections(true);
             },
@@ -83,7 +85,39 @@ sap.ui.define([
                 debugger;
                 console.log(oEvent.getParameter("selectedItem"));
             },
-            
+
+            /**
+    * Event handler for the select eventonSearch
+    * @param {sap.ui.base.Event} oEvent the select event
+    * @public
+    */
+            onSearch: function (oEvent) {
+
+                // add filter for search
+                debugger;
+                let aFilters = [];
+                const sQuery = oEvent.getSource().getValue();
+                if (sQuery && sQuery.length > 0) {
+                    const aOrFilters = [
+                       // new Filter("Begda", FilterOperator.Contains, sQuery),
+                        new Filter("RequestKey", FilterOperator.Contains, sQuery),
+                        new Filter("Info1", FilterOperator.Contains, sQuery),
+                        new Filter("Info2", FilterOperator.Contains, sQuery),
+                        new Filter("Info3", FilterOperator.Contains, sQuery)
+                    ];
+                    aFilters.push(new Filter({
+                        filters: aOrFilters,
+                        and: false // This creates OR logic
+                    }));
+                }
+
+                // update list binding
+                const oList = this.byId("list");
+                const oBinding = oList.getBinding("items");
+                oBinding.filter(aFilters);
+            },
+
+
             /* =========================================================== */
             /*  internal methods                                     */
             /* =========================================================== */
@@ -148,9 +182,9 @@ sap.ui.define([
                 //  }
             },
 
-            onCreateButtonPress: function() {
+            onCreateButtonPress: function () {
 
-                    if (!this.fragments._oTypeReqDialog) {
+                if (!this.fragments._oTypeReqDialog) {
                     this.fragments._oTypeReqDialog = sap.ui.xmlfragment("com.un.zhrbenefrequests.fragment.TypeReq", this);
                     this.getView().addDependent(this.fragments._oTypeReqDialog);
                     // forward compact/cozy style into Dialog
@@ -159,18 +193,18 @@ sap.ui.define([
                 this.fragments._oTypeReqDialog.open();
 
 
-        /*         if (!this._oTypeReqDialog) {
-                    this._oTypeReqDialog = sap.ui.xmlfragment(
-                        "com.un.zhrbenefrequests.fragment.TypeReq",
-                        this
-                    );
-                    this.getView().addDependent(this._oTypeReqDialog);
-                }
-                this._oTypeReqDialog.open(); */
+                /*         if (!this._oTypeReqDialog) {
+                            this._oTypeReqDialog = sap.ui.xmlfragment(
+                                "com.un.zhrbenefrequests.fragment.TypeReq",
+                                this
+                            );
+                            this.getView().addDependent(this._oTypeReqDialog);
+                        }
+                        this._oTypeReqDialog.open(); */
             },
 
             onConfirmTypeReqButtonPress: function (oEvent) {
-             
+
                 const sGroupId = "benefitRequest" + (new Date().getUTCMilliseconds());
                 const oRouter = this.getRouter();
                 const oModel = this.getView().getModel();
@@ -182,7 +216,7 @@ sap.ui.define([
 
                 //Get type Flow
                 debugger;
-              //  let reqFlow = sap.ui.getCore().byId("requestType").getSelectedButton().getId();
+                //  let reqFlow = sap.ui.getCore().byId("requestType").getSelectedButton().getId();
 
                 // set busy indicator during view binding
                 let oViewModel = this.getModel("masterView");
@@ -195,7 +229,7 @@ sap.ui.define([
                     properties: {
                         "Seqnr": "001",
                         "RequestStatus": "00",
-                        "RequestType" : "01",
+                        "RequestType": "01",
                         "RequestDesc": this.getResourceBundle().getText("newBenefitRequestTitle")
                     }
                 });

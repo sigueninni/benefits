@@ -247,6 +247,23 @@ sap.ui.define([
                 oView.addDependent(this.fragments._oAddClaimDialog);
                 this.fragments._oAddClaimDialog.open();
             },
+
+
+            selectChildPress: function () { 
+
+             if (!this.fragments._oChildTableSelectDialog) {
+                    this.fragments._oChildTableSelectDialog = sap.ui.xmlfragment("com.un.zhrbenefrequests.fragment.form.educationGrant.ChildTableSelectDialog", this);
+                    this.getView().addDependent(this.fragments._oChildTableSelectDialog);
+                    // forward compact/cozy style into Dialog
+                    this.fragments._oChildTableSelectDialog.addStyleClass(this.getOwnerComponent().getContentDensityClass());
+                }
+                this.fragments._oChildTableSelectDialog.open();
+
+                
+            },
+                      
+                    
+
             /*        _removeClaimAddDialog: function () {
                        if (this.fragments._oAddClaimDialog) {
                            this.fragments._oAddClaimDialog.destroy();

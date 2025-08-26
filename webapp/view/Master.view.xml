@@ -31,7 +31,7 @@
                 inset="false"
                 width="auto"
                 class="sapFDynamicPageAlignContent"
-                items="{ path: '/RequestHeaderSet', sorter: { path: 'RequestKey', descending: false } }"
+                items="{ path: '/RequestHeaderSet', parameters: {operationMode: 'Client'}, sorter: { path: 'RequestKey', descending: false } }"
                 busyIndicatorDelay="{masterView>/delay}"
                 noDataText="{masterView>/noDataText}"
                 mode="{= ${device>/system/phone} ? 'None' : 'SingleSelectMaster'}"
@@ -48,7 +48,8 @@
                             showRefreshButton="{= !${device>/support/touch} }"
                             tooltip="{i18n>masterSearchTooltip}"
                             width="100%"
-                            search="onSearch"
+                            
+                            liveChange=".onSearch"
                         />
                         <Button
                             id="createAction"

@@ -24,6 +24,13 @@
             <!-- Name .. -->
             <core:Title text="{i18n>childMasterData}" />
 
+            <Button
+                class="sapUiSmallMarginBottom"
+                text="Show Table Select Dialog"
+                press=".selectChildPress"
+            />
+            <core:Title text="" />
+            <core:Title text="" />
             <Label
                 text="{i18n>lastName}"
                 required="true"
@@ -33,7 +40,7 @@
             <Input
                 id="lastName"
                 type="Text"
-               value="{ToEduGrantDetail/Fanam}"
+                value="{ToEduGrantDetail/Fanam}"
                 editable="{RequestSettings/IsFormEditable}"
             />
 
@@ -46,7 +53,7 @@
             <Input
                 id="birthName"
                 type="Text"
-                value="{JobGroup}"
+                value="{ToEduGrantDetail/Favor}"
                 editable="{RequestSettings/IsFormEditable}"
             />
 
@@ -72,12 +79,10 @@
             />
             <DatePicker
                 id="startDate"
-                value="{ path: 'StartDate', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy', UTC: true }}"
+                value="{ path: 'Fgbdt', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy', UTC: true }}"
                 editable="{RequestSettings/IsFormEditable}"
                 required="true"
-                minDate="{datesModel>/MinDate}"
-                maxDate="{datesModel>/MaxDate}"
-                change=".onStartDateChange"
+  
             />
 
             <Label
@@ -89,7 +94,7 @@
             <Input
                 id="computedAge"
                 type="Text"
-                value="{JobGroup}"
+                value="{Egage}"
                 editable="{RequestSettings/IsFormEditable}"
             />
 
@@ -102,7 +107,7 @@
             <Input
                 id="Nationality"
                 type="Text"
-                value="{JobGroup}"
+                value="{Fanat}"
                 editable="{RequestSettings/IsFormEditable}"
             />
 
@@ -115,7 +120,7 @@
             <Input
                 id="gender"
                 type="Text"
-                value="{JobGroup}"
+                value="{Fasex}"
                 editable="{RequestSettings/IsFormEditable}"
             />
 
