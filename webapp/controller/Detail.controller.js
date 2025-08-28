@@ -172,7 +172,7 @@ sap.ui.define([
           * @public
           */
             onDeleteButtonPress: function (oEvent) {
-            
+
                 const that = this;
                 const oView = this.getView();
                 const oModel = oView.getModel();
@@ -182,7 +182,7 @@ sap.ui.define([
                     actions: [MessageBox.Action.OK, MessageBox.Action.CANCEL],
                     initialFocus: MessageBox.Action.OK,
                     onClose: function (oAction) {
-                            debugger;
+                        debugger;
                         if (oAction === MessageBox.Action.OK) {
                             // set busy indicator during view binding
                             let oViewModel = that.getModel("detailView");
@@ -249,27 +249,73 @@ sap.ui.define([
             },
 
 
-            selectChildPress: function () { 
+            /**
+             * Event handler for the Select child button
+             * Opens the ChildTableSelectDialog for selecting a child
+             */
+            selectChildPress: function () {
 
-             if (!this.fragments._oChildTableSelectDialog) {
+                if (!this.fragments._oChildTableSelectDialog) {
                     this.fragments._oChildTableSelectDialog = sap.ui.xmlfragment("com.un.zhrbenefrequests.fragment.form.educationGrant.ChildTableSelectDialog", this);
                     this.getView().addDependent(this.fragments._oChildTableSelectDialog);
                     // forward compact/cozy style into Dialog
                     this.fragments._oChildTableSelectDialog.addStyleClass(this.getOwnerComponent().getContentDensityClass());
                 }
                 this.fragments._oChildTableSelectDialog.open();
-
-                
             },
-                      
-                    
 
-            /*        _removeClaimAddDialog: function () {
-                       if (this.fragments._oAddClaimDialog) {
-                           this.fragments._oAddClaimDialog.destroy();
-                           this.fragments._oAddClaimDialog = null;
-                       }
-                   } */
+
+            /**
+             * Event handler for the Select child search
+             * Filters the binding of the ChildTableSelectDialog
+             */
+            onChildSearch: function (oEvent) {
+                const sValue = oEvent.getParameter("value");
+                const oFilter = new Filter("Favor", FilterOperator.Contains, sValue);
+                const oBinding = oEvent.getSource().getBinding("items");
+                oBinding.filter([oFilter]);
+
+            },
+
+            /**
+             * Event handler for the Confirm child button
+             * Sets the child for EG request
+             */
+            onConfirmChild: function (oEvent) {
+                debugger;
+                const oModel = this.getView().getModel();
+                const bindingContext = this.getView().getBindingContext();
+                const path = bindingContext.getPath();
+
+                // reset the filter
+                const oBinding = oEvent.getSource().getBinding("items");
+                oBinding.filter([]);
+
+                const objDetail = this.getBindingDetailObject() ;
+
+                const aContexts = oEvent.getParameter("selectedContexts");
+                if (aContexts && aContexts.length) {
+                    const selectedChild = aContexts[0].getObject(); // Get first selected child
+
+                    // Update the model only - the UI will update automatically
+                    const sEduGrantDetailPath = path + "/ToEduGrantDetail";
+                    oModel.setProperty(sEduGrantDetailPath + "/Favor", selectedChild.Favor);
+                    oModel.setProperty(sEduGrantDetailPath + "/Fanam", selectedChild.Fanam);
+                    oModel.setProperty(sEduGrantDetailPath + "/Fgbdt", selectedChild.Fgbdt);
+                    oModel.setProperty(sEduGrantDetailPath + "/Fgbna", selectedChild.Fgbna);
+                    oModel.setProperty(sEduGrantDetailPath + "/Fanat", selectedChild.Fanat);
+                    oModel.setProperty(sEduGrantDetailPath + "/Objps", selectedChild.Objps);
+                    oModel.setProperty(sEduGrantDetailPath + "/Famsa", selectedChild.Famsa);
+                    oModel.setProperty(sEduGrantDetailPath + "/Fasex", selectedChild.Fasex);
+                    oModel.setProperty(sEduGrantDetailPath + "/Egage", selectedChild.Egage);
+                    
+                    //Descriptions
+                    this.getView().byId("nationality").setDescription(selectedChild.FanatTxt);
+                    this.getView().byId("gender").setDescription(selectedChild.FasexTxt);
+
+                  //  MessageToast.show("You have chosen " + selectedChild.Favor);
+                }
+            },
 
             /* =========================================================== */
             /* Internal methods                                     */

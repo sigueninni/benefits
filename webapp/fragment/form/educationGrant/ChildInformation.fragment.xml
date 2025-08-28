@@ -53,7 +53,7 @@
             <Input
                 id="birthName"
                 type="Text"
-                value="{ToEduGrantDetail/Favor}"
+                value="{ToEduGrantDetail/Fgbna}"
                 editable="{RequestSettings/IsFormEditable}"
             />
 
@@ -66,7 +66,7 @@
             <Input
                 id="firstName"
                 type="Text"
-                value="{JobGroup}"
+                value="{ToEduGrantDetail/Favor}"
                 editable="{RequestSettings/IsFormEditable}"
             />
 
@@ -79,7 +79,7 @@
             />
             <DatePicker
                 id="startDate"
-                value="{ path: 'Fgbdt', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy', UTC: true }}"
+                value="{ path: 'ToEduGrantDetail/Fgbdt', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy', UTC: true }}"
                 editable="{RequestSettings/IsFormEditable}"
                 required="true"
   
@@ -94,7 +94,8 @@
             <Input
                 id="computedAge"
                 type="Text"
-                value="{Egage}"
+                maxLength="2"
+                value="{ToEduGrantDetail/Egage}"
                 editable="{RequestSettings/IsFormEditable}"
             />
 
@@ -105,9 +106,9 @@
             />
 
             <Input
-                id="Nationality"
+                id="nationality"
                 type="Text"
-                value="{Fanat}"
+                value="{ToEduGrantDetail/Fanat}"
                 editable="{RequestSettings/IsFormEditable}"
             />
 
@@ -120,7 +121,7 @@
             <Input
                 id="gender"
                 type="Text"
-                value="{Fasex}"
+                value="{ToEduGrantDetail/Fasex}"
                 editable="{RequestSettings/IsFormEditable}"
             />
 

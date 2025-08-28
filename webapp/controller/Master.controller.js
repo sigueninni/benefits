@@ -83,7 +83,33 @@ sap.ui.define([
              */
             onReqTypChange: function (oEvent) {
                 debugger;
-                console.log(oEvent.getParameter("selectedItem"));
+                const oSelectedItem = oEvent.getParameter("selectedItem");
+                const sSelectedKey = oSelectedItem.getKey();
+                
+                // Update the type model to control visibility
+                const oTypeModel = this.fragments._oTypeReqDialog.getModel("typeModel");
+                oTypeModel.setProperty("/RequestType", sSelectedKey);
+                
+                console.log("Request Type changed to:", sSelectedKey);
+            },
+
+            /**
+             * Event handler for the RadioButtonGroup select event
+             * @param {sap.ui.base.Event} oEvent the select event
+             * @public
+             */
+            onClaimAdvanceChange: function (oEvent) {
+                const oSelectedButton = oEvent.getParameter("selectedButton");
+                const sButtonId = oSelectedButton.getId();
+                const oTypeModel = this.fragments._oTypeReqDialog.getModel("typeModel");
+                
+                if (sButtonId.includes("isClaim")) {
+                    oTypeModel.setProperty("/Isclaim", true);
+                    oTypeModel.setProperty("/Isadvance", false);
+                } else if (sButtonId.includes("isAdvance")) {
+                    oTypeModel.setProperty("/Isclaim", false);
+                    oTypeModel.setProperty("/Isadvance", true);
+                }
             },
 
             /**
@@ -190,6 +216,17 @@ sap.ui.define([
                     // forward compact/cozy style into Dialog
                     this.fragments._oTypeReqDialog.addStyleClass(this.getOwnerComponent().getContentDensityClass());
                 }
+                
+                // Create and set the type model for visibility binding with default value
+                const oTypeModel = new JSONModel({
+                    RequestType: "01", // Set default value to "01"
+                    Isclaim: true,     // Default to claim
+                    Isadvance: false,  // Default to not advance
+                    Begda: null,       // Start date
+                    Endda: null        // End date
+                });
+                this.fragments._oTypeReqDialog.setModel(oTypeModel, "typeModel");
+                
                 this.fragments._oTypeReqDialog.open();
 
 
@@ -214,9 +251,22 @@ sap.ui.define([
                 oModel.setDeferredGroups(aDeferredGroups);
 
 
-                //Get type Flow
+                //Get type Flow and claim/advance info
                 debugger;
-                //  let reqFlow = sap.ui.getCore().byId("requestType").getSelectedButton().getId();
+                const oTypeModel = this.fragments._oTypeReqDialog.getModel("typeModel");
+                let ReqType = oTypeModel.getProperty("/RequestType");
+                let Isclaim = oTypeModel.getProperty("/Isclaim");
+                let Isadvance = oTypeModel.getProperty("/Isadvance");
+                let Begda = oTypeModel.getProperty("/Begda");
+                let Endda = oTypeModel.getProperty("/Endda");
+
+                // Convert date strings to JavaScript Date objects
+                if (Begda && typeof Begda === 'string') {
+                    Begda = new Date(Begda);
+                }
+                if (Endda && typeof Endda === 'string') {
+                    Endda = new Date(Endda);
+                }
 
                 // set busy indicator during view binding
                 let oViewModel = this.getModel("masterView");
@@ -229,7 +279,11 @@ sap.ui.define([
                     properties: {
                         "Seqnr": "001",
                         "RequestStatus": "00",
-                        "RequestType": "01",
+                        "RequestType": ReqType,
+                        "Isclaim": Isclaim,
+                        "Isadvance": Isadvance,
+                        "Begda": Begda,
+                        "Endda": Endda,
                         "RequestDesc": this.getResourceBundle().getText("newBenefitRequestTitle")
                     }
                 });

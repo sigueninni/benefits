@@ -239,6 +239,7 @@
             <uxap:ObjectPageSection
                 id="claimsSection"
                 title="{i18n>Claims}"
+                visible="{Isclaim}"
             >
                 <uxap:subSections>
                     <uxap:ObjectPageSubSection id="claimsSubSection">
@@ -257,6 +258,7 @@
             <uxap:ObjectPageSection
                 id="advancesSection"
                 title="{i18n>Advances}"
+                visible="{Isadvance}"
             >
                 <uxap:subSections>
                     <uxap:ObjectPageSubSection id="advancesSubSection">

@@ -9,58 +9,65 @@
         type="Message"
     >
         <content>
-            <FlexBox
-                alignContent="Center"
-                justifyContent="Start"
-            >
-
-             <Select
-                id="requestType"
-
-               
-                enabled="{RequestSettings/IsFormEditable}"
-                                items="{/RequestTypeVHSet}"
-               
+            <VBox class="sapUiMediumMargin">
+                <HBox class="sapUiSmallMarginBottom">
+                    <VBox class="sapUiMediumMarginEnd">
+                        <Label text="{i18n>startDate}" class="sapUiSmallMarginBottom" />
+                        <DatePicker
+                            id="startDatePicker"
+                            placeholder="{i18n>selectStartDate}"
+                            valueFormat="yyyy-MM-dd"
+                            displayFormat="dd/MM/yyyy"
+                            width="150px"
+                            value="{typeModel>/Begda}"
+                        />
+                    </VBox>
+                    <VBox>
+                        <Label text="{i18n>endDate}" class="sapUiSmallMarginBottom" />
+                        <DatePicker
+                            id="endDatePicker"
+                            placeholder="{i18n>selectEndDate}"
+                            valueFormat="yyyy-MM-dd"
+                            displayFormat="dd/MM/yyyy"
+                            width="150px"
+                            value="{typeModel>/Endda}"
+                        />
+                    </VBox>
+                </HBox>
                 
-            >
-             <!-- change=".onReqTypChange"  visible="{= ${Job} !== '' &amp;&amp;  ${uiSettings>/rangeVisible}  }" -->
-                <core:ListItem
-                    text="{Name}"
-                    key="{Id}"
-                />
-            </Select>
-
-    <!--         				<Select
-					forceSelection="false"
-					selectedKey="{/SelectedProduct}"
-					items="{
-						path: '/ProductCollection',
-						sorter: { path: 'Name' }
-					}">
-					<core:ListItem key="{ProductId}" text="{Name}" icon="{Icon}"/>
-				</Select> -->
-
-               <!--  <RadioButtonGroup
-                    id="rgbReqType"
-                    valueState="Information"
-                    select=".setReqTypeAtCreation"
+                <Label text="{i18n>requestType}" class="sapUiSmallMarginBottom" />
+                <Select
+                    id="requestType"
+                    enabled="{RequestSettings/IsFormEditable}"
+                    items="{/RequestTypeVHSet}"
+                    selectedKey="{typeModel>/RequestType}"
+                    change="onReqTypChange"
+                >
+                    <core:ListItem
+                        text="{Name}"
+                        key="{Id}"
+                    />
+                </Select>
+                
+                <RadioButtonGroup
+                    id="claimAdvanceGroup"
+                    visible="{= ${typeModel>/RequestType} === '01'}"
+                    class="sapUiMediumMarginTop"
+                    columns="2"
+                    select="onClaimAdvanceChange"
                 >
                     <RadioButton
-                        id="c"
-                        text="{i18n>creation}"
+                        id="isClaim"
+                        text="{i18n>isClaim}"
+                        selected="{typeModel>/Isclaim}"
                     />
-
                     <RadioButton
-                        id="u"
-                        text="{i18n>change}"
+                        id="isAdvance"
+                        text="{i18n>isAdvance}"
+                        selected="{typeModel>/Isadvance}"
                     />
-                </RadioButtonGroup> -->
-   <!--              <ObjectStatus
-                    class="sapUiSmallMargin"
-                    icon="sap-icon://message-information"
-                    state="Information"
-                /> -->
-            </FlexBox>
+                </RadioButtonGroup>
+            </VBox>
         </content>
         <beginButton>
             <Button
