@@ -113,13 +113,6 @@ sap.ui.define([
                         Guid: sObjectId
                     });
                     this._bindView("/" + sObjectPath);
-
-                    /*******************************************************************************/
-                    //Initial controls of Dates, retro etc...
-                    /*******************************************************************************/
-                    //this._getTimeConstraints();
-
-
                 }.bind(this));
             },
 
@@ -145,16 +138,6 @@ sap.ui.define([
 
                 this.getOwnerComponent().oListSelector.selectAListItem(sPath);
 
-                /*   oViewModel.setProperty("/saveAsTileTitle", oResourceBundle.getText("shareSaveTileAppTitle", [sObjectName]));
-                  oViewModel.setProperty("/shareOnJamTitle", sObjectName);
-                  oViewModel.setProperty("/shareSendEmailSubject",
-                      oResourceBundle.getText("shareSendEmailObjectSubject", [sObjectId]));
-                  oViewModel.setProperty("/shareSendEmailMessage",
-                      oResourceBundle.getText("shareSendEmailObjectMessage", [sObjectName, sObjectId, location.href]));
-   */
-                // this._filterPersonnelSubareaValues();
-
-                // this._getTimeConstraints();
             },
 
             /**
@@ -167,10 +150,10 @@ sap.ui.define([
             },
 
             /**
-          * Event handler for the button delete 
-          * @param {sap.ui.base.Event} oEvent the button Click event
-          * @public
-          */
+            * Event handler for the button delete 
+            * @param {sap.ui.base.Event} oEvent the button Click event
+            * @public
+            */
             onDeleteButtonPress: function (oEvent) {
 
                 const that = this;
@@ -203,6 +186,46 @@ sap.ui.define([
                 });
             },
 
+
+            /**
+            * Event handler for the button save 
+            * @param {sap.ui.base.Event} oEvent the button Click event
+            * @public
+            */
+            onSaveBenefitRequestObject: function () {
+                const that = this;
+                const oView = this.getView();
+                const oModel = oView.getModel();
+                const oResourceBundle = this.getResourceBundle();
+                // set status to saved draft
+                oView.byId("draftIndicator").showDraftSaving();
+
+                if (oModel.hasPendingChanges()) {
+
+                    // set busy indicator during view binding
+                    const oViewModel = this.getModel("detailView");
+                    oViewModel.setProperty("/busy", true);
+
+                    oModel.submitChanges({
+                        success: function (oBatchData) {
+                            oViewModel.setProperty("/busy", false);
+                            // error in $batch responses / payload ? > no ChangeResponses ?
+                            if (!oBatchData.__batchResponses[0].__changeResponses) {
+                                const oError = JSON.parse(oBatchData.__batchResponses[0].response.body);
+                                MessageBox.error(oError.error.message.value.toString());
+                                oModel.resetChanges();
+                            } else {
+                                // reset the message popover 
+                                sap.ui.getCore().getMessageManager().removeAllMessages();
+                                that._resetValidationChecks();
+                                oView.byId("draftIndicator").showDraftSaved();
+                            }
+                        }
+                    });
+                } else {
+                    //MessageBox.information(oResourceBundle.getText("noChangesToSubmit"));
+                }
+            },
 
 
             /**
@@ -291,7 +314,7 @@ sap.ui.define([
                 const oBinding = oEvent.getSource().getBinding("items");
                 oBinding.filter([]);
 
-                const objDetail = this.getBindingDetailObject() ;
+                const objDetail = this.getBindingDetailObject();
 
                 const aContexts = oEvent.getParameter("selectedContexts");
                 if (aContexts && aContexts.length) {
@@ -308,17 +331,17 @@ sap.ui.define([
                     oModel.setProperty(sEduGrantDetailPath + "/Famsa", selectedChild.Famsa);
                     oModel.setProperty(sEduGrantDetailPath + "/Fasex", selectedChild.Fasex);
                     oModel.setProperty(sEduGrantDetailPath + "/Egage", selectedChild.Egage);
-                    
+
                     //Descriptions
                     this.getView().byId("nationality").setDescription(selectedChild.FanatTxt);
                     this.getView().byId("gender").setDescription(selectedChild.FasexTxt);
 
-                  //  MessageToast.show("You have chosen " + selectedChild.Favor);
+                    //  MessageToast.show("You have chosen " + selectedChild.Favor);
                 }
             },
 
             /* =========================================================== */
-            /* Internal methods                                     */
+            /* Internal methods                                            */
             /* =========================================================== */
 
             _onMetadataLoaded: function () {

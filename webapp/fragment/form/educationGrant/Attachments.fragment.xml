@@ -1,0 +1,95 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+    xmlns:u="sap.ui.unified"
+    xmlns:form="sap.ui.layout.form"
+    xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
+
+    <VBox>
+        <Label text="{i18n>attachments}" class="sapUiMediumMarginBottom" />
+        
+        <HBox>
+            <!-- Left Column -->
+            <VBox class="sapUiMediumMarginEnd" width="50%">
+                <!-- Pro-forma Invoice -->
+                <VBox class="sapUiSmallMarginBottom">
+                    <Label text="{i18n>proFormaInvoice}" class="sapUiSmallMarginBottom" />
+                    <u:FileUploader
+                        id="proFormaUpload"
+                        multiple="true"
+                        uploadUrl="/upload/proforma"
+                        change="onProFormaFileChange"
+                        fileType="pdf,jpg,jpeg,png"
+                        maximumFileSize="5"
+                        buttonText="{i18n>selectFiles}"
+                        placeholder="{i18n>chooseProFormaFiles}"
+                    />
+                </VBox>
+                
+                <!-- Payment Receipts -->
+                <VBox class="sapUiSmallMarginBottom">
+                    <Label text="{i18n>paymentReceipts}" class="sapUiSmallMarginBottom" />
+                    <u:FileUploader
+                        id="paymentReceiptsUpload"
+                        multiple="true"
+                        uploadUrl="/upload/paymentreceipts"
+                        change="onPaymentReceiptsFileChange"
+                        fileType="pdf,jpg,jpeg,png"
+                        maximumFileSize="5"
+                        buttonText="{i18n>selectFiles}"
+                        placeholder="{i18n>choosePaymentReceiptsFiles}"
+                    />
+                </VBox>
+                
+                <!-- Teacher Diploma -->
+                <VBox class="sapUiSmallMarginBottom">
+                    <Label text="{i18n>teacherDiploma}" class="sapUiSmallMarginBottom" />
+                    <u:FileUploader
+                        id="teacherDiplomaUpload"
+                        multiple="true"
+                        uploadUrl="/upload/teacherdiploma"
+                        change="onTeacherDiplomaFileChange"
+                        fileType="pdf,jpg,jpeg,png"
+                        maximumFileSize="5"
+                        buttonText="{i18n>selectFiles}"
+                        placeholder="{i18n>chooseTeacherDiplomaFiles}"
+                    />
+                </VBox>
+            </VBox>
+            
+            <!-- Right Column -->
+            <VBox width="50%">
+                <!-- Receipts -->
+                <VBox class="sapUiSmallMarginBottom">
+                    <Label text="{i18n>receipts}" class="sapUiSmallMarginBottom" />
+                    <u:FileUploader
+                        id="receiptsUpload"
+                        multiple="true"
+                        uploadUrl="/upload/receipts"
+                        change="onReceiptsFileChange"
+                        fileType="pdf,jpg,jpeg,png"
+                        maximumFileSize="5"
+                        buttonText="{i18n>selectFiles}"
+                        placeholder="{i18n>chooseReceiptsFiles}"
+                    />
+                </VBox>
+                
+                <!-- Teacher Passport/ID -->
+                <VBox class="sapUiSmallMarginBottom">
+                    <Label text="{i18n>teacherPassportId}" class="sapUiSmallMarginBottom" />
+                    <u:FileUploader
+                        id="teacherPassportUpload"
+                        multiple="true"
+                        uploadUrl="/upload/teacherpassport"
+                        change="onTeacherPassportFileChange"
+                        fileType="pdf,jpg,jpeg,png"
+                        maximumFileSize="5"
+                        buttonText="{i18n>selectFiles}"
+                        placeholder="{i18n>choosePassportFiles}"
+                    />
+                </VBox>
+            </VBox>
+        </HBox>
+    </VBox>
+    
+</core:FragmentDefinition>

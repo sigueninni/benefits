@@ -74,23 +74,22 @@
         <uxap:headerContent>
             <l:VerticalLayout>
                 <ObjectAttribute text="{RequestKey}" />
-                 <ObjectStatus
+                <ObjectStatus
                     title="{i18n>status}"
-                   text="{Info1}"
-                             state="{ path: 'RequestStatus', formatter: '.formatter.requestStatusStateText' }"
+                    text="{Info1}"
+                    state="{ path: 'RequestStatus', formatter: '.formatter.requestStatusStateText' }"
                     id="status"
-                    
                 />
                 <ObjectAttribute
                     title="{i18n>createdOn}"
                     text="{path: 'CreationDate', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy', UTC: true }}"
                 />
-      <!--           <ObjectAttribute
+                <!--           <ObjectAttribute
                     title="{i18n>createdBy}"
                     text="{CreatorLname}"
                 /> -->
             </l:VerticalLayout>
- <!--            <l:VerticalLayout>
+            <!--            <l:VerticalLayout>
                 <ObjectStatus
                     title="{i18n>status}"
                    text="{Info1}"
@@ -102,7 +101,7 @@
             
             </l:VerticalLayout> -->
 
-    <!--         <l:VerticalLayout>
+            <!--         <l:VerticalLayout>
                 <Label text="" />
             </l:VerticalLayout> -->
 
@@ -165,14 +164,13 @@
                 </uxap:subSections>
             </uxap:ObjectPageSection>
 
-
-        <!-- Section and forms  : Education Grant-->
-          <uxap:ObjectPageSection
+            <!-- Section and forms  : Education Grant-->
+            <uxap:ObjectPageSection
                 id="rentalSubsidyFormSection"
                 showTitle="true"
                 title="{i18n>educationGrantRequestForm}"
                 titleUppercase="true"
-                                visible="{= ${RequestType} === '01' }"
+                visible="{= ${RequestType} === '01' }"
             >
                 <uxap:subSections>
                     <!-- Child Information -->
@@ -217,7 +215,6 @@
                         </uxap:blocks>
                     </uxap:ObjectPageSubSection>
 
-   
                     <!-- Others -->
                     <uxap:ObjectPageSubSection
                         id="othersSubSection"
@@ -233,7 +230,6 @@
                     </uxap:ObjectPageSubSection>
                 </uxap:subSections>
             </uxap:ObjectPageSection>
-
 
             <!-- Claims Section -->
             <uxap:ObjectPageSection
@@ -299,6 +295,24 @@
                 </uxap:subSections>
             </uxap:ObjectPageSection>
 
+            <!-- Attachment Section -->
+            <uxap:ObjectPageSection
+                id="attachmentsSection"
+                title="Attachments"
+            >
+                <uxap:subSections>
+                    <uxap:ObjectPageSubSection id="attachmentsSubSection">
+                      
+                           <core:Fragment
+                               fragmentName="com.un.zhrbenefrequests.fragment.form.educationGrant.Attachments"
+                               type="XML"
+                               xmlns:core="sap.ui.core"
+                           />
+                       
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
+
             <!-- TimeLine Section -->
             <uxap:ObjectPageSection
                 id="timeLineSection"
@@ -354,7 +368,7 @@
                     <ToolbarSpacer width="" />
                     <Button
                         text="{i18n>save}"
-                        press="onSaveButtonPress"
+                        press="onSaveBenefitRequestObject"
                         type="Emphasized"
                         visible="{RequestSettings/IsDraftHandlingEnabled}"
                     />

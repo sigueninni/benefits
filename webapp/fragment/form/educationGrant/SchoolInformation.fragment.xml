@@ -38,7 +38,7 @@
             />
             <Select
                 id="school"
-                  items="{
+                items="{
                     path : '/GenericVHSet',
                     filters : [
                         { path : 'Method', operator : 'EQ', value1 :'GET_SCHOOL_LIST' }
@@ -70,40 +70,105 @@
                 required="true"
                 labelFor="schoolType"
             />
-            <Input
+
+            <Select
                 id="schoolType"
-                type="Text"
-                value="{schoolType}"
-                editable="{RequestSettings/IsFormEditable}"
-            />
+                items="{
+                    path : '/GenericVHSet',
+                    filters : [
+                        { path : 'Method', operator : 'EQ', value1 :'GET_SCHOOL_TYPE_LIST' }
+                    ]
+                    }"
+                selectedKey="{ContractType}"
+                enabled="{RequestSettings/IsFormEditable}"
+            >
+                <core:Item
+                    text="{Txt}"
+                    key="{Id}"
+                />
+            </Select>
+
             <core:Title text="{i18n>schoolLocationAdditional}" />
-            <Label text="{i18n>firstPostSecondaryDegree}" labelFor="firstPostSecondaryDegree"/>
-            <Switch id="firstPostSecondaryDegree" state="false" customTextOn="Yes" customTextOff="No" enabled="true"/>
-            <Label text="{i18n>yearOfEntryPostSecondary}" labelFor="yearOfEntryPostSecondary"/>
-            <Input id="yearOfEntryPostSecondary" type="Text" value="" editable="true"/>
-            <Label text="{i18n>grade}" labelFor="grade"/>
-            <Input id="grade" type="Text" value="" editable="true"/>
-            <Label text="{i18n>typeOfAttendance}" labelFor="typeOfAttendance"/>
-            <Input id="typeOfAttendance" type="Text" value="" editable="true"/>
+            <Label
+                text="{i18n>firstPostSecondaryDegree}"
+                labelFor="firstPostSecondaryDegree"
+            />
+            <Switch
+                id="firstPostSecondaryDegree"
+                state="false"
+                customTextOn="Yes"
+                customTextOff="No"
+                enabled="true"
+            />
+            <Label
+                text="{i18n>yearOfEntryPostSecondary}"
+                labelFor="yearOfEntryPostSecondary"
+            />
+            <Input
+                id="yearOfEntryPostSecondary"
+                type="Text"
+                value=""
+                editable="true"
+            />
+            <Label
+                text="{i18n>grade}"
+                labelFor="grade"
+            />
+            <Select
+                id="grade"
+                items="{
+                    path : '/GenericVHSet',
+                    filters : [
+                        { path : 'Method', operator : 'EQ', value1 :'GET_ATTEND_SCHOOL_GRADE_LIST' }
+                    ]
+                    }"
+                selectedKey="{ContractType}"
+                enabled="{RequestSettings/IsFormEditable}"
+            >
+                <core:Item
+                    text="{Txt}"
+                    key="{Id}"
+                />
+            </Select>
+            <Label
+                text="{i18n>typeOfAttendance}"
+                labelFor="typeOfAttendance"
+            />
+            <Input
+                id="typeOfAttendance"
+                type="Text"
+                value=""
+                editable="true"
+            />
 
-
-<!-- Application N°
+            <!-- Application N°
 Starting from 
 Grade-->
-          <core:Title text="" />
+            <core:Title text="" />
             <Label
                 text="{i18n>schoolCountry}"
                 required="true"
                 labelFor="schoolName"
             />
-            <Input
-                id="schoolCountry"
-                type="Text"
-                value="{schoolCountry}"
-                editable="{RequestSettings/IsFormEditable}"
-            />
 
-           <Label
+            <Select
+                id="schoolCountry"
+                items="{
+                    path : '/GenericVHSet',
+                    filters : [
+                        { path : 'Method', operator : 'EQ', value1 :'GET_SCHOOL_COUNTRY_LIST' }
+                    ]
+                    }"
+                selectedKey="{ContractType}"
+                enabled="{RequestSettings/IsFormEditable}"
+            >
+                <core:Item
+                    text="{Txt}"
+                    key="{Id}"
+                />
+            </Select>
+
+            <Label
                 text="{i18n>schoolCity}"
                 required="true"
                 labelFor="schoolCity"
@@ -115,19 +180,18 @@ Grade-->
                 editable="{RequestSettings/IsFormEditable}"
             />
 
-           <Label
+            <Label
                 text="{i18n>commutingDistance}"
                 required="true"
                 labelFor="commutingDistance"
             />
-            <Input
+            <Switch
                 id="commutingDistance"
-                type="Text"
-                value="{commutingDistance}"
-                editable="{RequestSettings/IsFormEditable}"
+                state="false"
+                customTextOn="Yes"
+                customTextOff="No"
+                enabled="true"
             />
-            
-
         </form:content>
     </form:SimpleForm>
 </core:FragmentDefinition>
