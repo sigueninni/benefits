@@ -5,7 +5,7 @@
     xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
 >
     <form:SimpleForm
-        id="claimAddForm"
+        id="advanceAddForm"
         editable="true"
         layout="ResponsiveGridLayout"
         labelSpanXL="4"
@@ -23,9 +23,9 @@
         singleContainerFullSize="false"
     >
         <form:content>
-            <core:Title text="{i18n>claimDetails}" />
+            <core:Title text="{i18n>advanceDetails}" />
             <Label text="{i18n>expenseType}" />
-            <Select id="expenseTypeAdd" selectedKey="{claimModel>/ExpenseType}">
+            <Select id="expenseTypeAdvanceAdd" selectedKey="{advanceModel>/ExpenseType}">
                 <core:Item key="tuition" text="{i18n>tuitionFees}" />
                 <core:Item key="admission" text="{i18n>admissionFee}" />
                 <core:Item key="registration" text="{i18n>registrationFee}" />
@@ -41,15 +41,15 @@
                 <core:Item key="books" text="{i18n>books}" />
             </Select>
             <Label text="{i18n>amount}" />
-            <Input id="amountAdd" type="Number" value="{claimModel>/Amount}" required="true" />
+            <Input id="amountAdvanceAdd" type="Number" value="{advanceModel>/Amount}" required="true" />
             <Label text="{i18n>currency}" />
-            <Select id="currencyAdd" selectedKey="{claimModel>/Currency}">
+            <Select id="currencyAdvanceAdd" selectedKey="{advanceModel>/Currency}">
                 <core:Item key="USD" text="USD" />
                 <core:Item key="EUR" text="EUR" />
                 <core:Item key="CHF" text="CHF" />
             </Select>
             <Label text="{i18n>comments}" />
-            <TextArea id="commentsAdd" value="{claimModel>/Comments}" rows="2" />
+            <TextArea id="commentsAdvanceAdd" value="{advanceModel>/Comments}" rows="2" />
         </form:content>
     </form:SimpleForm>
 </core:FragmentDefinition>

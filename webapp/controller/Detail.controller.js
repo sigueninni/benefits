@@ -257,16 +257,15 @@ sap.ui.define([
                         endButton: new sap.m.Button({
                             text: oView.getModel("i18n").getResourceBundle().getText("submit"),
                             press: function () {
-                                // TODO: Add logic to save the claim
-                                that._removeClaimAddDialog();
+                                that._onConfirmAddClaim();
                             }
                         })
                     });
                     this.fragments._oAddClaimDialog.setModel(oView.getModel("i18n"), "i18n");
-                    this.fragments._oAddClaimDialog.setModel(oDialogModel, "dialogModel");
+                    this.fragments._oAddClaimDialog.setModel(oDialogModel, "claimModel");
                 }
                 // Set the context/model to the dialog
-                this.fragments._oAddClaimDialog.setModel(oDialogModel, "dialogModel");
+                this.fragments._oAddClaimDialog.setModel(oDialogModel, "claimModel");
                 oView.addDependent(this.fragments._oAddClaimDialog);
                 this.fragments._oAddClaimDialog.open();
             },
@@ -450,6 +449,190 @@ sap.ui.define([
                         }
                     }
                 });
+            },
+
+            /**
+             * Confirms the addition of a new claim
+             * Validates the data and adds it to the ClaimItems model
+             */
+            _onConfirmAddClaim: function () {
+                const oDialogModel = this.fragments._oAddClaimDialog.getModel("claimModel");
+                const oClaimData = oDialogModel.getData();
+                
+                // Validation
+                if (!oClaimData.ExpenseType || !oClaimData.Amount || !oClaimData.Currency) {
+                    sap.m.MessageBox.error(this.getView().getModel("i18n").getResourceBundle().getText("fillRequiredFields"));
+                    return;
+                }
+                
+                // Get the current context and model
+                const oContext = this.getView().getBindingContext();
+                const oModel = this.getView().getModel();
+                
+                // Create a new claim entry
+                const oNewClaim = {
+                    ExpenseType: oClaimData.ExpenseType,
+                    Amount: parseFloat(oClaimData.Amount),
+                    Currency: oClaimData.Currency,
+                    Comments: oClaimData.Comments || "",
+                    // Add a temporary ID for local handling
+                    TempId: Date.now().toString()
+                };
+                
+                // Get existing claims or create empty array
+                const sPath = oContext.getPath();
+                const aCurrentClaims = oModel.getProperty(sPath + "/ClaimItems") || [];
+                
+                // Add new claim to the array
+                aCurrentClaims.push(oNewClaim);
+                
+                // Update the model
+                oModel.setProperty(sPath + "/ClaimItems", aCurrentClaims);
+                
+                // Show success message
+                sap.m.MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("claimAdded"));
+                
+                // Close dialog
+                this._removeClaimAddDialog();
+            },
+
+            /**
+             * Removes and destroys the Add Claim dialog
+             */
+            _removeClaimAddDialog: function () {
+                if (this.fragments._oAddClaimDialog) {
+                    this.fragments._oAddClaimDialog.close();
+                    this.fragments._oAddClaimDialog.destroy();
+                    this.fragments._oAddClaimDialog = null;
+                }
+            },
+
+            /**
+             * Event handler for the Add Advance button
+             * Opens the AdvanceAdd dialog for new advance entry
+             */
+            onAddAdvanceButtonPress: function () {
+                const that = this;
+                const oView = this.getView();
+                // Create a new JSON model for the dialog if needed
+                const oDialogModel = new sap.ui.model.json.JSONModel({
+                    ExpenseType: "",
+                    Amount: "",
+                    Currency: "",
+                    Comments: ""
+                });
+                // Create dialog only once
+                if (!this.fragments._oAddAdvanceDialog) {
+                    this.fragments._oAddAdvanceDialog = new sap.m.Dialog({
+                        id: "advanceAddDialog",
+                        title: oView.getModel("i18n").getResourceBundle().getText("addAdvance"),
+                        content: sap.ui.xmlfragment("com.un.zhrbenefrequests.fragment.form.educationGrant.AdvanceAdd", this),
+                        beginButton: new sap.m.Button({
+                            text: oView.getModel("i18n").getResourceBundle().getText("cancel"),
+                            press: function () {
+                                that._removeAdvanceAddDialog();
+                            }
+                        }),
+                        endButton: new sap.m.Button({
+                            text: oView.getModel("i18n").getResourceBundle().getText("submit"),
+                            press: function () {
+                                that._onConfirmAddAdvance();
+                            }
+                        })
+                    });
+                    this.fragments._oAddAdvanceDialog.setModel(oView.getModel("i18n"), "i18n");
+                    this.fragments._oAddAdvanceDialog.setModel(oDialogModel, "advanceModel");
+                }
+                // Set the context/model to the dialog
+                this.fragments._oAddAdvanceDialog.setModel(oDialogModel, "advanceModel");
+                oView.addDependent(this.fragments._oAddAdvanceDialog);
+                this.fragments._oAddAdvanceDialog.open();
+            },
+
+            /**
+             * Confirms the addition of a new advance
+             * Validates the data and adds it to the AdvanceItems model
+             */
+            _onConfirmAddAdvance: function () {
+                const oDialogModel = this.fragments._oAddAdvanceDialog.getModel("advanceModel");
+                const oAdvanceData = oDialogModel.getData();
+                
+                // Validation
+                if (!oAdvanceData.ExpenseType || !oAdvanceData.Amount || !oAdvanceData.Currency) {
+                    sap.m.MessageBox.error(this.getView().getModel("i18n").getResourceBundle().getText("fillRequiredFields"));
+                    return;
+                }
+                
+                // Get the current context and model
+                const oContext = this.getView().getBindingContext();
+                const oModel = this.getView().getModel();
+                
+                // Create a new advance entry
+                const oNewAdvance = {
+                    ExpenseType: oAdvanceData.ExpenseType,
+                    Amount: parseFloat(oAdvanceData.Amount),
+                    Currency: oAdvanceData.Currency,
+                    Comments: oAdvanceData.Comments || "",
+                    // Add a temporary ID for local handling
+                    TempId: Date.now().toString()
+                };
+                
+                // Get existing advances or create empty array
+                const sPath = oContext.getPath();
+                const aCurrentAdvances = oModel.getProperty(sPath + "/AdvanceItems") || [];
+                
+                // Add new advance to the array
+                aCurrentAdvances.push(oNewAdvance);
+                
+                // Update the model
+                oModel.setProperty(sPath + "/AdvanceItems", aCurrentAdvances);
+                
+                // Show success message
+                sap.m.MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("advanceAdded"));
+                
+                // Close dialog
+                this._removeAdvanceAddDialog();
+            },
+
+            /**
+             * Removes and destroys the Add Advance dialog
+             */
+            _removeAdvanceAddDialog: function () {
+                if (this.fragments._oAddAdvanceDialog) {
+                    this.fragments._oAddAdvanceDialog.close();
+                    this.fragments._oAddAdvanceDialog.destroy();
+                    this.fragments._oAddAdvanceDialog = null;
+                }
+            },
+
+            /**
+             * Event handler for deleting an advance
+             */
+            onDeleteAdvanceButtonPress: function (oEvent) {
+                const oContext = oEvent.getParameter("listItem").getBindingContext();
+                const sPath = oContext.getPath();
+                const oModel = this.getView().getModel();
+                
+                // Get the advance item to delete
+                const oAdvanceToDelete = oModel.getProperty(sPath);
+                
+                // Get the parent path (request)
+                const sRequestPath = sPath.substring(0, sPath.lastIndexOf("/AdvanceItems"));
+                const aCurrentAdvances = oModel.getProperty(sRequestPath + "/AdvanceItems") || [];
+                
+                // Find and remove the advance
+                const iIndex = aCurrentAdvances.findIndex(advance => 
+                    advance.TempId === oAdvanceToDelete.TempId || 
+                    (advance.ExpenseType === oAdvanceToDelete.ExpenseType && 
+                     advance.Amount === oAdvanceToDelete.Amount && 
+                     advance.Currency === oAdvanceToDelete.Currency)
+                );
+                
+                if (iIndex > -1) {
+                    aCurrentAdvances.splice(iIndex, 1);
+                    oModel.setProperty(sRequestPath + "/AdvanceItems", aCurrentAdvances);
+                    sap.m.MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("advanceDeleted"));
+                }
             }
 
         });

@@ -1,0 +1,44 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+>
+    <VBox>
+        <Table
+            id="advanceTable"
+            width="100%"
+            noDataText="{i18n>noAdvances}"
+            mode="{RequestSettings/ListMode}"
+            items="{AdvanceItems}"
+            delete="onDeleteAdvanceButtonPress"
+        >
+            <headerToolbar>
+                <OverflowToolbar design="Transparent">
+                    <content>
+                        <ToolbarSpacer />
+                        <Button
+                            type="Default"
+                            icon="sap-icon://add"
+                            enabled="{RequestSettings/IsFormEditable}"
+                            tooltip="{i18n>add}"
+                            press="onAddAdvanceButtonPress"
+                        />
+                    </content>
+                </OverflowToolbar>
+            </headerToolbar>
+            <columns>
+                <Column><Text text="{i18n>expenseType}" /></Column>
+                <Column><Text text="{i18n>amount}" /></Column>
+                <Column><Text text="{i18n>currency}" /></Column>
+            </columns>
+            <items>
+                <ColumnListItem>
+                    <cells>
+                        <Text text="{ExpenseType}" />
+                        <ObjectNumber number="{Amount}" />
+                        <Text text="{Currency}" />
+                    </cells>
+                </ColumnListItem>
+            </items>
+        </Table>
+    </VBox>
+</core:FragmentDefinition>

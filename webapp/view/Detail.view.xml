@@ -258,7 +258,13 @@
             >
                 <uxap:subSections>
                     <uxap:ObjectPageSubSection id="advancesSubSection">
-                        <VBox />
+                        <uxap:blocks>
+                            <core:Fragment
+                                fragmentName="com.un.zhrbenefrequests.fragment.form.educationGrant.Advance"
+                                type="XML"
+                                xmlns:core="sap.ui.core"
+                            />
+                        </uxap:blocks>
                     </uxap:ObjectPageSubSection>
                 </uxap:subSections>
             </uxap:ObjectPageSection>
