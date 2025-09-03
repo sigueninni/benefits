@@ -18,7 +18,6 @@
         columnsXL="2"
         columnsL="2"
         columnsM="2"
-        editable="true"
     >
         <form:content>
             <core:Title text="{i18n>schoolLocationData}" />
@@ -34,10 +33,10 @@
             <Label
                 text="{i18n>school}"
                 required="true"
-                labelFor="school"
+                labelFor="EGSSL"
             />
             <Select
-                id="school"
+                id="EGSSL"
                 items="{
                     path : '/GenericVHSet',
                     filters : [
@@ -56,10 +55,10 @@
             <Label
                 text="{i18n>schoolName}"
                 required="true"
-                labelFor="schoolName"
+                labelFor="EGSNA"
             />
             <Input
-                id="schoolName"
+                id="EGSNA"
                 type="Text"
                 value="{schoolName}"
                 editable="{RequestSettings/IsFormEditable}"
@@ -68,11 +67,11 @@
             <Label
                 text="{i18n>schoolType}"
                 required="true"
-                labelFor="schoolType"
+                labelFor="EGSTY"
             />
 
             <Select
-                id="schoolType"
+                id="EGSTY"
                 items="{
                     path : '/GenericVHSet',
                     filters : [
@@ -112,10 +111,10 @@
             />
             <Label
                 text="{i18n>grade}"
-                labelFor="grade"
+                labelFor="EGGRD"
             />
             <Select
-                id="grade"
+                id="EGGRD"
                 items="{
                     path : '/GenericVHSet',
                     filters : [
@@ -148,11 +147,11 @@ Grade-->
             <Label
                 text="{i18n>schoolCountry}"
                 required="true"
-                labelFor="schoolName"
+                labelFor="EGSCT"
             />
 
             <Select
-                id="schoolCountry"
+                id="EGSCT"
                 items="{
                     path : '/GenericVHSet',
                     filters : [
@@ -171,10 +170,10 @@ Grade-->
             <Label
                 text="{i18n>schoolCity}"
                 required="true"
-                labelFor="schoolCity"
+                labelFor="ORT01"
             />
             <Input
-                id="schoolCity"
+                id="ORT01"
                 type="Text"
                 value="{schoolCity}"
                 editable="{RequestSettings/IsFormEditable}"
@@ -183,14 +182,69 @@ Grade-->
             <Label
                 text="{i18n>commutingDistance}"
                 required="true"
-                labelFor="commutingDistance"
+                labelFor="EGCDF"
             />
             <Switch
-                id="commutingDistance"
+                id="EGCDF"
                 state="false"
                 customTextOn="Yes"
                 customTextOff="No"
                 enabled="true"
+            />
+            
+            <Label
+                text="{i18n>tuitionCurrency}"
+                labelFor="WAERS"
+            />
+            <Input
+                id="WAERS"
+                type="Text"
+                value=""
+                editable="true"
+                showValueHelp="true"
+            />
+            
+            <Label
+                text="{i18n>childBoarder}"
+                labelFor="childBoarder"
+            />
+            <Switch
+                id="childBoarder"
+                state="false"
+                customTextOn="Yes"
+                customTextOff="No"
+                enabled="true"
+            />
+            
+            <Label
+                text="{i18n>applicationNumber}"
+                labelFor="EGYEA"
+            />
+            <Input
+                id="EGYEA"
+                type="Text"
+                value=""
+                editable="true"
+            />
+            
+            <Label
+                text="{i18n>startingFrom}"
+                labelFor="EGYFR"
+            />
+            <DatePicker
+                id="EGYFR"
+                value=""
+                editable="true"
+            />
+            
+            <Label
+                text="{i18n>upTo}"
+                labelFor="EGYTO"
+            />
+            <DatePicker
+                id="EGYTO"
+                value=""
+                editable="true"
             />
         </form:content>
     </form:SimpleForm>

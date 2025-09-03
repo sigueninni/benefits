@@ -292,8 +292,8 @@ sap.ui.define([
                     oModel.setProperty(sEduGrantDetailPath + "/Egage", selectedChild.Egage);
 
                     //Descriptions
-                    this.getView().byId("nationality").setDescription(selectedChild.FanatTxt);
-                    this.getView().byId("gender").setDescription(selectedChild.FasexTxt);
+                    this.getView().byId("FANAT").setDescription(selectedChild.FanatTxt);
+                    this.getView().byId("FASEX").setDescription(selectedChild.FasexTxt);
 
                     //  MessageToast.show("You have chosen " + selectedChild.Favor);
                 }
@@ -601,40 +601,44 @@ sap.ui.define([
                          m.setDefaultBindingMode(sap.ui.model.BindingMode.OneWay); // sécurité
                          this.getView().setModel(m, "UISettings"); */
 
-              
-                    const a = oData?.results || [];
 
-                    // réinitialiser tous les champs qu'on pilote
-                    const oView = this.getView();
+                const a = oData?.results || [];
 
-                    for (const r of a) {
-                        let editable = false, hidden = false, required = false;
+                // réinitialiser tous les champs qu'on pilote
+                const oView = this.getView();
 
-                        switch (r.Property) {
-                            case "01": hidden = true; break; // Hidden
-                            case "02": hidden = false; break; // Visible
-                            case "03": editable = true; break; // Editable
-                            case "04": required = true; break; // Mandatory
-                        }
+                for (const r of a) {
+                    let editable = false,enabled = false, hidden = false, required = false;
 
-                        // Cherche le contrôle par son id (qui doit matcher Field)
-                        const oCtrl = oView.byId(r.Field);
-                        if (oCtrl) {
-                            // applique dynamiquement
-                            if (oCtrl.setEditable) {
-                                oCtrl.setEditable(editable);
-                            }
-                            if (oCtrl.setVisible) {
-                                oCtrl.setVisible(!hidden);
-                            }
-                            if (oCtrl.setRequired) {
-                                oCtrl.setRequired(required);
-                            }
-                        } else {
-                            console.warn("Pas de contrôle trouvé pour Field =", r.Field);
-                        }
+                    switch (r.Property) {
+                        case "01": hidden = true; break; // Hidden
+                        case "02": hidden = false; break; // Visible
+                        case "03": editable = enabled = true;  break; // Editable
+                        case "04": editable = enabled =true;required = true; break; // Mandatory
                     }
-                
+
+                    // Cherche le contrôle par son id (qui doit matcher Field)
+                    const oCtrl = oView.byId(r.Field);
+                    if (oCtrl) {
+                        console.info(" Field =", r.Field," Editable =", editable," Hidden =", hidden," Required =", required);
+                        // applique dynamiquement
+                        if (oCtrl.setEditable) {
+                            oCtrl.setEditable(editable);
+                        }
+                        if(oCtrl.setEnabled){
+                            oCtrl.setEnabled(enabled);
+                        }
+                        if (oCtrl.setVisible) {
+                            oCtrl.setVisible(!hidden);
+                        }
+                        if (oCtrl.setRequired) {
+                            oCtrl.setRequired(required);
+                        }
+                    } else {
+                        console.warn("Pas de contrôle trouvé pour Field =", r.Field);
+                    }
+                }
+
 
             }
             ,

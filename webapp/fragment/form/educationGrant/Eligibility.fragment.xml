@@ -17,7 +17,6 @@
         columnsXL="3"
         columnsL="3"
         columnsM="3"
-       editable="true"
     >
         <form:content>
             <!-- Eligibility core Fields -->
@@ -38,7 +37,6 @@
                 id="EGAGE"
                 type="Number"
                 value="{ToEduGrantDetail/Egage}"
-                editable="false"
             />
             <Label text="{i18n>egSystemStatus}" />
             <Select id="EGSST">
@@ -62,7 +60,6 @@
                                         ]
                                         }"
                 selectedKey="{ContractType}"
-                enabled="{RequestSettings/IsFormEditable}"
             >
                 <core:Item
                     text="{Txt}"
@@ -75,14 +72,12 @@
                 state="false"
                 customTextOn="{i18n>yes}"
                 customTextOff="{i18n>no}"
-                enabled="true"
             />
             <Label text="{i18n>specialArrangement}" />
             <Input
                 id="specialArrangement"
                 type="Text"
                 value=""
-                editable="true"
             />
             <Label text="{i18n>changeReason}" />
             <!--     <Select  forceSelection="false"
@@ -100,7 +95,6 @@
                                         ]
                                         }"
                 selectedKey="{ReqType}"
-                enabled="{RequestSettings/IsFormEditable}"
             >
                 <core:Item
                     text="{Txt}"
@@ -112,7 +106,6 @@
                 id="DSTAT"
                 type="Text"
                 value=""
-                editable="true"
                 showValueHelp="true"
             />
             <Label text="{i18n>designatedDS}" />
@@ -121,14 +114,12 @@
                 state="false"
                 customTextOn="{i18n>yes}"
                 customTextOff="{i18n>no}"
-                enabled="true"
             />
             <Label text="{i18n>nationalitySM}" />
             <Input
                 id="NATIO"
                 type="Text"
                 value=""
-                editable="true"
                 showValueHelp="true"
             />
             <Label text="{i18n>contractType}" />
@@ -136,15 +127,11 @@
                 id="CTTYP"
                 type="Text"
                 value=""
-                 editable="{ path: 'UISettings>CTTYP/editable', type: 'sap.ui.model.type.Boolean' }"
-                visible="{= !${UISettings>CTTYP/hidden} }"
-                required="{UISettings>CTTYP/required}"
             />
             <Label text="{i18n>validTo}" />
             <DatePicker
                 id="CTEDT"
                 value=""
-                editable="true"
             />
 
             <!-- Attendance Fields -->
@@ -154,7 +141,6 @@
                 id="EGFAC"
                 type="Number"
                 value=""
-                editable="true"
             />
             <Label text="{i18n>changeProrationFactor}" />
             <CheckBox
@@ -174,7 +160,6 @@
                 id="EGCUR"
                 type="Text"
                 value=""
-                editable="true"
                 showValueHelp="true"
             />
             <Label text="{i18n>eligibilityBoarding}" />
@@ -183,7 +168,6 @@
                 state="false"
                 customTextOn="{i18n>yes}"
                 customTextOff="{i18n>no}"
-                enabled="true"
             />
             <Label text="{i18n>reasonBoarding}" />
             <Select
@@ -196,7 +180,6 @@
                     ]
                     }"
                 selectedKey="{ContractType}"
-                enabled="{RequestSettings/IsFormEditable}"
             >
                 <core:Item
                     text="{Txt}"
@@ -208,7 +191,6 @@
                 id="boardingProrationFactor"
                 type="Text"
                 value=""
-                editable="true"
             />
             <Label text="{i18n>overrideBoardProration}" />
             <CheckBox
