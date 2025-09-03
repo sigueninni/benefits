@@ -54,6 +54,8 @@ sap.ui.define([
                 this.getRouter().getRoute("RouteMaster").attachPatternMatched(this._onMasterMatched, this);
                 this.getRouter().attachBypassed(this.onBypassed, this);
 
+ 
+
             },
 
             /* =========================================================== */

@@ -17,13 +17,13 @@
         columnsXL="3"
         columnsL="3"
         columnsM="3"
-        editable="true"
+       editable="true"
     >
         <form:content>
             <!-- Eligibility core Fields -->
             <core:Title text="{i18n>eligibilitySubtab}" />
             <Label text="{i18n>dependencyStatus}" />
-            <Select id="dependencyStatus">
+            <Select id="KDGBR">
                 <core:Item
                     key="1"
                     text="{i18n>eligible}"
@@ -33,15 +33,15 @@
                     text="{i18n>notEligible}"
                 />
             </Select>
-            <Label text="{i18n>eligibility}" />
+            <Label text="{i18n>computedAge}" />
             <Input
-                id="eligibilityInput"
+                id="EGAGE"
                 type="Number"
-                value=""
-                editable="true"
+                value="{ToEduGrantDetail/Egage}"
+                editable="false"
             />
             <Label text="{i18n>egSystemStatus}" />
-            <Select id="egSystemStatus">
+            <Select id="EGSST">
                 <core:Item
                     key="1"
                     text="{i18n>active}"
@@ -53,9 +53,9 @@
             </Select>
             <Label text="{i18n>egCustomerStatus}" />
             <Select
-                id="egCustomerStatus"
+                id="EGCST"
                 forceSelection="false"
-                 items="{
+                items="{
                                         path : '/GenericVHSet',
                                         filters : [
                                             { path : 'Method', operator : 'EQ', value1 :'GET_EG_CUSTOMER_STATUS_LIST' }
@@ -71,7 +71,7 @@
             </Select>
             <Label text="{i18n>specialEducationGrant}" />
             <Switch
-                id="specialEducationGrant"
+                id="EGDIS"
                 state="false"
                 customTextOn="{i18n>yes}"
                 customTextOff="{i18n>no}"
@@ -91,7 +91,7 @@
                 enabled="{RequestSettings/IsFormEditable}"
             > -->
             <Select
-              id="changeReason"
+                id="EGCRS"
                 forceSelection="false"
                 items="{
                                         path : '/GenericVHSet',
@@ -101,7 +101,6 @@
                                         }"
                 selectedKey="{ReqType}"
                 enabled="{RequestSettings/IsFormEditable}"
-              
             >
                 <core:Item
                     text="{Txt}"
@@ -110,7 +109,7 @@
             </Select>
             <Label text="{i18n>dutyStationSM}" />
             <Input
-                id="dutyStationSM"
+                id="DSTAT"
                 type="Text"
                 value=""
                 editable="true"
@@ -118,7 +117,7 @@
             />
             <Label text="{i18n>designatedDS}" />
             <Switch
-                id="designatedDS"
+                id="EGDDS"
                 state="false"
                 customTextOn="{i18n>yes}"
                 customTextOff="{i18n>no}"
@@ -126,7 +125,7 @@
             />
             <Label text="{i18n>nationalitySM}" />
             <Input
-                id="nationalitySM"
+                id="NATIO"
                 type="Text"
                 value=""
                 editable="true"
@@ -134,15 +133,16 @@
             />
             <Label text="{i18n>contractType}" />
             <Input
-                id="contractType"
+                id="CTTYP"
                 type="Text"
                 value=""
-                editable="true"
-                showValueHelp="true"
+                 editable="{ path: 'UISettings>CTTYP/editable', type: 'sap.ui.model.type.Boolean' }"
+                visible="{= !${UISettings>CTTYP/hidden} }"
+                required="{UISettings>CTTYP/required}"
             />
             <Label text="{i18n>validTo}" />
             <DatePicker
-                id="validTo"
+                id="CTEDT"
                 value=""
                 editable="true"
             />
@@ -151,19 +151,19 @@
             <core:Title text="{i18n>attendanceSubtab}" />
             <Label text="{i18n>prorationFactor}" />
             <Input
-                id="prorationFactor"
+                id="EGFAC"
                 type="Number"
                 value=""
                 editable="true"
             />
             <Label text="{i18n>changeProrationFactor}" />
             <CheckBox
-                id="changeProrationFactor"
+                id="EGPRO"
                 selected="false"
             />
             <Label text="{i18n>overrideProrationFactor}" />
             <CheckBox
-                id="overrideProrationFactor"
+                id="EGOPR"
                 selected="false"
             />
 
@@ -171,7 +171,7 @@
             <core:Title text="{i18n>entitlementSubtab}" />
             <Label text="{i18n>currency}" />
             <Input
-                id="currency"
+                id="EGCUR"
                 type="Text"
                 value=""
                 editable="true"
@@ -179,15 +179,17 @@
             />
             <Label text="{i18n>eligibilityBoarding}" />
             <Switch
-                id="eligibilityBoarding"
+                id="EGC01"
                 state="false"
                 customTextOn="{i18n>yes}"
                 customTextOff="{i18n>no}"
                 enabled="true"
             />
             <Label text="{i18n>reasonBoarding}" />
-            <Select id="reasonBoarding" forceSelection="false"
-                 items="{
+            <Select
+                id="EGBRS"
+                forceSelection="false"
+                items="{
                     path : '/GenericVHSet',
                     filters : [
                         { path : 'Method', operator : 'EQ', value1 :'GET_REASON_BOARDING_LIST' }

@@ -67,8 +67,6 @@ sap.ui.define([
                 console.log({ commentsDataModel });
                 this.getView().setModel(commentsDataModel, "commentsModel");
 
-
-
             },
 
 
@@ -113,7 +111,9 @@ sap.ui.define([
                         Guid: sObjectId
                     });
                     this._bindView("/" + sObjectPath);
+
                 }.bind(this));
+
             },
 
             _onBindingChange: function () {
@@ -138,6 +138,9 @@ sap.ui.define([
 
                 this.getOwnerComponent().oListSelector.selectAListItem(sPath);
 
+
+                //Get and adapt commonModel for UI settings as a JSONMODEL
+                this._getUISettings();
             },
 
             /**
@@ -229,49 +232,6 @@ sap.ui.define([
 
 
             /**
-             * Event handler for the Add Claim button
-             * Opens the ClaimAdd dialog for new claim entry
-             */
-            onAddClaimButtonPress: function () {
-                const that = this;
-                const oView = this.getView();
-                // Create a new JSON model for the dialog if needed
-                const oDialogModel = new sap.ui.model.json.JSONModel({
-                    ExpenseType: "",
-                    Amount: "",
-                    Currency: "",
-                    Comments: ""
-                });
-                // Create dialog only once
-                if (!this.fragments._oAddClaimDialog) {
-                    this.fragments._oAddClaimDialog = new sap.m.Dialog({
-                        id: "claimAddDialog",
-                        title: oView.getModel("i18n").getResourceBundle().getText("addClaim"),
-                        content: sap.ui.xmlfragment("com.un.zhrbenefrequests.fragment.form.educationGrant.ClaimAdd", this),
-                        beginButton: new sap.m.Button({
-                            text: oView.getModel("i18n").getResourceBundle().getText("cancel"),
-                            press: function () {
-                                that._removeClaimAddDialog();
-                            }
-                        }),
-                        endButton: new sap.m.Button({
-                            text: oView.getModel("i18n").getResourceBundle().getText("submit"),
-                            press: function () {
-                                that._onConfirmAddClaim();
-                            }
-                        })
-                    });
-                    this.fragments._oAddClaimDialog.setModel(oView.getModel("i18n"), "i18n");
-                    this.fragments._oAddClaimDialog.setModel(oDialogModel, "claimModel");
-                }
-                // Set the context/model to the dialog
-                this.fragments._oAddClaimDialog.setModel(oDialogModel, "claimModel");
-                oView.addDependent(this.fragments._oAddClaimDialog);
-                this.fragments._oAddClaimDialog.open();
-            },
-
-
-            /**
              * Event handler for the Select child button
              * Opens the ChildTableSelectDialog for selecting a child
              */
@@ -288,9 +248,9 @@ sap.ui.define([
 
 
             /**
-             * Event handler for the Select child search
-             * Filters the binding of the ChildTableSelectDialog
-             */
+ * Event handler for the Select child search
+ * Filters the binding of the ChildTableSelectDialog
+ */
             onChildSearch: function (oEvent) {
                 const sValue = oEvent.getParameter("value");
                 const oFilter = new Filter("Favor", FilterOperator.Contains, sValue);
@@ -339,10 +299,6 @@ sap.ui.define([
                 }
             },
 
-            /* =========================================================== */
-            /* Internal methods                                            */
-            /* =========================================================== */
-
             _onMetadataLoaded: function () {
                 // Store original busy indicator delay for the detail view
                 const iOriginalViewBusyDelay = this.getView().getBusyIndicatorDelay(),
@@ -358,117 +314,69 @@ sap.ui.define([
                 oViewModel.setProperty("/delay", iOriginalViewBusyDelay);
             },
 
-            /**
-             * Call a functionImport to get dates constraints
-             * @function
-             * @private
-             */
-            _getTimeConstraints: function () {
-                debugger;
-                /*  //Start Date 
-                 --> Not in the past
-                 --> Limit Year + 4 
-                 --> Only '01' or '15' of the month */
-                const oModel = this.getView().getModel();
-
-                const bindingContext = this.getView().getBindingContext();
-                const path = bindingContext.getPath();
-                const object = bindingContext.getModel().getProperty(path);
-                let oPositionRequest = bindingContext.getObject(); //getProperty("ReqFlow"); //bindingContext.getObject()
-                let startDate = oPositionRequest.StartDate;
-                let createdOnDate = oPositionRequest.CreatedOn || '';
-                let oUrlParam = {
-                    "ReqType": oPositionRequest.ReqType,
-                    "ReqFlow": oPositionRequest.ReqFlow,
-                    //"StartDate": startDate,
-                    "ContractType": oPositionRequest.ContractType,
-                    "DurationInMonths": oPositionRequest.DurationInMonths,
-                    "CreatedOn": createdOnDate
-
-                };
-
-                if (startDate) { oUrlParam.StartDate = startDate; }
-
-                oModel.setProperty("/busy", true);
-
-                oModel.callFunction("/getDateSettings", {
-                    method: "GET",
-                    urlParameters: oUrlParam,
-                    success: function (oSuccess) {
-                        oModel.setProperty("/busy", false);
-                        let oDateSettings = oSuccess.getDateSettings;
-                        let oDatesModel = new JSONModel(oDateSettings);
-                        this.getView().setModel(oDatesModel, 'datesModel');
-
-                        //  if (oDateSettings && oDateSettings.EndDate)
-                        if (this.byId("startDate").getValue() === '')
-                            oModel.setProperty("StartDate", oDateSettings.DateInitial, this.getView().getBindingContext());
-                        oModel.setProperty("EndDate", oDateSettings.EndDate, this.getView().getBindingContext());
-
-                        // oModel.refresh();
-                    }.bind(this),
-                    error: function (oError) {
-                        oModel.setProperty("/busy", false);
-                        const oFunctError = JSON.parse(oError.responseText);
-                        MessageBox.error(oFunctError.error.message.value);
-                    }
-                });
-
-            },
+            /*********************  Claim  *********************/
 
             /**
-             * Binds the view to the object path. Makes sure that detail view displays
-             * a busy indicator while data for the corresponding element binding is loaded.
-             * @function
-             * @param {string} sObjectPath path to the object to be bound to the view.
-             * @private
+             * Event handler for the Add Claim button
+             * Opens the ClaimAdd dialog for new claim entry
              */
-            _bindView: function (sObjectPath) {
-                let that = this;
+            onAddClaimButtonPress: function () {
+                const that = this;
                 const oView = this.getView();
-                // Set busy indicator during view binding
-                let oViewModel = this.getModel("detailView");
-
-                // If the view was not bound yet its not busy, only if the binding requests data it is set to busy again
-                oViewModel.setProperty("/busy", false);
-                this.getView().bindElement({
-                    path: sObjectPath,
-                    parameters: {
-                        expand: "ToEduGrantDetail"   // <-- ToEduGrantDetail
-                        // ,select: "Guid,RequestKey,ReqEducationGrantMain/LongText" // optionnel
-                    },
-                    events: {
-                        change: this._onBindingChange.bind(this),
-                        dataRequested: function () {
-                            oViewModel.setProperty("/busy", true);
-                        },
-                        dataReceived: function () {
-
-                            oViewModel.setProperty("/busy", false);
-                            //that._getTimeConstraints();
-                        }
-                    }
+                // Create a new JSON model for the dialog if needed
+                const oDialogModel = new sap.ui.model.json.JSONModel({
+                    ExpenseType: "",
+                    Amount: "",
+                    Currency: "",
+                    Comments: ""
                 });
+                // Create dialog only once
+                if (!this.fragments._oAddClaimDialog) {
+                    this.fragments._oAddClaimDialog = new sap.m.Dialog({
+                        id: "claimAddDialog",
+                        title: oView.getModel("i18n").getResourceBundle().getText("addClaim"),
+                        content: sap.ui.xmlfragment("com.un.zhrbenefrequests.fragment.form.educationGrant.ClaimAdd", this),
+                        beginButton: new sap.m.Button({
+                            text: oView.getModel("i18n").getResourceBundle().getText("cancel"),
+                            press: function () {
+                                that._removeClaimAddDialog();
+                            }
+                        }),
+                        endButton: new sap.m.Button({
+                            text: oView.getModel("i18n").getResourceBundle().getText("submit"),
+                            press: function () {
+                                that._onConfirmAddClaim();
+                            }
+                        })
+                    });
+                    this.fragments._oAddClaimDialog.setModel(oView.getModel("i18n"), "i18n");
+                    this.fragments._oAddClaimDialog.setModel(oDialogModel, "claimModel");
+                }
+                // Set the context/model to the dialog
+                this.fragments._oAddClaimDialog.setModel(oDialogModel, "claimModel");
+                oView.addDependent(this.fragments._oAddClaimDialog);
+                this.fragments._oAddClaimDialog.open();
             },
 
+
             /**
-             * Confirms the addition of a new claim
-             * Validates the data and adds it to the ClaimItems model
-             */
+                     * Confirms the addition of a new claim
+                     * Validates the data and adds it to the ClaimItems model
+                     */
             _onConfirmAddClaim: function () {
                 const oDialogModel = this.fragments._oAddClaimDialog.getModel("claimModel");
                 const oClaimData = oDialogModel.getData();
-                
+
                 // Validation
                 if (!oClaimData.ExpenseType || !oClaimData.Amount || !oClaimData.Currency) {
                     sap.m.MessageBox.error(this.getView().getModel("i18n").getResourceBundle().getText("fillRequiredFields"));
                     return;
                 }
-                
+
                 // Get the current context and model
                 const oContext = this.getView().getBindingContext();
                 const oModel = this.getView().getModel();
-                
+
                 // Create a new claim entry
                 const oNewClaim = {
                     ExpenseType: oClaimData.ExpenseType,
@@ -478,39 +386,34 @@ sap.ui.define([
                     // Add a temporary ID for local handling
                     TempId: Date.now().toString()
                 };
-                
+
                 // Get existing claims or create empty array
                 const sPath = oContext.getPath();
                 const aCurrentClaims = oModel.getProperty(sPath + "/ClaimItems") || [];
-                
+
                 // Add new claim to the array
                 aCurrentClaims.push(oNewClaim);
-                
+
                 // Update the model
                 oModel.setProperty(sPath + "/ClaimItems", aCurrentClaims);
-                
+
                 // Show success message
                 sap.m.MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("claimAdded"));
-                
+
                 // Close dialog
                 this._removeClaimAddDialog();
             },
 
-            /**
-             * Removes and destroys the Add Claim dialog
-             */
-            _removeClaimAddDialog: function () {
-                if (this.fragments._oAddClaimDialog) {
-                    this.fragments._oAddClaimDialog.close();
-                    this.fragments._oAddClaimDialog.destroy();
-                    this.fragments._oAddClaimDialog = null;
-                }
-            },
 
+
+
+
+
+            /*********************  Advance  *********************/
             /**
-             * Event handler for the Add Advance button
-             * Opens the AdvanceAdd dialog for new advance entry
-             */
+ * Event handler for the Add Advance button
+ * Opens the AdvanceAdd dialog for new advance entry
+ */
             onAddAdvanceButtonPress: function () {
                 const that = this;
                 const oView = this.getView();
@@ -556,17 +459,17 @@ sap.ui.define([
             _onConfirmAddAdvance: function () {
                 const oDialogModel = this.fragments._oAddAdvanceDialog.getModel("advanceModel");
                 const oAdvanceData = oDialogModel.getData();
-                
+
                 // Validation
                 if (!oAdvanceData.ExpenseType || !oAdvanceData.Amount || !oAdvanceData.Currency) {
                     sap.m.MessageBox.error(this.getView().getModel("i18n").getResourceBundle().getText("fillRequiredFields"));
                     return;
                 }
-                
+
                 // Get the current context and model
                 const oContext = this.getView().getBindingContext();
                 const oModel = this.getView().getModel();
-                
+
                 // Create a new advance entry
                 const oNewAdvance = {
                     ExpenseType: oAdvanceData.ExpenseType,
@@ -576,22 +479,214 @@ sap.ui.define([
                     // Add a temporary ID for local handling
                     TempId: Date.now().toString()
                 };
-                
+
                 // Get existing advances or create empty array
                 const sPath = oContext.getPath();
                 const aCurrentAdvances = oModel.getProperty(sPath + "/AdvanceItems") || [];
-                
+
                 // Add new advance to the array
                 aCurrentAdvances.push(oNewAdvance);
-                
+
                 // Update the model
                 oModel.setProperty(sPath + "/AdvanceItems", aCurrentAdvances);
-                
+
                 // Show success message
                 sap.m.MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("advanceAdded"));
-                
+
                 // Close dialog
                 this._removeAdvanceAddDialog();
+            },
+
+            /**
+             * Removes and destroys the Add Advance dialog
+             */
+            // _removeAdvanceAddDialog: function () {
+            //     if (this.fragments._oAddAdvanceDialog) {
+            //         this.fragments._oAddAdvanceDialog.close();
+            //         this.fragments._oAddAdvanceDialog.destroy();
+            //         this.fragments._oAddAdvanceDialog = null;
+            //     }
+            // },
+
+
+
+
+            /**
+             * Event handler for deleting an advance
+             */
+            onDeleteAdvanceButtonPress: function (oEvent) {
+                const oContext = oEvent.getParameter("listItem").getBindingContext();
+                const sPath = oContext.getPath();
+                const oModel = this.getView().getModel();
+
+                // Get the advance item to delete
+                const oAdvanceToDelete = oModel.getProperty(sPath);
+
+                // Get the parent path (request)
+                const sRequestPath = sPath.substring(0, sPath.lastIndexOf("/AdvanceItems"));
+                const aCurrentAdvances = oModel.getProperty(sRequestPath + "/AdvanceItems") || [];
+
+                // Find and remove the advance
+                const iIndex = aCurrentAdvances.findIndex(advance =>
+                    advance.TempId === oAdvanceToDelete.TempId ||
+                    (advance.ExpenseType === oAdvanceToDelete.ExpenseType &&
+                        advance.Amount === oAdvanceToDelete.Amount &&
+                        advance.Currency === oAdvanceToDelete.Currency)
+                );
+
+                if (iIndex > -1) {
+                    aCurrentAdvances.splice(iIndex, 1);
+                    oModel.setProperty(sRequestPath + "/AdvanceItems", aCurrentAdvances);
+                    sap.m.MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("advanceDeleted"));
+                }
+            },
+
+
+            /* =========================================================== */
+            /* Internal methods                                            */
+            /* =========================================================== */
+
+            /**
+             * GetUI settings
+             * @function
+             * @private
+             */
+            _getUISettings: function () {
+                const oCommonModel = this.getOwnerComponent().getModel("commonModel");
+                let aFilters = [];
+                /*           const oContext = this.getView().getBindingContext();
+                      
+                          
+          
+                          // Add filters for RequestType, Status and Role
+                          aFilters.push(new Filter("RequestType", FilterOperator.EQ, oCurrentObject.RequestType));
+                          aFilters.push(new Filter("Status", FilterOperator.EQ, oCurrentObject.RequestStatus));
+                          aFilters.push(new Filter("Actor", FilterOperator.EQ, "01")); // Role constant
+           */
+
+                const oCurrentObject = this.getBindingDetailObject();
+                aFilters.push(new Filter("RequestType", FilterOperator.EQ, oCurrentObject.RequestType));
+                aFilters.push(new Filter("Status", FilterOperator.EQ, oCurrentObject.RequestStatus));
+                aFilters.push(new Filter("Actor", FilterOperator.EQ, "01")); //TODO Role constant for now , make it dynamic
+                //Read entitySet
+                oCommonModel.read("/UI5PropertySet", {
+                    filters: aFilters,
+                    success: this.getUI5PropertySetSuccess.bind(this),
+                    error: this.fError.bind(this)
+                });
+            },
+
+            /**
+             * Success callback for UI5PropertySet read
+             * @param {object} oData - Response data from the service
+             * @param {object} oResponse - Full response object
+             */
+            getUI5PropertySetSuccess: function (oData) {
+                /*          const a = oData?.results || [];
+                         const byField = Object.create(null);
+         
+                         for (const r of a) {
+                             let editable = false, hidden = false, required = false;
+                             switch (r.Property) {
+                                 case "01": hidden = true; break; // Hidden
+                                 case "02": hidden = false; break; // Visible
+                                 case "03": editable = true; break; // Editable
+                                 case "04": required = true; break; // Mandatory
+                             }
+                             // => n’inclut pas ...r
+                             byField[String(r.Field)] = { editable, hidden, required };
+                         }
+         
+                         const m = new sap.ui.model.json.JSONModel(byField);
+                         m.setDefaultBindingMode(sap.ui.model.BindingMode.OneWay); // sécurité
+                         this.getView().setModel(m, "UISettings"); */
+
+              
+                    const a = oData?.results || [];
+
+                    // réinitialiser tous les champs qu'on pilote
+                    const oView = this.getView();
+
+                    for (const r of a) {
+                        let editable = false, hidden = false, required = false;
+
+                        switch (r.Property) {
+                            case "01": hidden = true; break; // Hidden
+                            case "02": hidden = false; break; // Visible
+                            case "03": editable = true; break; // Editable
+                            case "04": required = true; break; // Mandatory
+                        }
+
+                        // Cherche le contrôle par son id (qui doit matcher Field)
+                        const oCtrl = oView.byId(r.Field);
+                        if (oCtrl) {
+                            // applique dynamiquement
+                            if (oCtrl.setEditable) {
+                                oCtrl.setEditable(editable);
+                            }
+                            if (oCtrl.setVisible) {
+                                oCtrl.setVisible(!hidden);
+                            }
+                            if (oCtrl.setRequired) {
+                                oCtrl.setRequired(required);
+                            }
+                        } else {
+                            console.warn("Pas de contrôle trouvé pour Field =", r.Field);
+                        }
+                    }
+                
+
+            }
+            ,
+
+
+            /**
+             * Binds the view to the object path. Makes sure that detail view displays
+             * a busy indicator while data for the corresponding element binding is loaded.
+             * @function
+             * @param {string} sObjectPath path to the object to be bound to the view.
+             * @private
+             */
+            _bindView: function (sObjectPath) {
+                let that = this;
+                const oView = this.getView();
+                // Set busy indicator during view binding
+                let oViewModel = this.getModel("detailView");
+
+                // If the view was not bound yet its not busy, only if the binding requests data it is set to busy again
+                oViewModel.setProperty("/busy", false);
+                this.getView().bindElement({
+                    path: sObjectPath,
+                    parameters: {
+                        expand: "ToEduGrantDetail"   // <-- ToEduGrantDetail
+                        // ,select: "Guid,RequestKey,ReqEducationGrantMain/LongText" // optionnel
+                    },
+                    events: {
+                        change: this._onBindingChange.bind(this),
+                        dataRequested: function () {
+                            oViewModel.setProperty("/busy", true);
+                        },
+                        dataReceived: function () {
+
+                            oViewModel.setProperty("/busy", false);
+                            //that._getTimeConstraints();
+                        }
+                    }
+                });
+            },
+
+
+
+
+            /**
+             * Removes and destroys the Add Claim dialog
+             */
+            _removeClaimAddDialog: function () {
+                if (this.fragments._oAddClaimDialog) {
+                    this.fragments._oAddClaimDialog.close();
+                    this.fragments._oAddClaimDialog.destroy();
+                    this.fragments._oAddClaimDialog = null;
+                }
             },
 
             /**
@@ -602,36 +697,6 @@ sap.ui.define([
                     this.fragments._oAddAdvanceDialog.close();
                     this.fragments._oAddAdvanceDialog.destroy();
                     this.fragments._oAddAdvanceDialog = null;
-                }
-            },
-
-            /**
-             * Event handler for deleting an advance
-             */
-            onDeleteAdvanceButtonPress: function (oEvent) {
-                const oContext = oEvent.getParameter("listItem").getBindingContext();
-                const sPath = oContext.getPath();
-                const oModel = this.getView().getModel();
-                
-                // Get the advance item to delete
-                const oAdvanceToDelete = oModel.getProperty(sPath);
-                
-                // Get the parent path (request)
-                const sRequestPath = sPath.substring(0, sPath.lastIndexOf("/AdvanceItems"));
-                const aCurrentAdvances = oModel.getProperty(sRequestPath + "/AdvanceItems") || [];
-                
-                // Find and remove the advance
-                const iIndex = aCurrentAdvances.findIndex(advance => 
-                    advance.TempId === oAdvanceToDelete.TempId || 
-                    (advance.ExpenseType === oAdvanceToDelete.ExpenseType && 
-                     advance.Amount === oAdvanceToDelete.Amount && 
-                     advance.Currency === oAdvanceToDelete.Currency)
-                );
-                
-                if (iIndex > -1) {
-                    aCurrentAdvances.splice(iIndex, 1);
-                    oModel.setProperty(sRequestPath + "/AdvanceItems", aCurrentAdvances);
-                    sap.m.MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("advanceDeleted"));
                 }
             }
 

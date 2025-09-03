@@ -24,6 +24,15 @@
           "localUri": "localService/mainService/metadata.xml",
           "odataVersion": "2.0"
         }
+      },
+      "commonService": {
+        "uri": "/sap/opu/odata/sap/ZHR_BENEFITS_COMMON_SRV/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "localUri": "localService/commonService/metadata.xml",
+          "odataVersion": "2.0"
+        }
       }
     }
   },
@@ -68,6 +77,17 @@
       },
       "": {
         "dataSource": "mainService",
+        "settings": {
+          "metadataUrlParams": {
+            "sap-documentation": "heading"
+          },
+          "defaultBindingMode": "TwoWay",
+          "defaultCountMode": "Inline"
+        },
+        "preload": true
+      },
+      "commonModel": {
+        "dataSource": "commonService",
         "settings": {
           "metadataUrlParams": {
             "sap-documentation": "heading"

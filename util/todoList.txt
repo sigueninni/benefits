@@ -1,8 +1,14 @@
-- popup choix type de request 
-- Fragment selon type de request et sous type si applicable
--Clean l'ecran quabd pas de requete
--filre
--tri
--i18n
-- db handler à créer
+- Gérer UI avec un model json Local 
+- init automatique des datas de léecole à la selection
+- ajouter le suggest values sur les Select avec bcp de data
+- ecran Claim/Advance
+- gestion des attachments
+- save
+- gestion de la floatingbar draft etc...
+- rendre begda/endda mandatory dans la pop de choix du type
+- Clean l'ecran quabd pas de requete
+- Améliorer filtre master pour le caseSensitive
+- tri
+- i18n
 - exception coté back a gerer coté front
+

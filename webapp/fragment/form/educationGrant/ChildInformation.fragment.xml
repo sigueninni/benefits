@@ -34,11 +34,11 @@
             <Label
                 text="{i18n>lastName}"
                 required="true"
-                labelFor="lastName"
+                labelFor="FANAM"
             />
 
             <Input
-                id="lastName"
+                id="FANAM"
                 type="Text"
                 value="{ToEduGrantDetail/Fanam}"
                 editable="{RequestSettings/IsFormEditable}"
@@ -47,11 +47,11 @@
             <Label
                 text="{i18n>birthName}"
                 required="true"
-                labelFor="birthName"
+                labelFor="FGBNA"
             />
 
             <Input
-                id="birthName"
+                id="FGBNA"
                 type="Text"
                 value="{ToEduGrantDetail/Fgbna}"
                 editable="{RequestSettings/IsFormEditable}"
@@ -60,11 +60,11 @@
             <Label
                 text="{i18n>firstName}"
                 required="true"
-                labelFor="firstName"
+                labelFor="FAVOR"
             />
 
             <Input
-                id="firstName"
+                id="FAVOR"
                 type="Text"
                 value="{ToEduGrantDetail/Favor}"
                 editable="{RequestSettings/IsFormEditable}"
@@ -75,10 +75,10 @@
             <Label
                 text="{i18n>dateOfBirth}"
                 required="true"
-                labelFor="dateOfBirth"
+                labelFor="FGBDT"
             />
             <DatePicker
-                id="startDate"
+                id="FGBDT"
                 value="{ path: 'ToEduGrantDetail/Fgbdt', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy', UTC: true }}"
                 editable="{RequestSettings/IsFormEditable}"
                 required="true"
@@ -86,40 +86,29 @@
             />
 
             <Label
-                text="{i18n>computedAge}"
-                required="true"
-                labelFor="computedAge"
-            />
-
-            <Input
-                id="computedAge"
-                type="Text"
-                maxLength="2"
-                value="{ToEduGrantDetail/Egage}"
-                editable="{RequestSettings/IsFormEditable}"
-            />
-
-            <Label
                 text="{i18n>Nationality}"
                 required="true"
-                labelFor="Nationality"
+                labelFor="FANAT"
             />
 
             <Input
-                id="nationality"
+                id="FANAT"
                 type="Text"
                 value="{ToEduGrantDetail/Fanat}"
                 editable="{RequestSettings/IsFormEditable}"
+                visible="true"
+                required="false"
+
             />
 
             <Label
                 text="{i18n>gender}"
                 required="true"
-                labelFor="gender"
+                labelFor="FASEX"
             />
 
             <Input
-                id="gender"
+                id="FASEX"
                 type="Text"
                 value="{ToEduGrantDetail/Fasex}"
                 editable="{RequestSettings/IsFormEditable}"
@@ -131,11 +120,11 @@
             <Label
                 text="{i18n>egNumber}"
                 required="true"
-                labelFor="egNumber"
+                labelFor="EXMNR"
             />
 
             <Input
-                id="egNumber"
+                id="EXMNR"
                 type="Text"
                 value="{JobGroup}"
                 editable="{RequestSettings/IsFormEditable}"
@@ -144,11 +133,11 @@
             <Label
                 text="{i18n>itRecordNumber}"
                 required="true"
-                labelFor="itRecordNumber"
+                labelFor="SEQNR"
             />
 
             <Input
-                id="itRecordNumber"
+                id="SEQNR"
                 type="Text"
                 value="{JobGroup}"
                 editable="{RequestSettings/IsFormEditable}"
