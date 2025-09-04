@@ -1,5 +1,6 @@
 - Gérer UI avec un model json Local 
 - init automatique des datas de léecole à la selection
+- init tous les champs automatique de EG comme dans linfotype
 - eligibility handling
 - ajouter le suggest values sur les Select avec bcp de data
 - ecran Claim/Advance
@@ -11,5 +12,6 @@
 - Améliorer filtre master pour le caseSensitive
 - tri
 - i18n
+- gérer les dates de retro possible, creation requete dans le passé etc...
 - exception coté back a gerer coté front
 
