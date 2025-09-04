@@ -542,6 +542,102 @@ sap.ui.define([
             },
 
 
+
+            /*************************************************************************************************/
+            /********************************  Begin of School Management ***************************************/
+            /*************************************************************************************************/
+
+            /**
+           * Event handler for the ValueHelpPress event
+           * @param {sap.ui.base.Event} oEvent for OrgUnit
+           * @public
+           */
+            onSchoolCountryValueHelpPress: function (oEvent) {
+                debugger;
+                const oView = this.getView();
+                if (!this.fragments._oSchoolCountryDialog) {
+                    this.fragments._oSchoolCountryDialog = sap.ui.xmlfragment("com.un.zhrbenefrequests.fragment.form.educationGrant.SchoolCountryChoice", this);
+                    this.getView().addDependent(this.fragments._oSchoolCountryDialog);
+                    // forward compact/cozy style into Dialog
+                    this.fragments._oSchoolCountryDialog.addStyleClass(this.getOwnerComponent().getContentDensityClass());
+                    //this._oPositionValueHelpDialog.setModel(oView.getModel());
+                    //this._oPositionValueHelpDialog.setModel(oView.getModel("i18n"), "i18n");
+                }
+
+                this.fragments._oSchoolCountryDialog.open();
+            },
+
+
+            onSearchSchoolCountrySelectDialog: function (oEvent) {
+                debugger;
+                const sValue = oEvent.getParameter("value").toString();
+                if (sValue !== "") {
+                    let oFilter = new Filter("Txt", sap.ui.model.FilterOperator.Contains, sValue);
+                    let oBinding = oEvent.getSource().getBinding("items");
+                    oBinding.filter([oFilter]);
+                } else {
+                    // clear filters
+                    oEvent.getSource().getBinding("items").filter([]);
+                }
+            },
+
+
+
+            onConfirmSchoolCountrySelectDialogPress: function (oEvent) {
+                debugger;
+                const oView = this.getView();
+                const aContexts = oEvent.getParameter("selectedContexts");
+                // get back the selected entry data
+                if (aContexts && aContexts.length) {
+                    let sSchoolCountryName = aContexts.map(function (oContext) {
+                        return oContext.getObject().Txt;
+                    }).join(", ");
+                    let sSchoolCountryId = aContexts.map(function (oContext) {
+                        return oContext.getObject().Id;
+                    }).join(", ");
+                    // now set the returned values back into the view
+                    oView.byId("EGSCT").setDescription(sSchoolCountryName);
+                    oView.byId("EGSCT").setValue(sSchoolCountryId);
+                }
+                // clear filters
+                oEvent.getSource().getBinding("items").filter([]);
+                // destroy the dialog
+                if (this.fragments._oSchoolCountryDialog) {
+                    this.fragments._oSchoolCountryDialog.destroy();
+                    delete this.fragments._oSchoolCountryDialog;
+                }
+            },
+
+            /**
+     * Event handler for school selection change in education grant form
+     * @param {sap.ui.base.Event} oEvent - The change event
+     */
+            onSchoolChange(oEvent) {
+                const oSelect = oEvent.getSource();
+                const sSelectedKey = oSelect.getSelectedKey();
+
+                if (sSelectedKey) {
+                    this._loadSchoolDetails(sSelectedKey);
+                } else {
+                    // Clear school-related fields when no school is selected
+                    const oContext = this.getView().getBindingContext();
+                    if (oContext) {
+                        const oModel = this.getView().getModel();
+                        oModel.setProperty("EGSNA", "", oContext);
+                        oModel.setProperty("ORT01", "", oContext);
+                        oModel.setProperty("EGSCT", "", oContext);
+                        oModel.setProperty("EGSTY", "", oContext);
+                    }
+                }
+            },
+
+
+            /*************************************************************************************************/
+            /********************************  End of School management ******************************************/
+            /*************************************************************************************************/
+
+
+
             /* =========================================================== */
             /* Internal methods                                            */
             /* =========================================================== */
@@ -608,24 +704,24 @@ sap.ui.define([
                 const oView = this.getView();
 
                 for (const r of a) {
-                    let editable = false,enabled = false, hidden = false, required = false;
+                    let editable = false, enabled = false, hidden = false, required = false;
 
                     switch (r.Property) {
                         case "01": hidden = true; break; // Hidden
                         case "02": hidden = false; break; // Visible
-                        case "03": editable = enabled = true;  break; // Editable
-                        case "04": editable = enabled =true;required = true; break; // Mandatory
+                        case "03": editable = enabled = true; break; // Editable
+                        case "04": editable = enabled = true; required = true; break; // Mandatory
                     }
 
                     // Cherche le contrôle par son id (qui doit matcher Field)
                     const oCtrl = oView.byId(r.Field);
                     if (oCtrl) {
-                        console.info(" Field =", r.Field," Editable =", editable," Hidden =", hidden," Required =", required);
+                        console.info(" Field =", r.Field, " Editable =", editable, " Hidden =", hidden, " Required =", required);
                         // applique dynamiquement
                         if (oCtrl.setEditable) {
                             oCtrl.setEditable(editable);
                         }
-                        if(oCtrl.setEnabled){
+                        if (oCtrl.setEnabled) {
                             oCtrl.setEnabled(enabled);
                         }
                         if (oCtrl.setVisible) {
@@ -635,14 +731,12 @@ sap.ui.define([
                             oCtrl.setRequired(required);
                         }
                     } else {
-                        console.warn("Pas de contrôle trouvé pour Field =", r.Field);
+                        console.warn("Field non trouvé =", r.Field);
                     }
                 }
 
 
-            }
-            ,
-
+            },
 
             /**
              * Binds the view to the object path. Makes sure that detail view displays
@@ -679,9 +773,7 @@ sap.ui.define([
                 });
             },
 
-
-
-
+            //TODELETE & ADAPT to current fragment system
             /**
              * Removes and destroys the Add Claim dialog
              */
@@ -693,6 +785,7 @@ sap.ui.define([
                 }
             },
 
+            //TODELETE & ADAPT to current fragment system
             /**
              * Removes and destroys the Add Advance dialog
              */
@@ -702,6 +795,106 @@ sap.ui.define([
                     this.fragments._oAddAdvanceDialog.destroy();
                     this.fragments._oAddAdvanceDialog = null;
                 }
+            },
+
+
+            /**
+             * Load school details from backend using SchoolsVHSet
+             * @param {string} sSchoolId - The selected school ID
+             * @private
+             */
+            _loadSchoolDetails(sSchoolId) {
+                debugger;
+                const oModel = this.getView().getModel();
+                const oView = this.getView();
+                const oContext = this.getView().getBindingContext();
+
+                if (oContext) {
+                    const sEduGrantDetailPath = oContext.getPath() + "/ToEduGrantDetail";
+
+                    // Clear all school-related fields first to avoid old values
+                    oModel.setProperty(sEduGrantDetailPath + "/Egsna", "");
+                    oModel.setProperty(sEduGrantDetailPath + "/Ort01", "");
+                    oModel.setProperty(sEduGrantDetailPath + "/Egsct", "");
+                    oModel.setProperty(sEduGrantDetailPath + "/Egsty", "");
+                    
+                    // Vider aussi la description du champ School Country Input
+                    const oSchoolCountryInput = oView.byId("EGSCT");
+                    if (oSchoolCountryInput && oSchoolCountryInput.setDescription) {
+                        oSchoolCountryInput.setDescription("");
+                    }
+                }
+
+                const sPath = `/schoolsVHSet('${sSchoolId}')`;
+
+                oModel.read(sPath, {
+                    success: (oData) => {
+                        const oContext = this.getView().getBindingContext();
+                        if (oContext && oData) {
+                            // Populate school-related fields with retrieved data
+                            const sEduGrantDetailPath = oContext.getPath() + "/ToEduGrantDetail";
+                            oModel.setProperty(sEduGrantDetailPath + "/Egsna", oData.Egsna || "");
+                            oModel.setProperty(sEduGrantDetailPath + "/Ort01", oData.Ort01 || "");
+                            oModel.setProperty(sEduGrantDetailPath + "/Egsct", oData.Egsct || "");
+                            oModel.setProperty(sEduGrantDetailPath + "/Egsty", oData.Egsty || "");
+                            
+                            // Mettre à jour la description du champ School Country
+                            if (oData.Egsct) {
+                                this._updateSchoolCountryDescription(oData.Egsct);
+                            }
+                        }
+                    },
+                    error: (oError) => {
+                        this.fError("Error loading school details", oError);
+                    }
+                });
+            },
+
+            /**
+             * Update school country description based on country code
+             * @param {string} sCountryCode - The country code
+             * @private
+             */
+            _updateSchoolCountryDescription(sCountryCode) {
+                console.log("Country code to find:", sCountryCode);
+                const oModel = this.getView().getModel();
+                const oView = this.getView();
+                
+                // Chercher la description du pays dans GenericVHSet
+                const aFilters = [
+                    new Filter("Method", FilterOperator.EQ, "GET_SCHOOL_COUNTRY_LIST"),
+                    new Filter("Id", FilterOperator.EQ, sCountryCode)
+                ];
+                
+                oModel.read("/GenericVHSet", {
+                    filters: aFilters,
+                    success: (oData) => {
+                        console.log("GenericVHSet results:", oData.results);
+                        if (oData.results && oData.results.length > 0) {
+                            // Filtrer côté client pour être sûr de trouver le bon pays
+                            const aCountries = oData.results.filter(country => country.Id === sCountryCode);
+                            console.log("Filtered countries:", aCountries);
+                            
+                            if (aCountries.length > 0) {
+                                const sCountryDescription = aCountries[0].Txt;
+                                console.log("Setting description:", sCountryDescription);
+                                // Mettre la description dans l'Input (EGSCT)
+                                const oSchoolCountryInput = oView.byId("EGSCT");
+                                if (oSchoolCountryInput && oSchoolCountryInput.setDescription) {
+                                    oSchoolCountryInput.setDescription(sCountryDescription);
+                                }
+                            } else {
+                                console.warn("No country found with code:", sCountryCode);
+                            }
+                        } else {
+                            console.warn("No results from GenericVHSet");
+                        }
+                    },
+                    error: (oError) => {
+                        console.error("Error loading country description:", oError);
+                        this.fError("Error loading country description", oError);
+                    }
+                });
             }
 
         });

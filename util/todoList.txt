@@ -1,5 +1,6 @@
 - Gérer UI avec un model json Local 
 - init automatique des datas de léecole à la selection
+- eligibility handling
 - ajouter le suggest values sur les Select avec bcp de data
 - ecran Claim/Advance
 - gestion des attachments

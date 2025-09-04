@@ -43,8 +43,10 @@
                         { path : 'Method', operator : 'EQ', value1 :'GET_SCHOOL_LIST' }
                     ]
                     }"
-                selectedKey="{ContractType}"
+                selectedKey="{ToEduGrantDetail/Egssl}"
                 enabled="{RequestSettings/IsFormEditable}"
+                forceSelection="false"
+                change="onSchoolChange"
             >
                 <core:Item
                     text="{Txt}"
@@ -60,7 +62,7 @@
             <Input
                 id="EGSNA"
                 type="Text"
-                value="{schoolName}"
+                value="{ToEduGrantDetail/Egsna}"
                 editable="{RequestSettings/IsFormEditable}"
             />
 
@@ -78,8 +80,9 @@
                         { path : 'Method', operator : 'EQ', value1 :'GET_SCHOOL_TYPE_LIST' }
                     ]
                     }"
-                selectedKey="{ContractType}"
+                selectedKey="{ToEduGrantDetail/Egsty}"
                 enabled="{RequestSettings/IsFormEditable}"
+                forceSelection="false"
             >
                 <core:Item
                     text="{Txt}"
@@ -150,7 +153,7 @@ Grade-->
                 labelFor="EGSCT"
             />
 
-            <Select
+<!--             <Select
                 id="EGSCT"
                 items="{
                     path : '/GenericVHSet',
@@ -158,14 +161,24 @@ Grade-->
                         { path : 'Method', operator : 'EQ', value1 :'GET_SCHOOL_COUNTRY_LIST' }
                     ]
                     }"
-                selectedKey="{ContractType}"
+                selectedKey="{ToEduGrantDetail/Egsct}"
                 enabled="{RequestSettings/IsFormEditable}"
+                forceSelection="false"
             >
                 <core:Item
                     text="{Txt}"
                     key="{Id}"
                 />
-            </Select>
+            </Select> -->
+
+            <Input
+                id="EGSCT"
+                type="Text"
+                value="{ToEduGrantDetail/Egsct}"
+                showValueHelp="true"
+                valueHelpOnly="true"
+                valueHelpRequest="onSchoolCountryValueHelpPress"               
+            />
 
             <Label
                 text="{i18n>schoolCity}"
@@ -175,7 +188,7 @@ Grade-->
             <Input
                 id="ORT01"
                 type="Text"
-                value="{schoolCity}"
+                value="{ToEduGrantDetail/Ort01}"
                 editable="{RequestSettings/IsFormEditable}"
             />
 
@@ -191,7 +204,7 @@ Grade-->
                 customTextOff="No"
                 enabled="true"
             />
-            
+
             <Label
                 text="{i18n>tuitionCurrency}"
                 labelFor="WAERS"
@@ -203,7 +216,7 @@ Grade-->
                 editable="true"
                 showValueHelp="true"
             />
-            
+
             <Label
                 text="{i18n>childBoarder}"
                 labelFor="childBoarder"
@@ -215,7 +228,7 @@ Grade-->
                 customTextOff="No"
                 enabled="true"
             />
-            
+
             <Label
                 text="{i18n>applicationNumber}"
                 labelFor="EGYEA"
@@ -226,24 +239,24 @@ Grade-->
                 value=""
                 editable="true"
             />
-            
+
             <Label
                 text="{i18n>startingFrom}"
                 labelFor="EGYFR"
             />
             <DatePicker
                 id="EGYFR"
-                value=""
+                value="{ path: 'Begda', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy' }}"
                 editable="true"
             />
-            
+
             <Label
                 text="{i18n>upTo}"
                 labelFor="EGYTO"
             />
             <DatePicker
                 id="EGYTO"
-                value=""
+                value="{ path: 'Endda', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy' }}"
                 editable="true"
             />
         </form:content>

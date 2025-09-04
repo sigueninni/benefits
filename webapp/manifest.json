@@ -121,15 +121,6 @@
       },
       "routes": [
         {
-          "name": "RouteApp",
-          "pattern": ":?query:",
-          "target": [
-            "TargetApp"
-          ]
-        }
-      ],
-      "routes": [
-        {
           "name": "RouteMaster",
           "pattern": "",
           "target": [

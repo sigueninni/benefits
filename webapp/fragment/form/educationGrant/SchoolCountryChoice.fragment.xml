@@ -1,0 +1,24 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+    xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+>
+    <SelectDialog
+        id="schoolCountrySelectDialog"
+        noDataText="{i18n>noSchoolCountryFound}"
+        title="{i18n>selectSchoolCountry}"
+        search="onSearchSchoolCountrySelectDialog"
+        confirm="onConfirmSchoolCountrySelectDialogPress"
+        items="{
+                    path : '/GenericVHSet',
+                    filters : [
+                        { path : 'Method', operator : 'EQ', value1 :'GET_SCHOOL_COUNTRY_LIST' }
+                    ]
+                    }"
+        rememberSelections="false"
+    >
+        <ObjectListItem title="{Id}">
+            <ObjectAttribute text="{Txt}" />
+        </ObjectListItem>
+    </SelectDialog>
+</core:FragmentDefinition>
