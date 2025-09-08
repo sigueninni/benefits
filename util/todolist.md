@@ -1,6 +1,14 @@
-- Gérer UI avec un model json Local 
-- init automatique des datas de léecole à la selection
+# TODO List - HR Benefits Requests
+
+## ✅ Completed Tasks
+- ~~Gérer UI avec un model json Local~~
+- ~~init automatique des datas de lécole à la selection~~
+- ~~verifier qu'on mets à jour subty du 0965~~
+
+## 📋 Pending Tasks
+
 - init tous les champs automatique de EG comme dans linfotype
+- Mettre a jour la table history en // de la table header
 - eligibility handling
 - ajouter le suggest values sur les Select avec bcp de data
 - ecran Claim/Advance
@@ -14,4 +22,3 @@
 - i18n
 - gérer les dates de retro possible, creation requete dans le passé etc...
 - exception coté back a gerer coté front
-

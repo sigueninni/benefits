@@ -41,7 +41,7 @@
                 value="{ToEduGrantDetail/Fanam}"
             />
 
-            <Label
+            <Label                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
                 text="{i18n>birthName}"
                 labelFor="FGBNA"
             />

@@ -81,6 +81,7 @@ sap.ui.define([
              * @private
              */
             _onObjectMatched: function (oEvent) {
+                debugger;
                 const oView = this.getView();
                 const oModel = oView.getModel();
                 const sObjectId = oEvent.getParameter("arguments").benefitRequestId;
@@ -138,9 +139,8 @@ sap.ui.define([
 
                 this.getOwnerComponent().oListSelector.selectAListItem(sPath);
 
-
                 //Get and adapt commonModel for UI settings as a JSONMODEL
-                this._getUISettings();
+                // Note: _getUISettings moved to dataReceived event to ensure data is loaded
             },
 
             /**
@@ -231,73 +231,74 @@ sap.ui.define([
             },
 
 
-            /**
-             * Event handler for the Select child button
-             * Opens the ChildTableSelectDialog for selecting a child
-             */
-            selectChildPress: function () {
+            // /**
+            //  * Event handler for the Select child button
+            //  * Opens the ChildTableSelectDialog for selecting a child
+            //  */
+            // _openChildDialog: function () {
 
-                if (!this.fragments._oChildTableSelectDialog) {
-                    this.fragments._oChildTableSelectDialog = sap.ui.xmlfragment("com.un.zhrbenefrequests.fragment.form.educationGrant.ChildTableSelectDialog", this);
-                    this.getView().addDependent(this.fragments._oChildTableSelectDialog);
-                    // forward compact/cozy style into Dialog
-                    this.fragments._oChildTableSelectDialog.addStyleClass(this.getOwnerComponent().getContentDensityClass());
-                }
-                this.fragments._oChildTableSelectDialog.open();
-            },
+            //     if (!this.fragments._oChildTableSelectDialog) {
+            //         this.fragments._oChildTableSelectDialog = sap.ui.xmlfragment("com.un.zhrbenefrequests.fragment.form.educationGrant.ChildTableSelectDialog", this);
+            //         this.getView().addDependent(this.fragments._oChildTableSelectDialog);
+            //         // forward compact/cozy style into Dialog
+            //         this.fragments._oChildTableSelectDialog.addStyleClass(this.getOwnerComponent().getContentDensityClass());
+            //     }
+            //     this.fragments._oChildTableSelectDialog.open();
+            // },
 
 
-            /**
- * Event handler for the Select child search
- * Filters the binding of the ChildTableSelectDialog
- */
-            onChildSearch: function (oEvent) {
-                const sValue = oEvent.getParameter("value");
-                const oFilter = new Filter("Favor", FilterOperator.Contains, sValue);
-                const oBinding = oEvent.getSource().getBinding("items");
-                oBinding.filter([oFilter]);
+            // /**
+            //  * Event handler for the Select child search
+            //  * Filters the binding of the ChildTableSelectDialog
+            //  */
+            // onChildSearch: function (oEvent) {
+            //     const sValue = oEvent.getParameter("value");
+            //     const oFilter = new Filter("Favor", FilterOperator.Contains, sValue);
+            //     const oBinding = oEvent.getSource().getBinding("items");
+            //     oBinding.filter([oFilter]);
 
-            },
+            // },
 
-            /**
-             * Event handler for the Confirm child button
-             * Sets the child for EG request
-             */
-            onConfirmChild: function (oEvent) {
-                debugger;
-                const oModel = this.getView().getModel();
-                const bindingContext = this.getView().getBindingContext();
-                const path = bindingContext.getPath();
+            // /**
+            //  * Event handler for the Confirm child button
+            //  * Sets the child for EG request
+            //  */
+            // onConfirmChild: function (oEvent) {
+            //     debugger;
+            //     const oModel = this.getView().getModel();
+            //     const bindingContext = this.getView().getBindingContext();
+            //     const path = bindingContext.getPath();
 
-                // reset the filter
-                const oBinding = oEvent.getSource().getBinding("items");
-                oBinding.filter([]);
+            //     // reset the filter
+            //     const oBinding = oEvent.getSource().getBinding("items");
+            //     oBinding.filter([]);
 
-                const objDetail = this.getBindingDetailObject();
+            //     const objDetail = this.getBindingDetailObject();
 
-                const aContexts = oEvent.getParameter("selectedContexts");
-                if (aContexts && aContexts.length) {
-                    const selectedChild = aContexts[0].getObject(); // Get first selected child
+            //     const aContexts = oEvent.getParameter("selectedContexts");
+            //     if (aContexts && aContexts.length) {
+            //         const selectedChild = aContexts[0].getObject(); // Get first selected child
 
-                    // Update the model only - the UI will update automatically
-                    const sEduGrantDetailPath = path + "/ToEduGrantDetail";
-                    oModel.setProperty(sEduGrantDetailPath + "/Favor", selectedChild.Favor);
-                    oModel.setProperty(sEduGrantDetailPath + "/Fanam", selectedChild.Fanam);
-                    oModel.setProperty(sEduGrantDetailPath + "/Fgbdt", selectedChild.Fgbdt);
-                    oModel.setProperty(sEduGrantDetailPath + "/Fgbna", selectedChild.Fgbna);
-                    oModel.setProperty(sEduGrantDetailPath + "/Fanat", selectedChild.Fanat);
-                    oModel.setProperty(sEduGrantDetailPath + "/Objps", selectedChild.Objps);
-                    oModel.setProperty(sEduGrantDetailPath + "/Famsa", selectedChild.Famsa);
-                    oModel.setProperty(sEduGrantDetailPath + "/Fasex", selectedChild.Fasex);
-                    oModel.setProperty(sEduGrantDetailPath + "/Egage", selectedChild.Egage);
+            //         // Update the model only - the UI will update automatically
+            //         const sEduGrantDetailPath = path + "/ToEduGrantDetail";
+            //         oModel.setProperty(sEduGrantDetailPath + "/Favor", selectedChild.Favor);
+            //         oModel.setProperty(sEduGrantDetailPath + "/Fanam", selectedChild.Fanam);
+            //         oModel.setProperty(sEduGrantDetailPath + "/Fgbdt", selectedChild.Fgbdt);
+            //         oModel.setProperty(sEduGrantDetailPath + "/Fgbna", selectedChild.Fgbna);
+            //         oModel.setProperty(sEduGrantDetailPath + "/Fanat", selectedChild.Fanat);
+            //         oModel.setProperty(sEduGrantDetailPath + "/Objps", selectedChild.Objps);
+            //         oModel.setProperty(+ "/Subty", selectedChild.Famsa);
+            //         oModel.setProperty(sEduGrantDetailPath + "/Famsa", selectedChild.Famsa);
+            //         oModel.setProperty(sEduGrantDetailPath + "/Fasex", selectedChild.Fasex);
+            //         oModel.setProperty(sEduGrantDetailPath + "/Egage", selectedChild.Egage);
 
-                    //Descriptions
-                    this.getView().byId("FANAT").setDescription(selectedChild.FanatTxt);
-                    this.getView().byId("FASEX").setDescription(selectedChild.FasexTxt);
+            //         //Descriptions
+            //         this.getView().byId("FANAT").setDescription(selectedChild.FanatTxt);
+            //         this.getView().byId("FASEX").setDescription(selectedChild.FasexTxt);
 
-                    //  MessageToast.show("You have chosen " + selectedChild.Favor);
-                }
-            },
+            //         //  MessageToast.show("You have chosen " + selectedChild.Favor);
+            //     }
+            // },
 
             _onMetadataLoaded: function () {
                 // Store original busy indicator delay for the detail view
@@ -360,9 +361,9 @@ sap.ui.define([
 
 
             /**
-                     * Confirms the addition of a new claim
-                     * Validates the data and adds it to the ClaimItems model
-                     */
+             * Confirms the addition of a new claim
+             * Validates the data and adds it to the ClaimItems model
+             */
             _onConfirmAddClaim: function () {
                 const oDialogModel = this.fragments._oAddClaimDialog.getModel("claimModel");
                 const oClaimData = oDialogModel.getData();
@@ -405,15 +406,11 @@ sap.ui.define([
             },
 
 
-
-
-
-
             /*********************  Advance  *********************/
             /**
- * Event handler for the Add Advance button
- * Opens the AdvanceAdd dialog for new advance entry
- */
+             * Event handler for the Add Advance button
+             * Opens the AdvanceAdd dialog for new advance entry
+             */
             onAddAdvanceButtonPress: function () {
                 const that = this;
                 const oView = this.getView();
@@ -548,10 +545,10 @@ sap.ui.define([
             /*************************************************************************************************/
 
             /**
-           * Event handler for the ValueHelpPress event
-           * @param {sap.ui.base.Event} oEvent for OrgUnit
-           * @public
-           */
+             * Event handler for the ValueHelpPress event
+             * @param {sap.ui.base.Event} oEvent for OrgUnit
+             * @public
+             */
             onSchoolCountryValueHelpPress: function (oEvent) {
                 debugger;
                 const oView = this.getView();
@@ -609,9 +606,9 @@ sap.ui.define([
             },
 
             /**
-     * Event handler for school selection change in education grant form
-     * @param {sap.ui.base.Event} oEvent - The change event
-     */
+             * Event handler for school selection change in education grant form
+             * @param {sap.ui.base.Event} oEvent - The change event
+             */
             onSchoolChange(oEvent) {
                 const oSelect = oEvent.getSource();
                 const sSelectedKey = oSelect.getSelectedKey();
@@ -648,6 +645,7 @@ sap.ui.define([
              * @private
              */
             _getUISettings: function () {
+                debugger;
                 const oCommonModel = this.getOwnerComponent().getModel("commonModel");
                 let aFilters = [];
                 /*           const oContext = this.getView().getBindingContext();
@@ -661,6 +659,7 @@ sap.ui.define([
            */
 
                 const oCurrentObject = this.getBindingDetailObject();
+                debugger;
                 aFilters.push(new Filter("RequestType", FilterOperator.EQ, oCurrentObject.RequestType));
                 aFilters.push(new Filter("Status", FilterOperator.EQ, oCurrentObject.RequestStatus));
                 aFilters.push(new Filter("Actor", FilterOperator.EQ, "01")); //TODO Role constant for now , make it dynamic
@@ -745,7 +744,7 @@ sap.ui.define([
              * @param {string} sObjectPath path to the object to be bound to the view.
              * @private
              */
-            _bindView: function (sObjectPath) {
+      /*       _bindView: function (sObjectPath) {
                 let that = this;
                 const oView = this.getView();
                 // Set busy indicator during view binding
@@ -764,15 +763,57 @@ sap.ui.define([
                         dataRequested: function () {
                             oViewModel.setProperty("/busy", true);
                         },
-                        dataReceived: function () {
-
+                        dataReceived: function (oEvent) {
                             oViewModel.setProperty("/busy", false);
+                            
+                            // Get and adapt commonModel for UI settings after data is loaded
+                            that._getUISettings();
+                            
                             //that._getTimeConstraints();
                         }
                     }
                 });
             },
 
+            
+ */
+
+
+            // Dans _bindView, ligne 820
+_bindView: function (sObjectPath) {
+    let that = this;
+    const oView = this.getView();
+    let oViewModel = this.getModel("detailView");
+
+    oViewModel.setProperty("/busy", false);
+    
+    // Vérifier si on a déjà un binding et le refresh si nécessaire
+    const oElementBinding = oView.getElementBinding();
+    if (oElementBinding && oElementBinding.getPath() === sObjectPath) {
+        // Même path = retour sur une request déjà visitée
+        // Force refresh pour recharger ToEduGrantDetail
+        oElementBinding.refresh(true); // true = force refresh
+        return;
+    }
+    
+    this.getView().bindElement({
+        path: sObjectPath,
+        parameters: {
+            expand: "ToEduGrantDetail"
+        },
+        events: {
+            change: this._onBindingChange.bind(this),
+            dataRequested: function () {
+                oViewModel.setProperty("/busy", true);
+            },
+            dataReceived: function (oEvent) {
+                oViewModel.setProperty("/busy", false);
+                // Décommenter cette ligne pour que les UISettings fonctionnent
+                that._getUISettings();
+            }
+        }
+    });
+},
             //TODELETE & ADAPT to current fragment system
             /**
              * Removes and destroys the Add Claim dialog
@@ -817,7 +858,7 @@ sap.ui.define([
                     oModel.setProperty(sEduGrantDetailPath + "/Ort01", "");
                     oModel.setProperty(sEduGrantDetailPath + "/Egsct", "");
                     oModel.setProperty(sEduGrantDetailPath + "/Egsty", "");
-                    
+
                     // Vider aussi la description du champ School Country Input
                     const oSchoolCountryInput = oView.byId("EGSCT");
                     if (oSchoolCountryInput && oSchoolCountryInput.setDescription) {
@@ -837,7 +878,7 @@ sap.ui.define([
                             oModel.setProperty(sEduGrantDetailPath + "/Ort01", oData.Ort01 || "");
                             oModel.setProperty(sEduGrantDetailPath + "/Egsct", oData.Egsct || "");
                             oModel.setProperty(sEduGrantDetailPath + "/Egsty", oData.Egsty || "");
-                            
+
                             // Mettre à jour la description du champ School Country
                             if (oData.Egsct) {
                                 this._updateSchoolCountryDescription(oData.Egsct);
@@ -859,13 +900,13 @@ sap.ui.define([
                 console.log("Country code to find:", sCountryCode);
                 const oModel = this.getView().getModel();
                 const oView = this.getView();
-                
+
                 // Chercher la description du pays dans GenericVHSet
                 const aFilters = [
                     new Filter("Method", FilterOperator.EQ, "GET_SCHOOL_COUNTRY_LIST"),
                     new Filter("Id", FilterOperator.EQ, sCountryCode)
                 ];
-                
+
                 oModel.read("/GenericVHSet", {
                     filters: aFilters,
                     success: (oData) => {
@@ -874,7 +915,7 @@ sap.ui.define([
                             // Filtrer côté client pour être sûr de trouver le bon pays
                             const aCountries = oData.results.filter(country => country.Id === sCountryCode);
                             console.log("Filtered countries:", aCountries);
-                            
+
                             if (aCountries.length > 0) {
                                 const sCountryDescription = aCountries[0].Txt;
                                 console.log("Setting description:", sCountryDescription);

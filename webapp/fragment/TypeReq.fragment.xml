@@ -12,25 +12,31 @@
             <VBox class="sapUiMediumMargin">
                 <HBox class="sapUiSmallMarginBottom">
                     <VBox class="sapUiMediumMarginEnd">
-                        <Label text="{i18n>startDate}" class="sapUiSmallMarginBottom" />
+                        <Label text="{i18n>startDate}" class="sapUiSmallMarginBottom" required="true" />
                         <DatePicker
-                            id="startDatePicker"
+                            id="Begda"
                             placeholder="{i18n>selectStartDate}"
                             valueFormat="yyyy-MM-dd"
                             displayFormat="dd/MM/yyyy"
                             width="150px"
                             value="{typeModel>/Begda}"
+                            required="true"
+                            valueState="{typeModel>/startDateValueState}"
+                            valueStateText="{typeModel>/startDateValueStateText}"
                         />
                     </VBox>
                     <VBox>
-                        <Label text="{i18n>endDate}" class="sapUiSmallMarginBottom" />
+                        <Label text="{i18n>endDate}" class="sapUiSmallMarginBottom" required="true" />
                         <DatePicker
-                            id="endDatePicker"
+                            id="Endda"
                             placeholder="{i18n>selectEndDate}"
                             valueFormat="yyyy-MM-dd"
                             displayFormat="dd/MM/yyyy"
                             width="150px"
                             value="{typeModel>/Endda}"
+                            required="true"
+                            valueState="{typeModel>/endDateValueState}"
+                            valueStateText="{typeModel>/endDateValueStateText}"
                         />
                     </VBox>
                 </HBox>
