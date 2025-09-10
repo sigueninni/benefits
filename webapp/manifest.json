@@ -1,187 +1,199 @@
 {
-  "_version": "1.17.0",
-  "sap.app": {
-    "id": "com.un.zhrbenefrequests",
-    "type": "application",
-    "i18n": "i18n/i18n.properties",
-    "title": "{{appTitle}}",
-    "description": "{{appDescription}}",
-    "applicationVersion": {
-      "version": "1.0.0"
-    },
-    "resources": "resources.json",
-    "sourceTemplate": {
-      "id": "@sap/generator-fiori:basic",
-      "version": "1.17.5",
-      "toolsId": "81c11e61-7640-493c-9ea3-7029fefe9b80"
-    },
-    "dataSources": {
-      "mainService": {
-        "uri": "/sap/opu/odata/sap/ZHR_BENEFITS_REQUESTS_SRV/",
-        "type": "OData",
-        "settings": {
-          "annotations": [],
-          "localUri": "localService/mainService/metadata.xml",
-          "odataVersion": "2.0"
+    "_version": "1.17.0",
+    "sap.app": {
+        "id": "com.un.zhrbenefrequests",
+        "type": "application",
+        "i18n": "i18n/i18n.properties",
+        "title": "{{appTitle}}",
+        "description": "{{appDescription}}",
+        "applicationVersion": {
+            "version": "1.0.0"
+        },
+        "resources": "resources.json",
+        "sourceTemplate": {
+            "id": "@sap/generator-fiori:basic",
+            "version": "1.17.5",
+            "toolsId": "81c11e61-7640-493c-9ea3-7029fefe9b80"
+        },
+        "dataSources": {
+            "mainService": {
+                "uri": "/sap/opu/odata/sap/ZHR_BENEFITS_REQUESTS_SRV/",
+                "type": "OData",
+                "settings": {
+                    "annotations": [],
+                    "localUri": "localService/mainService/metadata.xml",
+                    "odataVersion": "2.0"
+                }
+            },
+            "commonService": {
+                "uri": "/sap/opu/odata/sap/ZHR_BENEFITS_COMMON_SRV/",
+                "type": "OData",
+                "settings": {
+                    "annotations": [],
+                    "localUri": "localService/commonService/metadata.xml",
+                    "odataVersion": "2.0"
+                }
+            }
         }
-      },
-      "commonService": {
-        "uri": "/sap/opu/odata/sap/ZHR_BENEFITS_COMMON_SRV/",
-        "type": "OData",
-        "settings": {
-          "annotations": [],
-          "localUri": "localService/commonService/metadata.xml",
-          "odataVersion": "2.0"
+    },
+    "sap.ui": {
+        "technology": "UI5",
+        "icons": {
+            "icon": "",
+            "favIcon": "",
+            "phone": "",
+            "phone@2": "",
+            "tablet": "",
+            "tablet@2": ""
+        },
+        "deviceTypes": {
+            "desktop": true,
+            "tablet": true,
+            "phone": true
         }
-      }
+    },
+    "sap.ui5": {
+        "flexEnabled": false,
+        "dependencies": {
+            "minUI5Version": "1.71.58",
+            "libs": {
+                "sap.f": {},
+                "sap.m": {},
+                "sap.ui.core": {},
+                "sap.ui.layout": {},
+                "sap.uxap": {}
+            }
+        },
+        "contentDensities": {
+            "compact": true,
+            "cozy": true
+        },
+        "models": {
+            "i18n": {
+                "type": "sap.ui.model.resource.ResourceModel",
+                "settings": {
+                    "bundleName": "com.un.zhrbenefrequests.i18n.i18n"
+                }
+            },
+            "": {
+                "dataSource": "mainService",
+                "settings": {
+                    "metadataUrlParams": {
+                        "sap-documentation": "heading"
+                    },
+                    "defaultBindingMode": "TwoWay",
+                    "defaultCountMode": "Inline"
+                },
+                "preload": true
+            },
+            "commonModel": {
+                "dataSource": "commonService",
+                "settings": {
+                    "metadataUrlParams": {
+                        "sap-documentation": "heading"
+                    },
+                    "defaultBindingMode": "TwoWay",
+                    "defaultCountMode": "Inline"
+                },
+                "preload": true
+            }
+        },
+        "resources": {
+            "css": [
+                {
+                    "uri": "css/style.css"
+                }
+            ]
+        },
+        "routing": {
+            "config": {
+                "routerClass": "sap.f.routing.Router",
+                "viewType": "XML",
+                "async": true,
+                "viewPath": "com.un.zhrbenefrequests.view",
+                "controlAggregation": "pages",
+                "controlId": "idAppControl",
+                "bypassed": {
+                    "target": [
+                        "notFound"
+                    ]
+                }
+            },
+            "routes": [
+                {
+                    "name": "RouteMaster",
+                    "pattern": "",
+                    "target": [
+                        "TargetMaster"
+                    ],
+                    "layout": "OneColumn"
+                },
+                {
+                    "name": "RouteDetail",
+                    "pattern": "Requests/{benefitRequestId}",
+                    "target": [
+                        "TargetMaster",
+                        "TargetDetail"
+                    ],
+                    "layout": "TwoColumnsMidExpanded"
+                },
+                {
+                    "name": "RouteDetailOnly",
+                    "pattern": "DetailOnly/{benefitRequestId}",
+                    "target": [
+                        "TargetDetail"
+                    ],
+                    "layout": "MidColumnFullScreen"
+                }
+            ],
+            "targets": {
+                "TargetMaster": {
+                    "viewType": "XML",
+                    "transition": "slide",
+                    "clearControlAggregation": false,
+                    "viewId": "master",
+                    "viewName": "Master",
+                    "viewLevel": 1,
+                    "controlAggregation": "beginColumnPages"
+                },
+                "TargetDetail": {
+                    "viewType": "XML",
+                    "transition": "slide",
+                    "clearControlAggregation": false,
+                    "viewId": "detail",
+                    "viewName": "Detail",
+                    "viewLevel": 2,
+                    "controlAggregation": "midColumnPages"
+                },
+                "detailNoObjectsAvailable": {
+                    "viewName": "DetailNoObjectsAvailable",
+                    "viewId": "detailNoObjectsAvailable",
+                    "viewLevel": 2,
+                    "controlAggregation": "midColumnPages"
+                },
+                "notFound": {
+                    "viewName": "NotFound",
+                    "viewId": "notFound",
+                    "viewLevel": 1,
+                    "controlAggregation": "beginColumnPages"
+                },
+                "detailObjectNotFound": {
+                    "viewName": "DetailObjectNotFound",
+                    "viewId": "detailObjectNotFound",
+                    "viewLevel": 2,
+                    "controlAggregation": "midColumnPages"
+                }
+            }
+        },
+        "rootView": {
+            "viewName": "com.un.zhrbenefrequests.view.App",
+            "type": "XML",
+            "async": true,
+            "id": "App"
+        }
+    },
+    "sap.platform.abap": {
+        "uri": "/sap/bc/ui5_ui5/sap/zhrbenefreq",
+        "_version": "1.1.0"
     }
-  },
-  "sap.ui": {
-    "technology": "UI5",
-    "icons": {
-      "icon": "",
-      "favIcon": "",
-      "phone": "",
-      "phone@2": "",
-      "tablet": "",
-      "tablet@2": ""
-    },
-    "deviceTypes": {
-      "desktop": true,
-      "tablet": true,
-      "phone": true
-    }
-  },
-  "sap.ui5": {
-    "flexEnabled": false,
-    "dependencies": {
-      "minUI5Version": "1.71.58",
-      "libs": {
-        "sap.f": {},
-        "sap.m": {},
-        "sap.ui.core": {},
-        "sap.ui.layout": {},
-        "sap.uxap": {}
-      }
-    },
-    "contentDensities": {
-      "compact": true,
-      "cozy": true
-    },
-    "models": {
-      "i18n": {
-        "type": "sap.ui.model.resource.ResourceModel",
-        "settings": {
-          "bundleName": "com.un.zhrbenefrequests.i18n.i18n"
-        }
-      },
-      "": {
-        "dataSource": "mainService",
-        "settings": {
-          "metadataUrlParams": {
-            "sap-documentation": "heading"
-          },
-          "defaultBindingMode": "TwoWay",
-          "defaultCountMode": "Inline"
-        },
-        "preload": true
-      },
-      "commonModel": {
-        "dataSource": "commonService",
-        "settings": {
-          "metadataUrlParams": {
-            "sap-documentation": "heading"
-          },
-          "defaultBindingMode": "TwoWay",
-          "defaultCountMode": "Inline"
-        },
-        "preload": true
-      }
-    },
-    "resources": {
-      "css": [
-        {
-          "uri": "css/style.css"
-        }
-      ]
-    },
-    "routing": {
-      "config": {
-        "routerClass": "sap.f.routing.Router",
-        "viewType": "XML",
-        "async": true,
-        "viewPath": "com.un.zhrbenefrequests.view",
-        "controlAggregation": "pages",
-        "controlId": "idAppControl",
-        "bypassed": {
-          "target": [
-            "notFound"
-          ]
-        }
-      },
-      "routes": [
-        {
-          "name": "RouteMaster",
-          "pattern": "",
-          "target": [
-            "TargetMaster"
-          ],
-          "layout": "OneColumn"
-        },
-        {
-          "name": "RouteDetail",
-          "pattern": "Requests/{benefitRequestId}",
-          "target": [
-            "TargetMaster",
-            "TargetDetail"
-          ],
-          "layout": "TwoColumnsMidExpanded"
-        }
-      ],
-      "targets": {
-        "TargetMaster": {
-          "viewType": "XML",
-          "transition": "slide",
-          "clearControlAggregation": false,
-          "viewId": "master",
-          "viewName": "Master",
-          "viewLevel": 1,
-          "controlAggregation": "beginColumnPages"
-        },
-        "TargetDetail": {
-          "viewType": "XML",
-          "transition": "slide",
-          "clearControlAggregation": false,
-          "viewId": "detail",
-          "viewName": "Detail",
-          "viewLevel": 2,
-          "controlAggregation": "midColumnPages"
-        },
-        "detailNoObjectsAvailable": {
-          "viewName": "DetailNoObjectsAvailable",
-          "viewId": "detailNoObjectsAvailable",
-          "viewLevel": 2,
-          "controlAggregation": "midColumnPages"
-        },
-        "notFound": {
-          "viewName": "NotFound",
-          "viewId": "notFound",
-          "viewLevel": 1,
-          "controlAggregation": "beginColumnPages"
-        },
-        "detailObjectNotFound": {
-          "viewName": "DetailObjectNotFound",
-          "viewId": "detailObjectNotFound",
-          "viewLevel": 2,
-          "controlAggregation": "midColumnPages"
-        }
-      }
-    },
-    "rootView": {
-      "viewName": "com.un.zhrbenefrequests.view.App",
-      "type": "XML",
-      "async": true,
-      "id": "App"
-    }
-  }
 }

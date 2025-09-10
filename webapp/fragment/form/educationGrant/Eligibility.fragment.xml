@@ -21,15 +21,27 @@
         <form:content>
             <!-- Eligibility core Fields -->
             <core:Title text="{i18n>eligibilitySubtab}" />
+
             <Label text="{i18n>dependencyStatus}" />
-            <Select id="KDGBR">
+            <Select
+                id="KDGBR"
+                forceSelection="true"
+                selectedKey="{ToEduGrantDetail/Kdgbr}"
+            >
+                <!--               items="{
+                        path : '/GenericVHSet',
+                        filters : [
+                            { path : 'Method', operator : 'EQ', value1 :'GET_DEPENDENCY_STATUS_LIST' }
+                        ]
+                        }" -->
                 <core:Item
-                    key="1"
-                    text="{i18n>eligible}"
+                    text="{i18n>notDependent}"
+                    key=""
                 />
+
                 <core:Item
-                    key="2"
-                    text="{i18n>notEligible}"
+                    text="{i18n>Dependent}"
+                    key="X"
                 />
             </Select>
             <Label text="{i18n>computedAge}" />
@@ -41,44 +53,67 @@
             <Label text="{i18n>egSystemStatus}" />
             <Select id="EGSST">
                 <core:Item
-                    key="1"
-                    text="{i18n>active}"
+                    key=""
+                    text="{i18n>eligible}"
                 />
                 <core:Item
                     key="2"
-                    text="{i18n>inactive}"
+                    text="{i18n>notEligible}"
                 />
             </Select>
             <Label text="{i18n>egCustomerStatus}" />
             <Select
                 id="EGCST"
                 forceSelection="false"
+                selectedKey="{ToEduGrantDetail/Egcst}"
+            >
+                <core:Item
+                    text="{i18n>notEligible}"
+                    key=""
+                />
+
+                <core:Item
+                    text="{i18n>Eligible}"
+                    key="X"
+                />
+                <!--       items="{
+                        path : '/GenericVHSet',
+                        filters : [
+                            { path : 'Method', operator : 'EQ', value1 :'GET_EG_CUSTOMER_STATUS_LIST' }
+                        ]
+                        }"
+                <core:Item
+                    text="{Txt}"
+                    key="{Id}"
+                /> -->
+            </Select>
+            <Label text="{i18n>specialEducationGrant}" />
+            <Switch
+                id="EGDIS"
+                state="{ToEduGrantDetail/Egdis}"
+                customTextOn="{i18n>yes}"
+                customTextOff="{i18n>no}"
+            />
+            <Label text="{i18n>specialArrangement}" />
+            <Select
+                id="EGSAR"
+                forceSelection="false"
                 items="{
-                                        path : '/GenericVHSet',
-                                        filters : [
-                                            { path : 'Method', operator : 'EQ', value1 :'GET_EG_CUSTOMER_STATUS_LIST' }
-                                        ]
-                                        }"
-                selectedKey="{ContractType}"
+                        path : '/GenericVHSet',
+                        filters : [
+                            { path : 'Method', operator : 'EQ', value1 :'GET_SPECIAL_ARRANGEMENT_LIST' }
+                        ]
+                        }"
+                selectedKey="{ToEduGrantDetail/Egsar}"
+                visible="{ToEduGrantDetail/Egdis}"
             >
                 <core:Item
                     text="{Txt}"
                     key="{Id}"
                 />
             </Select>
-            <Label text="{i18n>specialEducationGrant}" />
-            <Switch
-                id="EGDIS"
-                state="false"
-                customTextOn="{i18n>yes}"
-                customTextOff="{i18n>no}"
-            />
-            <Label text="{i18n>specialArrangement}" />
-            <Input
-                id="specialArrangement"
-                type="Text"
-                value=""
-            />
+
+            <!--  -->
             <Label text="{i18n>changeReason}" />
             <!--     <Select  forceSelection="false"
                 items="{/ChangeReasonVHSet}"
@@ -105,13 +140,13 @@
             <Input
                 id="DSTAT"
                 type="Text"
-                value=""
+                value="{ToEduGrantDetail/Dstat}"
                 showValueHelp="true"
             />
             <Label text="{i18n>designatedDS}" />
             <Switch
                 id="EGDDS"
-                state="false"
+                state="{ToEduGrantDetail/Egdds}"
                 customTextOn="{i18n>yes}"
                 customTextOff="{i18n>no}"
             />
@@ -119,19 +154,19 @@
             <Input
                 id="NATIO"
                 type="Text"
-                value=""
+                value="{ToEduGrantDetail/Natio}"
                 showValueHelp="true"
             />
             <Label text="{i18n>contractType}" />
             <Input
                 id="CTTYP"
                 type="Text"
-                value=""
+                value="{ToEduGrantDetail/Cttyp}"
             />
             <Label text="{i18n>validTo}" />
             <DatePicker
                 id="CTEDT"
-                value=""
+                value="{ path: 'ToEduGrantDetail/Ctedt', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy', UTC: true }}"
             />
 
             <!-- Attendance Fields -->

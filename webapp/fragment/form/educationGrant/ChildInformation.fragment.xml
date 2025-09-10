@@ -23,13 +23,13 @@
             <!-- Name .. -->
             <core:Title text="{i18n>childMasterData}" />
 
-            <Button
+           <!--  <Button
                 class="sapUiSmallMarginBottom"
                 text="{i18n>selectAChild}"
                 press=".selectChildPress"
             />
             <core:Title text="" />
-            <core:Title text="" />
+            <core:Title text="" /> -->
             <Label
                 text="{i18n>lastName}"
                 labelFor="FANAM"
