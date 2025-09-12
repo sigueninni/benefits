@@ -10,7 +10,7 @@ sap.ui.define([
 	"sap/m/MessageToast",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
-], function(BaseController, JSONModel, formatter, formatMessage, ValueState, FlattenedDataset, FeedItem, MessageBox, MessageToast, Filter,
+], function (BaseController, JSONModel, formatter, formatMessage, ValueState, FlattenedDataset, FeedItem, MessageBox, MessageToast, Filter,
 	FilterOperator) {
 	"use strict";
 
@@ -22,7 +22,7 @@ sap.ui.define([
 		/* =========================================================== */
 		/* lifecycle methods                                           */
 		/* =========================================================== */
-		onInit: function() {
+		onInit: function () {
 			const oCore = sap.ui.getCore();
 			const oView = this.getView();
 
@@ -40,18 +40,18 @@ sap.ui.define([
 
 			// attach navigation route pattern event
 			// this.getRouter().getRoute("RouteDetail").attachPatternMatched(this._onObjectMatched, this);
-			this.getRouter().getRoute("RouteDetail").attachPatternMatched(function(e) {
+			this.getRouter().getRoute("RouteDetail").attachPatternMatched(function (e) {
 				this._onObjectMatched(e, "RouteDetail");
 			}.bind(this));
-			this.getRouter().getRoute("RouteDetailOnly").attachPatternMatched(function(e) {
+			this.getRouter().getRoute("RouteDetailOnly").attachPatternMatched(function (e) {
 				this._onObjectMatched(e, "RouteDetailOnly");
 			}.bind(this));
 
 			// attach validation events
-			oCore.attachValidationError(function(oEvent) {
+			oCore.attachValidationError(function (oEvent) {
 				oEvent.getParameter("element").setValueState(sap.ui.core.ValueState.Error);
 			});
-			oCore.attachValidationSuccess(function(oEvent) {
+			oCore.attachValidationSuccess(function (oEvent) {
 				oEvent.getParameter("element").setValueState(sap.ui.core.ValueState.None);
 			});
 
@@ -103,7 +103,7 @@ sap.ui.define([
 
 		// 	}.bind(this));
 		// },
-		_onObjectMatched: function(e, routeName) {
+		_onObjectMatched: function (e, routeName) {
 			if (routeName === "RouteDetailOnly") {
 				const t = this.getView();
 				const s = t.getModel();
@@ -119,7 +119,7 @@ sap.ui.define([
 					return;
 				}
 
-				this.getModel().metadataLoaded().then(function() {
+				this.getModel().metadataLoaded().then(function () {
 					if (s.hasPendingChanges()) {
 						s.resetChanges();
 					}
@@ -128,12 +128,16 @@ sap.ui.define([
 
 					t.bindElement({
 						path: path,
-
+						// Note: Pas d'expand ici - ToEduGrantDetail, ToClaimItems et ToAdvanceItems 
+						// ne sont pas encore implémentés côté ABAP pour cette route
+						// parameters: {
+						//     expand: "ToEduGrantDetail,ToClaimItems,ToAdvanceItems"
+						// },
 						events: {
-							dataRequested: function() {
+							dataRequested: function () {
 								t.setBusy(true);
 							},
-							dataReceived: function() {
+							dataReceived: function () {
 								t.setBusy(false);
 
 								const ctx = t.getBindingContext();
@@ -151,7 +155,7 @@ sap.ui.define([
 				const t = this.getView();
 				const s = t.getModel();
 				const n = e.getParameter("arguments").benefitRequestId;
-				this.getModel().metadataLoaded().then(function() {
+				this.getModel().metadataLoaded().then(function () {
 					if (s.hasPendingChanges()) {
 						s.resetChanges()
 					}
@@ -163,7 +167,7 @@ sap.ui.define([
 			}
 		},
 
-		_onBindingChange: function() {
+		_onBindingChange: function () {
 			const oView = this.getView(),
 				oElementBinding = oView.getElementBinding();
 
@@ -186,21 +190,21 @@ sap.ui.define([
 			this.getOwnerComponent().oListSelector.selectAListItem(sPath);
 		},
 
-		/**
-		 * Event handler for the save button 
-		 * @param {sap.ui.base.Event} oEvent the button Click event
-		 * @public
-		 */
-		onSaveButtonPress: function(oEvent) {
-			//   this._savePosRequestObject();
-		},
+		// /**
+		//  * Event handler for the save button 
+		//  * @param {sap.ui.base.Event} oEvent the button Click event
+		//  * @public
+		//  */
+		// onSaveButtonPress: function (oEvent) {
+		// 	this._saveBenefitRequestObject();
+		// },
 
 		/**
 		 * Event handler for the button delete 
 		 * @param {sap.ui.base.Event} oEvent the button Click event
 		 * @public
 		 */
-		onDeleteButtonPress: function(oEvent) {
+		onDeleteButtonPress: function (oEvent) {
 			const that = this;
 			const oView = this.getView();
 			const oModel = oView.getModel();
@@ -209,7 +213,7 @@ sap.ui.define([
 				title: this.getResourceBundle().getText("confirmDeletionTitle"),
 				actions: [MessageBox.Action.OK, MessageBox.Action.CANCEL],
 				initialFocus: MessageBox.Action.OK,
-				onClose: function(oAction) {
+				onClose: function (oAction) {
 					debugger;
 					if (oAction === MessageBox.Action.OK) {
 						// set busy indicator during view binding
@@ -217,7 +221,7 @@ sap.ui.define([
 						oViewModel.setProperty("/busy", true);
 						// delete the entry
 						oModel.remove(oView.getBindingContext().getPath(), {
-							success: function(oSuccess) {
+							success: function (oSuccess) {
 								oViewModel.setProperty("/busy", false);
 								MessageToast.show(that.getResourceBundle().getText("requestDeleted"));
 								that.getRouter().navTo("RouteMaster", that);
@@ -235,41 +239,112 @@ sap.ui.define([
 		 * @param {sap.ui.base.Event} oEvent the button Click event
 		 * @public
 		 */
-		onSaveBenefitRequestObject: function() {
+		onSaveBenefitRequestObject: function () {
 			const that = this;
 			const oView = this.getView();
 			const oModel = oView.getModel();
-			const oResourceBundle = this.getResourceBundle();
+			const oContext = oView.getBindingContext();
+			
 			// set status to saved draft
 			oView.byId("draftIndicator").showDraftSaving();
 
-			if (oModel.hasPendingChanges()) {
-				// set busy indicator during view binding
-				const oViewModel = this.getModel("detailView");
-				oViewModel.setProperty("/busy", true);
-
-				oModel.submitChanges({
-					success: function(oBatchData) {
-						oViewModel.setProperty("/busy", false);
-						// error in $batch responses / payload ? > no ChangeResponses ?
-						if (!oBatchData.__batchResponses[0].__changeResponses) {
-							const oError = JSON.parse(oBatchData.__batchResponses[0].response.body);
-							MessageBox.error(oError.error.message.value.toString());
-							oModel.resetChanges();
-						} else {
-							// reset the message popover 
-							sap.ui.getCore().getMessageManager().removeAllMessages();
-							that._resetValidationChecks();
-							oView.byId("draftIndicator").showDraftSaved();
-						}
-					}
-				});
-			} else {
-				//MessageBox.information(oResourceBundle.getText("noChangesToSubmit"));
+			if (!oContext) {
+				console.error("No binding context available");
+				this.fError();
+				return;
 			}
+
+			// Vérifier s'il y a des changements pending
+			if (!oModel.hasPendingChanges()) {
+				console.log("No pending changes to submit");
+				oView.byId("draftIndicator").showDraftSaved();
+				return;
+			}
+
+			// set busy indicator during save
+			const oViewModel = this.getModel("detailView");
+			oViewModel.setProperty("/busy", true);
+
+			// Pour deep insert, récupérer les données du formulaire et créer un nouvel objet
+			const oRequestData = oModel.getObject(oContext.getPath());
+			const oEduGrantDetail = oModel.getObject(oContext.getPath() + "/ToEduGrantDetail");
+
+			// Générer un nouveau GUID pour le deep insert
+			const sNewGuid = this._generateGuid();
+
+			// Construire l'objet pour deep insert avec nouveau GUID
+			const oDeepInsertData = {
+				// Propriétés du header - nouveau GUID
+				Guid: oRequestData.Guid,
+				RequestType: oRequestData.RequestType,
+				Title: oRequestData.Title,
+				RequestStatus: oRequestData.RequestStatus || "01", // Status initial
+				// Ajouter autres propriétés header nécessaires
+				
+				// Association deep insert avec les données du formulaire
+				ToEduGrantDetail: oEduGrantDetail ? {
+					Guid: sNewGuid, // Même GUID que le header pour la relation
+					Egage: oEduGrantDetail.Egage,
+					Egsst: oEduGrantDetail.Egsst,
+					Egcst: oEduGrantDetail.Egcst,
+					Egdis: oEduGrantDetail.Egdis,
+					Egsar: oEduGrantDetail.Egsar,
+					Egcrs: oEduGrantDetail.Egcrs,
+					Dstat: oEduGrantDetail.Dstat,
+					Egdds: oEduGrantDetail.Egdds,
+					Natio: oEduGrantDetail.Natio,
+					Cttyp: oEduGrantDetail.Cttyp,
+					Ctedt: oEduGrantDetail.Ctedt,
+					Egfac: oEduGrantDetail.Egfac,
+					Egpro: oEduGrantDetail.Egpro,
+					Egopr: oEduGrantDetail.Egopr,
+					Egcur: oEduGrantDetail.Egcur,
+					Egc01: oEduGrantDetail.Egc01,
+					Egbrs: oEduGrantDetail.Egbrs,
+					Egssl: oEduGrantDetail.Egssl,
+					Egsna: oEduGrantDetail.Egsna,
+					Egsty: oEduGrantDetail.Egsty,
+					Egsct: oEduGrantDetail.Egsct,
+					Egcdf: oEduGrantDetail.Egcdf,
+					Ort01: oEduGrantDetail.Ort01,
+					Waers: oEduGrantDetail.Waers,
+					Egyea: oEduGrantDetail.Egyea,
+					Egyfr: oEduGrantDetail.Egyfr,
+					Egyto: oEduGrantDetail.Egyto,
+					Eggrd: oEduGrantDetail.Eggrd
+				} : null
+			};
+
+			// Utiliser create() pour deep insert d'un nouvel enregistrement
+			oModel.create("/RequestHeaderSet", oDeepInsertData, {
+				success: function (oData, oResponse) {
+					oViewModel.setProperty("/busy", false);
+					
+					// Succès - nettoyer les messages et indiquer le save
+					sap.ui.getCore().getMessageManager().removeAllMessages();
+					that._resetValidationChecks && that._resetValidationChecks();
+					oView.byId("draftIndicator").showDraftSaved();
+					
+					// Reset pending changes car le nouvel objet a été créé
+					oModel.resetChanges();
+					
+					// Navigation vers le nouvel objet créé
+					that.getRouter().navTo("RouteDetail", {
+						benefitRequestId: oData.Guid
+					});
+					
+					console.log("Deep insert successful:", oData);
+				},
+				error: function (oError) {
+					oViewModel.setProperty("/busy", false);
+					console.error("Deep insert error:", oError);
+					that.fError();
+					oView.byId("draftIndicator").clearDraftState();
+				}
+			});
 		},
 
-		_onMetadataLoaded: function() {
+		_onMetadataLoaded: function () {
 			// Store original busy indicator delay for the detail view
 			const iOriginalViewBusyDelay = this.getView().getBusyIndicatorDelay(),
 				oViewModel = this.getModel("detailView");
@@ -290,7 +365,7 @@ sap.ui.define([
 		 * Event handler for the Add Claim button
 		 * Opens the ClaimAdd dialog for new claim entry
 		 */
-		onAddClaimButtonPress: function() {
+		onAddClaimButtonPress: function () {
 			const that = this;
 			const oView = this.getView();
 			// Create a new JSON model for the dialog if needed
@@ -308,13 +383,13 @@ sap.ui.define([
 					content: sap.ui.xmlfragment("com.un.zhrbenefrequests.fragment.form.educationGrant.ClaimAdd", this),
 					beginButton: new sap.m.Button({
 						text: oView.getModel("i18n").getResourceBundle().getText("cancel"),
-						press: function() {
+						press: function () {
 							that._removeClaimAddDialog();
 						}
 					}),
 					endButton: new sap.m.Button({
 						text: oView.getModel("i18n").getResourceBundle().getText("submit"),
-						press: function() {
+						press: function () {
 							that._onConfirmAddClaim();
 						}
 					})
@@ -330,9 +405,10 @@ sap.ui.define([
 
 		/**
 		 * Confirms the addition of a new claim
-		 * Validates the data and adds it to the ClaimItems model
+		 * Validates the data and adds it to the ClaimItems local model
+		 * Note: ClaimItems est stocké localement - pas encore d'association ABAP ToClaimItems
 		 */
-		_onConfirmAddClaim: function() {
+		_onConfirmAddClaim: function () {
 			const oDialogModel = this.fragments._oAddClaimDialog.getModel("claimModel");
 			const oClaimData = oDialogModel.getData();
 
@@ -357,13 +433,14 @@ sap.ui.define([
 			};
 
 			// Get existing claims or create empty array
+			// Note: ClaimItems est une propriété locale, pas une association ABAP
 			const sPath = oContext.getPath();
 			const aCurrentClaims = oModel.getProperty(sPath + "/ClaimItems") || [];
 
 			// Add new claim to the array
 			aCurrentClaims.push(oNewClaim);
 
-			// Update the model
+			// Update the model (local only - pas de persistance backend pour le moment)
 			oModel.setProperty(sPath + "/ClaimItems", aCurrentClaims);
 
 			// Show success message
@@ -378,7 +455,7 @@ sap.ui.define([
 		 * Event handler for the Add Advance button
 		 * Opens the AdvanceAdd dialog for new advance entry
 		 */
-		onAddAdvanceButtonPress: function() {
+		onAddAdvanceButtonPress: function () {
 			const that = this;
 			const oView = this.getView();
 			// Create a new JSON model for the dialog if needed
@@ -396,13 +473,13 @@ sap.ui.define([
 					content: sap.ui.xmlfragment("com.un.zhrbenefrequests.fragment.form.educationGrant.AdvanceAdd", this),
 					beginButton: new sap.m.Button({
 						text: oView.getModel("i18n").getResourceBundle().getText("cancel"),
-						press: function() {
+						press: function () {
 							that._removeAdvanceAddDialog();
 						}
 					}),
 					endButton: new sap.m.Button({
 						text: oView.getModel("i18n").getResourceBundle().getText("submit"),
-						press: function() {
+						press: function () {
 							that._onConfirmAddAdvance();
 						}
 					})
@@ -418,9 +495,10 @@ sap.ui.define([
 
 		/**
 		 * Confirms the addition of a new advance
-		 * Validates the data and adds it to the AdvanceItems model
+		 * Validates the data and adds it to the AdvanceItems local model
+		 * Note: AdvanceItems est stocké localement - pas encore d'association ABAP ToAdvanceItems
 		 */
-		_onConfirmAddAdvance: function() {
+		_onConfirmAddAdvance: function () {
 			const oDialogModel = this.fragments._oAdvanceDialog.getModel("advanceModel");
 			const oAdvanceData = oDialogModel.getData();
 
@@ -445,13 +523,14 @@ sap.ui.define([
 			};
 
 			// Get existing advances or create empty array
+			// Note: AdvanceItems est une propriété locale, pas une association ABAP
 			const sPath = oContext.getPath();
 			const aCurrentAdvances = oModel.getProperty(sPath + "/AdvanceItems") || [];
 
 			// Add new advance to the array
 			aCurrentAdvances.push(oNewAdvance);
 
-			// Update the model
+			// Update the model (local only - pas de persistance backend pour le moment)
 			oModel.setProperty(sPath + "/AdvanceItems", aCurrentAdvances);
 
 			// Show success message
@@ -464,7 +543,7 @@ sap.ui.define([
 		/**
 		 * Event handler for deleting an advance
 		 */
-		onDeleteAdvanceButtonPress: function(oEvent) {
+		onDeleteAdvanceButtonPress: function (oEvent) {
 			const oContext = oEvent.getParameter("listItem").getBindingContext();
 			const sPath = oContext.getPath();
 			const oModel = this.getView().getModel();
@@ -474,6 +553,7 @@ sap.ui.define([
 
 			// Get the parent path (request)
 			const sRequestPath = sPath.substring(0, sPath.lastIndexOf("/AdvanceItems"));
+			// Note: AdvanceItems est une propriété locale, pas une association ABAP
 			const aCurrentAdvances = oModel.getProperty(sRequestPath + "/AdvanceItems") || [];
 
 			// Find and remove the advance
@@ -486,6 +566,7 @@ sap.ui.define([
 
 			if (iIndex > -1) {
 				aCurrentAdvances.splice(iIndex, 1);
+				// Update local model only - pas de persistance backend pour le moment
 				oModel.setProperty(sRequestPath + "/AdvanceItems", aCurrentAdvances);
 				sap.m.MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("advanceDeleted"));
 			}
@@ -500,7 +581,7 @@ sap.ui.define([
 		 * @param {sap.ui.base.Event} oEvent for OrgUnit
 		 * @public
 		 */
-		onSchoolCountryValueHelpPress: function(oEvent) {
+		onSchoolCountryValueHelpPress: function (oEvent) {
 			debugger;
 			const oView = this.getView();
 			if (!this.fragments._oSchoolCountryDialog) {
@@ -514,7 +595,7 @@ sap.ui.define([
 			this.fragments._oSchoolCountryDialog.open();
 		},
 
-		onSearchSchoolCountrySelectDialog: function(oEvent) {
+		onSearchSchoolCountrySelectDialog: function (oEvent) {
 			debugger;
 			const sValue = oEvent.getParameter("value").toString();
 			if (sValue !== "") {
@@ -527,16 +608,16 @@ sap.ui.define([
 			}
 		},
 
-		onConfirmSchoolCountrySelectDialogPress: function(oEvent) {
+		onConfirmSchoolCountrySelectDialogPress: function (oEvent) {
 			debugger;
 			const oView = this.getView();
 			const aContexts = oEvent.getParameter("selectedContexts");
 			// get back the selected entry data
 			if (aContexts && aContexts.length) {
-				let sSchoolCountryName = aContexts.map(function(oContext) {
+				let sSchoolCountryName = aContexts.map(function (oContext) {
 					return oContext.getObject().Txt;
 				}).join(", ");
-				let sSchoolCountryId = aContexts.map(function(oContext) {
+				let sSchoolCountryId = aContexts.map(function (oContext) {
 					return oContext.getObject().Id;
 				}).join(", ");
 				// now set the returned values back into the view
@@ -584,11 +665,63 @@ sap.ui.define([
 		/* =========================================================== */
 
 		/**
+		 * Generate a new GUID for deep insert
+		 * @returns {string} New GUID
+		 * @private
+		 */
+		_generateGuid: function() {
+			return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+				const r = Math.random() * 16 | 0;
+				const v = c === 'x' ? r : (r & 0x3 | 0x8);
+				return v.toString(16);
+			});
+		},
+
+
+
+		_savePosRequestObject: function () {
+			const that = this;
+			const oView = this.getView();
+			const oModel = oView.getModel();
+			const oResourceBundle = this.getResourceBundle();
+			// set status to saved draft
+			oView.byId("draftIndicator").showDraftSaving();
+
+			if (oModel.hasPendingChanges()) {
+
+				// set busy indicator during view binding
+				const oViewModel = this.getModel("detailView");
+				oViewModel.setProperty("/busy", true);
+
+				oModel.submitChanges({
+					success: function (oBatchData) {
+						oViewModel.setProperty("/busy", false);
+						// error in $batch responses / payload ? > no ChangeResponses ?
+						if (!oBatchData.__batchResponses[0].__changeResponses) {
+							const oError = JSON.parse(oBatchData.__batchResponses[0].response.body);
+							MessageBox.error(oError.error.message.value.toString());
+							oModel.resetChanges();
+						} else {
+							// reset the message popover 
+							sap.ui.getCore().getMessageManager().removeAllMessages();
+							//that._resetValidationChecks();
+							oView.byId("draftIndicator").showDraftSaved();
+						}
+					}
+				});
+			} else {
+				//MessageBox.information(oResourceBundle.getText("noChangesToSubmit"));
+			}
+		},
+
+
+
+		/**
 		 * GetUI settings
 		 * @function
 		 * @private
 		 */
-		_getUISettings: function() {
+		_getUISettings: function () {
 			debugger;
 			const oCommonModel = this.getOwnerComponent().getModel("commonModel");
 			let aFilters = [];
@@ -611,7 +744,7 @@ sap.ui.define([
 		 * @param {object} oData - Response data from the service
 		 * @param {object} oResponse - Full response object
 		 */
-		getUI5PropertySetSuccess: function(oData) {
+		getUI5PropertySetSuccess: function (oData) {
 			const a = oData?.results || [];
 			const oView = this.getView();
 
@@ -667,7 +800,7 @@ sap.ui.define([
 		 * @param {string} sObjectPath path to the object to be bound to the view.
 		 * @private
 		 */
-		_bindView: function(sObjectPath) {
+		_bindView: function (sObjectPath) {
 			let that = this;
 			const oView = this.getView();
 			let oViewModel = this.getModel("detailView");
@@ -685,15 +818,18 @@ sap.ui.define([
 
 			this.getView().bindElement({
 				path: sObjectPath,
+				// Réactivé pour deep insert - ToEduGrantDetail doit être chargé pour le save
 				parameters: {
 					expand: "ToEduGrantDetail"
 				},
+				// Note: ToClaimItems et ToAdvanceItems ne sont pas encore implémentés côté ABAP
+				// expand: "ToEduGrantDetail,ToClaimItems,ToAdvanceItems"
 				events: {
 					change: this._onBindingChange.bind(this),
-					dataRequested: function() {
+					dataRequested: function () {
 						oViewModel.setProperty("/busy", true);
 					},
-					dataReceived: function(oEvent) {
+					dataReceived: function (oEvent) {
 						oViewModel.setProperty("/busy", false);
 						// (+) Par Vincent : Décommenter cette ligne pour que les UISettings fonctionnent
 						that._getUISettings();
@@ -705,7 +841,7 @@ sap.ui.define([
 		/**
 		 * Removes and destroys the Add Claim dialog
 		 */
-		_removeClaimAddDialog: function() {
+		_removeClaimAddDialog: function () {
 			if (this.fragments._oAddClaimDialog) {
 				this.fragments._oAddClaimDialog.close();
 				this.fragments._oAddClaimDialog.destroy();
@@ -716,7 +852,7 @@ sap.ui.define([
 		/**
 		 * Removes and destroys the Add Advance dialog
 		 */
-		_removeAdvanceAddDialog: function() {
+		_removeAdvanceAddDialog: function () {
 			if (this.fragments._oAddAdvanceDialog) {
 				this.fragments._oAddAdvanceDialog.close();
 				this.fragments._oAddAdvanceDialog.destroy();
@@ -771,7 +907,8 @@ sap.ui.define([
 					}
 				},
 				error: (oError) => {
-					this.fError("Error loading school details", oError);
+					console.error("Error loading school details:", oError);
+					this.fError();
 				}
 			});
 		},
@@ -818,7 +955,7 @@ sap.ui.define([
 				},
 				error: (oError) => {
 					console.error("Error loading country description:", oError);
-					this.fError("Error loading country description", oError);
+					this.fError();
 				}
 			});
 		}

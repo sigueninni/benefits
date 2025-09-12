@@ -117,7 +117,6 @@
             <Label text="{i18n>changeReason}" />
             <!--     <Select  forceSelection="false"
                 items="{/ChangeReasonVHSet}"
-                selectedKey="{ContractType}"
                 enabled="{RequestSettings/IsFormEditable}"
             > -->
             <Select
@@ -175,7 +174,7 @@
             <Input
                 id="EGFAC"
                 type="Number"
-                value=""
+                value="{ToEduGrantDetail/Egfac}"
             />
             <Label text="{i18n>changeProrationFactor}" />
             <CheckBox
@@ -194,7 +193,7 @@
             <Input
                 id="EGCUR"
                 type="Text"
-                value=""
+                value="{ToEduGrantDetail/Egcur}"
                 showValueHelp="true"
             />
             <Label text="{i18n>eligibilityBoarding}" />
@@ -214,7 +213,6 @@
                         { path : 'Method', operator : 'EQ', value1 :'GET_REASON_BOARDING_LIST' }
                     ]
                     }"
-                selectedKey="{ContractType}"
             >
                 <core:Item
                     text="{Txt}"

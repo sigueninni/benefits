@@ -14,7 +14,7 @@
                     <VBox class="sapUiMediumMarginEnd">
                         <Label text="{i18n>startDate}" class="sapUiSmallMarginBottom" required="true" />
                         <DatePicker
-                            id="Begda"
+                            id="begda"
                             placeholder="{i18n>selectStartDate}"
                             valueFormat="yyyy-MM-dd"
                             displayFormat="dd/MM/yyyy"
@@ -28,7 +28,7 @@
                     <VBox>
                         <Label text="{i18n>endDate}" class="sapUiSmallMarginBottom" required="true" />
                         <DatePicker
-                            id="Endda"
+                            id="endda"
                             placeholder="{i18n>selectEndDate}"
                             valueFormat="yyyy-MM-dd"
                             displayFormat="dd/MM/yyyy"

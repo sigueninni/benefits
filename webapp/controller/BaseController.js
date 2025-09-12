@@ -1,374 +1,202 @@
 /*global history */
 sap.ui.define([
 	"sap/ui/core/mvc/Controller",
-	"sap/ui/core/routing/History"
-], function (Controller, History) {
+	"sap/ui/core/routing/History",
+	"sap/m/MessageToast",
+	"sap/m/Dialog",
+	"sap/m/Button",
+	"sap/m/Text"
+], function (Controller, History, MessageToast, Dialog, Button, Text) {
 	"use strict";
 
-
 	return Controller.extend("com.un.zhrbenefrequests.controller.BaseController", {
-		fragments: {}, //All Fragments here
-		/**
-		 * Convenience method for accessing the router in every controller of the application.
-		 * @public
-		 * @returns {sap.ui.core.routing.Router} the router for this component
-		 */
+		fragments: {},
+
 		getRouter: function () {
 			return this.getOwnerComponent().getRouter();
 		},
 
-		/**
-		 * Convenience method for getting the view model by name in every controller of the application.
-		 * @public
-		 * @param {string} sName the model name
-		 * @returns {sap.ui.model.Model} the model instance
-		 */
 		getModel: function (sName) {
 			return this.getView().getModel(sName);
 		},
 
-		/**
-		 * Convenience method for setting the view model in every controller of the application.
-		 * @public
-		 * @param {sap.ui.model.Model} oModel the model instance
-		 * @param {string} sName the model name
-		 * @returns {sap.ui.mvc.View} the view instance
-		 */
 		setModel: function (oModel, sName) {
 			return this.getView().setModel(oModel, sName);
 		},
 
-		/**
-		 * Convenience method for getting the resource bundle.
-		 * @public
-		 * @returns {sap.ui.model.resource.ResourceModel} the resourceModel of the component
-		 */
 		getResourceBundle: function () {
 			return this.getOwnerComponent().getModel("i18n").getResourceBundle();
 		},
 
-		/**
-		 * Event handler for navigating back.
-		 * It there is a history entry or an previous app-to-app navigation we go one step back in the browser history
-		 * If not, it will replace the current entry of the browser history with the master route.
-		 * @public
-		 */
 		onNavBack: function () {
-			const sPreviousHash = History.getInstance().getPreviousHash(),
-				oCrossAppNavigator = sap.ushell.Container.getService("CrossApplicationNavigation");
-
-			if (sPreviousHash !== undefined || !oCrossAppNavigator.isInitialNavigation()) {
+			const sPreviousHash = History.getInstance().getPreviousHash();
+			const oCA = sap.ushell?.Container?.getService?.("CrossApplicationNavigation");
+			if (sPreviousHash !== undefined || (oCA && !oCA.isInitialNavigation())) {
 				history.go(-1);
 			} else {
 				this.getRouter().navTo("master", {}, true);
 			}
 		},
-		/**
-	 * Set Controls Id Enablement to isEnabled( parameter)
-	 * @method setEnabled
-	 * @param  {arr} Array of controls Id, isEnabled( boolean)
-	 */
+
 		setEnabled: function (arr, isEnabled) {
 			for (let id of arr) {
-				this.getView().byId(id).setEnabled(isEnabled);
+				this.getView().byId(id)?.setEnabled(isEnabled);
 			}
 		},
-		/**
-	 * Set Controls Id Visibility to isVisible( parameter)
-	 * @method setVisible
-	 * @param  {arr} Array of controls Id, isVisible( boolean)
-	 */
+
 		setVisible: function (arr, isVisible) {
 			for (let id of arr) {
-				this.getView().byId(id).setVisible(isVisible);
+				this.getView().byId(id)?.setVisible(isVisible);
 			}
 		},
-
-
-
-		/**
-		 * Return service Error
-		 * @method fError
-		 */
-		fError: function () {
-			this.alertErr([this.getText("MSG_ERREUR_SERVICE")]);
-		},
-
-
 
 		onCancel: function (oEvent) {
-			debugger;
-
-			let name = oEvent.getSource().data("name");
-			if (this.fragments[name]) {
-				let _odialog = this.fragments[name];
-				_odialog.close();
-				_odialog.destroy();
+			const name = oEvent.getSource().data("name");
+			const dlg = this.fragments[name];
+			if (dlg) {
+				dlg.close();
+				dlg.destroy();
 				delete this.fragments[name];
-
 			}
-
-		}
-		,
+		},
 
 		getBindingDetailObject: function () {
-			const oModel = this.getView().getModel();
-			const bindingContext = this.getView().getBindingContext();
-			const path = bindingContext.getPath();
-			return bindingContext.getObject();
+			const bc = this.getView().getBindingContext();
+			return bc?.getObject();
 		},
 
 		getBindingMasterObject: function () {
-			const oModel = this.getView().getModel();
-			const bindingContext = this.getView().getBindingContext();
-			const path = bindingContext.getPath();
-			return bindingContext.getObject();
+			const bc = this.getView().getBindingContext();
+			return bc?.getObject();
 		},
 
 		isAFieldEmpty: function (aFields) {
-
 			const txtFieldRequired = this.getText("MSG_FIELD_REQUIRED");
-
-			debugger;
-			// Reset all fields to normal state before validation
-			aFields.forEach(field => {
-				sap.ui.getCore().byId(field).setValueState("None");
-				sap.ui.getCore().byId(field).setValueStateText("");
+			aFields.forEach(id => {
+				const c = this.getView().byId(id) || sap.ui.getCore().byId(id);
+				c?.setValueState("None");
+				c?.setValueStateText("");
 			});
 
+			return aFields.some(id => {
+				const oControl = this.getView().byId(id) || sap.ui.getCore().byId(id);
+				if (!oControl) { return true; }
+				let value = "";
+				if (oControl.getValue) value = oControl.getValue();
+				else if (oControl.getSelectedKey) value = oControl.getSelectedKey();
+				else if (oControl.getSelected) value = oControl.getSelected() ? "true" : "";
+				else if (oControl.getState) value = oControl.getState() ? "true" : "";
+				else if (oControl.getText) value = oControl.getText();
 
-			return aFields.some(field => {
-				const value = sap.ui.getCore().byId(field).getValue();
-				if (!value || value.trim() === "") {
-					sap.ui.getCore().byId(field).setValueState("Error");
-					sap.ui.getCore().byId(field).setValueStateText(txtFieldRequired);
-					return true; // Trouvé un champ vide, arrête et retourne true
+				if (!value || String(value).trim() === "") {
+					if (oControl.setValueState) {
+						oControl.setValueState("Error");
+						oControl.setValueStateText(txtFieldRequired);
+					}
+					return true;
 				}
-				return false; // Champ pas vide, continue
+				return false;
 			});
 		},
 
+		/* ===================== Messages ===================== */
 
-		/* =========================================================== */
-		/* Handling Messages                                           */
-		/* =========================================================== */
 
-		/**
-		 * Display a Message Toast centered
-		 * @param	{string}	sMessage
-		 * @method displayToastMessage
-		 */
-		displayToastMessage: function (sMessage) {
-			MessageToast.show(sMessage, {
-				duration: 3000,
-				my: "center center",
-				at: "center center",
-				animationDuration: 2000,
-				closeOnBrowserNavigation: false
-			});
-		},
-
-		/*
-		 * Messages from SAP
-		 * @method getODataResponseMessage
-		 * @param  {Object} réponse ODATA
-		 * @return {Array} Array of error Messages
-		 */
-		getODataResponseMessage: function (oResponse) {
-			// Getting Messages from SAP 
-			let oBatchResponse;
-			let oChangeResponse;
-			let oDetail;
-			let aMessages = [];
-
-			if (oResponse !== undefined && oResponse.__batchResponses !== undefined) {
-				// Récupération des messages en mode Batch
-				for (var i = 0; i < oResponse.__batchResponses.length; i++) {
-					oBatchResponse = oResponse.__batchResponses[i];
-
-					if (oBatchResponse !== undefined && oBatchResponse.__changeResponses !== undefined) {
-						for (var j = 0; j < oBatchResponse.__changeResponses.length; j++) {
-							oChangeResponse = oBatchResponse.__changeResponses[j];
-
-							if (oChangeResponse !== undefined && oChangeResponse.headers !== undefined && oChangeResponse.headers["sap-message"] !==
-								undefined) {
-								oDetail = JSON.parse(oChangeResponse.headers["sap-message"]);
-								aMessages.push({
-									severity: oDetail.severity,
-									message: oDetail.message
-								});
-
-								if (oDetail !== undefined && oDetail.details !== undefined) {
-									for (var k = 0; k < oDetail.details.length; k++) {
-										aMessages.push(oDetail.details[k]);
-									}
-								}
-							}
-						}
+		/** Detect OData errors encapsulated in $batch responses (returns a string or null) */
+		_parseODataErrorFromBatch: function (oBatch) {
+			// Case 1: error at the changeset level (present on batch.response)
+			if (oBatch && oBatch.response) {
+				// try to extract JSON error message
+				try {
+					const body = oBatch.response.body;
+					if (body) {
+						const parsed = JSON.parse(body);
+						return parsed?.error?.message?.value || parsed?.error?.message || "changeset error";
 					}
+				} catch (e) {
+					// ignore JSON parse errors
 				}
-			} else if (oResponse !== undefined && oResponse.headers !== undefined && oResponse.headers["sap-message"] !== undefined) {
-				// Récupération des messages pour les autres cas
-				oDetail = JSON.parse(oResponse.headers["sap-message"]);
-
-				aMessages.push({
-					severity: oDetail.severity,
-					message: oDetail.message
-				});
-
-				if (oDetail !== undefined && oDetail.details !== undefined) {
-					for (var l = 0; l < oDetail.details.length; l++) {
-						aMessages.push({
-							severity: oDetail.details[l].severity,
-							message: oDetail.details[l].message
-						});
-					}
-				}
+				return "changeset error";
 			}
 
-			return aMessages;
-		},
+			// Case 2: inspect first change response
+			const first = oBatch && oBatch.__changeResponses && oBatch.__changeResponses[0];
+			if (!first) return "no change response";
 
-		/**
-		 * CallBack Handling Messages
-		 **/
-		_callBackMsgSAP: function (oData, oResponse, oEvent) {
+			const status = String(first.statusCode || first.status || "");
+			const ok2xx = /^2\d\d$/.test(status);
+			if (ok2xx) return null; // no error
+
+			// try to extract JSON error message from change response
 			try {
-				// On remonte dans l'application si des messages sont trouvés
-				this._displayMessagesFromSAP(oResponse);
-			} catch (oError) {
-				this.displayToastMessage(oError.message);
-			}
-		},
-
-		/**
-		 * Displaying messages from SAP
-		 **/
-		_displayMessagesFromSAP: function (oResponse) {
-			// => Dialog if error Message
-			// => Orherwise MessageToast
-			let aMessages;
-			let oDialog;
-			let bError;
-			let sMessages = "";
-			let i;
-
-			try {
-				aMessages = this.getODataResponseMessage(oResponse);
-				if (aMessages !== undefined && aMessages.length > 0) {
-					// Type of Message
-					for (i = 0; i < aMessages.length; i++) {
-						if (aMessages[i].severity === "error") {
-							bError = true;
-						}
-						// Constructing the Message
-						sMessages = sMessages + aMessages[i].message;
-						if (i < (aMessages.length - 1)) {
-							sMessages += " \n";
-						}
-					}
-					// Block user
-					// auAt least one error Message
-					if (bError) {
-						oDialog = new Dialog({
-							title: this.getText("MSG_TITLE"),
-							type: "Message",
-							content: new Text({
-								text: sMessages
-							}),
-							beginButton: new Button({
-								text: this.getText("LBL_CLOSE"),
-								press: function () {
-									oDialog.close();
-								}
-							}),
-							afterClose: function () {
-								oDialog.destroy();
-							}
-						});
-						oDialog.open();
-					} else {
-						// on ne bloque pas l'utilisateur car aucun message d'erreur n'est remonté de SAP
-						for (i = 0; i < aMessages.length; i++) {
-							this.displayToastMessage(aMessages[i].message);
-						}
-					}
+				const body = first.response?.body || first.body;
+				if (body) {
+					const parsed = JSON.parse(body);
+					return parsed?.error?.message?.value || parsed?.error?.message || "change error";
 				}
-			} catch (oError) {
-				this.displayToastMessage(oError.message);
+			} catch (e) {
+				// ignore JSON parse errors
 			}
+			return first.message || "change error";
 		},
 
-		/**
-		 * Return service Error
-		 * @method fError
-		 */
+		displayToastMessage: function (sMessageKey, aParams) {
+			const text = this.getText(sMessageKey, aParams);
+			MessageToast.show(text, {
+				duration: 3000, my: "center center", at: "center center",
+				animationDuration: 2000, closeOnBrowserNavigation: false
+			});
+		},
+
+		/** Show always the generic error message */
+		_showODataError: function () {
+			const msg = this.getText("MSG_SERVICE_ERROR");
+			new Dialog({
+				title: this.getText("LBL_ERROR"),
+				state: "Error",
+				icon: "sap-icon://warning",
+				content: new Text({ text: msg, wrapping: true }),
+				beginButton: new Button({
+					text: this.getText("LBL_CLOSE"),
+					press: function () { this.getParent().close(); }
+				}),
+				afterClose: function () { this.destroy(); }
+			}).open();
+			this.fError(); // fallback
+		},
+
+		/** Service Error (fallback) */
 		fError: function () {
-			this.alertErr([this.getText("MSG_ERREUR_SERVICE")]);
+			this.alertErr([this.getText("MSG_SERVICE_ERROR")]);
 		},
 
-		/*
-		 * Get a text from I18n
-		 * @method getText
-		 * @param  {String} textId 
-		 * @param  {array}  arr  array of parameters
-		 * @return {String} text
-		 */
 		getText: function (textId, arr) {
 			const oModel = this.getOwnerComponent().getModel("i18n");
-			let text;
-
-			if (oModel === undefined) {
-				return "";
-			}
-
-			try {
-				text = oModel.getResourceBundle().getText(textId, arr);
-			} catch (error) {
-				text = textId;
-			}
-
-			return text;
+			if (!oModel) return textId;
+			try { return oModel.getResourceBundle().getText(textId, arr); }
+			catch (e) { return textId; }
 		},
 
-		/**
-		 * Display error Message
-		 * @param  {String} aMessage Tableau de string à afficher
-		 */
 		alertErr: function (aMessage) {
-			var oText = new sap.m.Text();
-			var lText = "";
-			//Long Message -> Array of params
-			for (var i = 0; i !== aMessage.length; i++) {
-				lText = lText.concat(aMessage[i]);
-			}
-			oText.setText(lText);
-			oText.setWrapping(true);
-			oText.setTextAlign(sap.ui.core.TextAlign.Center);
-			oText.setRenderWhitespace(true);
-			//Open Dialog              
+			const lText = aMessage.join("");
+			const oText = new Text({ text: lText, wrapping: true, renderWhitespace: true });
 			if (!this.escapePreventDialog) {
-				this.escapePreventDialog = new sap.m.Dialog({
+				this.escapePreventDialog = new Dialog({
 					title: this.getText("LBL_ERROR"),
-					state: 'Error',
+					state: "Error",
 					icon: "sap-icon://warning",
 					buttons: [
-						new sap.m.Button({
+						new Button({
 							text: this.getText("LBL_CLOSE"),
-							//Close Dialog
-							press: function () {
-								this.escapePreventDialog.close();
-							}.bind(this)
+							press: function () { this.escapePreventDialog.close(); }.bind(this)
 						})
 					]
 				});
 			}
-
 			this.escapePreventDialog.removeAllContent();
 			this.escapePreventDialog.addContent(oText);
 			this.escapePreventDialog.open();
 		}
 
 	});
-
 });

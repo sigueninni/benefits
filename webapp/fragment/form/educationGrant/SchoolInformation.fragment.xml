@@ -124,7 +124,6 @@
                         { path : 'Method', operator : 'EQ', value1 :'GET_ATTEND_SCHOOL_GRADE_LIST' }
                     ]
                     }"
-                selectedKey="{ContractType}"
                 enabled="{RequestSettings/IsFormEditable}"
             >
                 <core:Item

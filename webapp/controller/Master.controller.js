@@ -149,10 +149,10 @@ sap.ui.define([
 
 
 
-                  /**
-             * Event handler for the Select child button
-             * Opens the ChildTableSelectDialog for selecting a child
-             */
+            /**
+       * Event handler for the Select child button
+       * Opens the ChildTableSelectDialog for selecting a child
+       */
             _openChildDialog: function () {
 
                 if (!this.fragments._oChildTableSelectDialog) {
@@ -184,39 +184,39 @@ sap.ui.define([
             onConfirmChild: function (oEvent) {
                 debugger;
                 const oModel = this.getView().getModel();
-              
-            //    const path = bindingContext.getPath();
+
+                //    const path = bindingContext.getPath();
 
                 // reset the filter
                 const oBinding = oEvent.getSource().getBinding("items");
                 oBinding.filter([]);
 
-            
+
                 const aContexts = oEvent.getParameter("selectedContexts");
                 if (aContexts && aContexts.length) {
                     const selectedChild = aContexts[0].getObject(); // Get first selected child
 
                     // Update the model only - the UI will update automatically
-      /*               const sEduGrantDetailPath = path + "/ToEduGrantDetail";
-                    oModel.setProperty(sEduGrantDetailPath + "/Favor", selectedChild.Favor);
-                    oModel.setProperty(sEduGrantDetailPath + "/Fanam", selectedChild.Fanam);
-                    oModel.setProperty(sEduGrantDetailPath + "/Fgbdt", selectedChild.Fgbdt);
-                    oModel.setProperty(sEduGrantDetailPath + "/Fgbna", selectedChild.Fgbna);
-                    oModel.setProperty(sEduGrantDetailPath + "/Fanat", selectedChild.Fanat);
-                    oModel.setProperty(sEduGrantDetailPath + "/Objps", selectedChild.Objps); */
+                    /*               const sEduGrantDetailPath = path + "/ToEduGrantDetail";
+                                  oModel.setProperty(sEduGrantDetailPath + "/Favor", selectedChild.Favor);
+                                  oModel.setProperty(sEduGrantDetailPath + "/Fanam", selectedChild.Fanam);
+                                  oModel.setProperty(sEduGrantDetailPath + "/Fgbdt", selectedChild.Fgbdt);
+                                  oModel.setProperty(sEduGrantDetailPath + "/Fgbna", selectedChild.Fgbna);
+                                  oModel.setProperty(sEduGrantDetailPath + "/Fanat", selectedChild.Fanat);
+                                  oModel.setProperty(sEduGrantDetailPath + "/Objps", selectedChild.Objps); */
                     oModel.setProperty(+ "/Subty", selectedChild.Famsa);
                     oModel.setProperty(+ "/Objps", selectedChild.Famsa);
- /*                    oModel.setProperty(sEduGrantDetailPath + "/Famsa", selectedChild.Famsa);
-                    oModel.setProperty(sEduGrantDetailPath + "/Fasex", selectedChild.Fasex);
-                    oModel.setProperty(sEduGrantDetailPath + "/Egage", selectedChild.Egage);
-
-                    //Descriptions
-                    this.getView().byId("FANAT").setDescription(selectedChild.FanatTxt);
-                    this.getView().byId("FASEX").setDescription(selectedChild.FasexTxt); */
+                    /*                    oModel.setProperty(sEduGrantDetailPath + "/Famsa", selectedChild.Famsa);
+                                       oModel.setProperty(sEduGrantDetailPath + "/Fasex", selectedChild.Fasex);
+                                       oModel.setProperty(sEduGrantDetailPath + "/Egage", selectedChild.Egage);
+                   
+                                       //Descriptions
+                                       this.getView().byId("FANAT").setDescription(selectedChild.FanatTxt);
+                                       this.getView().byId("FASEX").setDescription(selectedChild.FasexTxt); */
 
                     //  MessageToast.show("You have chosen " + selectedChild.Favor);
 
-                    this._createRequest(selectedChild.Famsa,selectedChild.Objps);
+                    this._createRequest(selectedChild.Famsa, selectedChild.Objps);
                 }
             },
 
@@ -296,7 +296,7 @@ sap.ui.define([
                     this.getView().addDependent(this.fragments._oTypeReqDialog);
                     // forward compact/cozy style into Dialog
                     this.fragments._oTypeReqDialog.addStyleClass(this.getOwnerComponent().getContentDensityClass());
-                } 
+                }
 
                 // Create and set the type model for visibility binding with default value
                 const oTypeModel = new JSONModel({
@@ -319,13 +319,17 @@ sap.ui.define([
 
                 // Validation des dates obligatoires
 
-                const aFieldsToValidate = ['Begda', 'Endda'];
+                const aFieldsToValidate = ['begda', 'endda', 'requestType'];
                 const errorValidation = this.isAFieldEmpty(aFieldsToValidate);
+
                 debugger;
                 // If validation failed, stop execution
                 if (errorValidation) {
                     return;
                 }
+
+                //Check begda le endda
+                //TODO - check begda lt endda and retro 
 
                 // if Education Grant , open Child dialog Choice otherwise create request directly
                 const oTypeModel = this.fragments._oTypeReqDialog.getModel("typeModel");
@@ -333,13 +337,14 @@ sap.ui.define([
                 if (ReqType === "01") { // If Education Grant
                     this._openChildDialog();
                 } else {
-                    this._createRequest('','');
+                    this._createRequest('', '');
                 }
 
             },
 
 
-            _createRequest: function (_famsa,_objps) {                   //Get type Flow and claim/advance info
+            _createRequest: function (_famsa, _objps) {
+                // Read type/flow info
                 const oTypeModel = this.fragments._oTypeReqDialog.getModel("typeModel");
                 let ReqType = oTypeModel.getProperty("/RequestType");
                 let Isclaim = oTypeModel.getProperty("/Isclaim");
@@ -347,31 +352,27 @@ sap.ui.define([
                 let Begda = oTypeModel.getProperty("/Begda");
                 let Endda = oTypeModel.getProperty("/Endda");
 
-
-
+                // Group & models
                 const sGroupId = "benefitRequest" + (new Date().getUTCMilliseconds());
                 const oRouter = this.getRouter();
                 const oModel = this.getView().getModel();
-                let aDeferredGroups = oModel.getDeferredGroups();
-                // set this subset to deferred
-                aDeferredGroups = aDeferredGroups.concat([sGroupId]);
-                oModel.setDeferredGroups(aDeferredGroups);
 
-                // Convert date strings to JavaScript Date objects
-                if (Begda && typeof Begda === 'string') {
-                    Begda = new Date(Begda);
-                }
-                if (Endda && typeof Endda === 'string') {
-                    Endda = new Date(Endda);
+                // Defer the group
+                let aDeferredGroups = oModel.getDeferredGroups() || [];
+                if (!aDeferredGroups.includes(sGroupId)) {
+                    aDeferredGroups = aDeferredGroups.concat([sGroupId]);
+                    oModel.setDeferredGroups(aDeferredGroups);
                 }
 
+                // Normalize dates if strings
+                if (Begda && typeof Begda === "string") Begda = new Date(Begda);
+                if (Endda && typeof Endda === "string") Endda = new Date(Endda);
 
-                  // set busy indicator during view binding
-                let oViewModel = this.getModel("masterView");
-                oViewModel.setProperty("/busy", true);
-                //sap.ui.core.BusyIndicator.show();
+                // Busy ON
+                const oViewModel = this.getModel("masterView");
+                oViewModel?.setProperty("/busy", true);
 
-                // create a new entry in model
+                // Create entry
                 oModel.createEntry("/RequestHeaderSet", {
                     groupId: sGroupId,
                     properties: {
@@ -383,55 +384,62 @@ sap.ui.define([
                         "Begda": Begda,
                         "Endda": Endda,
                         "RequestDesc": this.getResourceBundle().getText("newBenefitRequestTitle"),
-                        "Subty": _famsa ? _famsa : "", // Pass the selected child's FAMSA or empty if not applicable
-                        // Initializing Objps to avoid null issues
-                        "Objps": _objps ? _objps : "" 
-                        // Add other default properties as needed
-                        // "OtherProperty": "DefaultValue"
+                        "Subty": _famsa ? _famsa : "",
+                        "Objps": _objps ? _objps : ""
                     }
                 });
 
-                // initialize the request in backend and then navigate to object page for binding
+                // Submit
                 oModel.submitChanges({
                     groupId: sGroupId,
+
                     success: function (oSuccess) {
-                        let oResponse = oSuccess.__batchResponses[0];
-                        if (oResponse.__changeResponses) {
-                            let oNewEntry = oResponse.__changeResponses[0].data;
-                            oViewModel.setProperty("/busy", false);
-                            oRouter.navTo("RouteDetail", {
-                                benefitRequestId: oNewEntry.Guid
-                            }, true);
+                        oViewModel?.setProperty("/busy", false);
 
-                            // Si c'est Education Grant, ouvrir automatiquement le dialogue enfant après navigation
-                            if (ReqType === "01") {
-                                setTimeout(() => {
-                                    // Récupérer le contrôleur Detail et ouvrir le dialogue enfant
-                                    const oDetailView = sap.ui.getCore().byId("__component0---detail");
-                                    if (oDetailView) {
-                                        const oDetailController = oDetailView.getController();
-                                        if (oDetailController && oDetailController.selectChildPress) {
-                                            oDetailController.selectChildPress();
-                                        }
-                                    }
-                                }, 1000);
-                            }
-
-                        } else {
-                            oViewModel.setProperty("/busy", false);
-                            //sap.ui.core.BusyIndicator.hide();
+                        const batch = oSuccess?.__batchResponses?.[0];
+                        if (!batch) {
+                            this._showODataError(); // always MSG_SERVICE_ERROR
+                            return;
                         }
 
-                        this.fragments._oTypeReqDialog.close();
-                        this.fragments._oTypeReqDialog.destroy();
-                        delete this.fragments._oTypeReqDialog;
+                        // détecte une erreur encapsulée dans le batch 200
+                        const err = this._parseODataErrorFromBatch ? this._parseODataErrorFromBatch(batch) : null;
+                        if (err) {
+                            this._showODataError(); // toujours générique
+                            return;
+                        }
 
+                        // OK → récupérer l’entry créée
+                        const change = batch.__changeResponses && batch.__changeResponses[0];
+                        if (!change || !change.data) {
+                            this._showODataError(); // sécurité
+                            return;
+                        }
+
+                        const oNewEntry = change.data;
+                        oRouter.navTo("RouteDetail", { benefitRequestId: oNewEntry.Guid }, true);
+
+                        // Auto-open child dialog for Education Grant
+                        if (ReqType === "01") {
+                            setTimeout(() => {
+                                const oDetailView = sap.ui.getCore().byId("__component0---detail");
+                                oDetailView?.getController()?.selectChildPress?.();
+                            }, 1000);
+                        }
+
+                        // Cleanup type dialog
+                        this.fragments._oTypeReqDialog?.close();
+                        this.fragments._oTypeReqDialog?.destroy();
+                        delete this.fragments._oTypeReqDialog;
+                    }.bind(this),
+
+                    error: function (/*oError*/) {
+                        oViewModel?.setProperty("/busy", false);
+                        this._showODataError(); // toujours MSG_SERVICE_ERROR
                     }.bind(this)
                 });
-
-
-
             }
+
 
 
         });
