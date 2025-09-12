@@ -3,14 +3,14 @@ sap.ui.define([], function () {
     return {
 
         /* 
-        00 F        Brouillon
-        01 F        Demande soumise par l'employé
-        02 F        Demande approuvée par HRA
-        03 F        Demande rejetée par HRA
-        04 F        Demande renvoyée vers l'employé
-        05 F        Demande approuvée par HRA et envoyée vers HRO
-        06 F        Demande approuvée par HRO, fin du processus
-        07 F        Demande renvoyée vers HRA 
+        00 F        Draft
+        01 F        Request submitted by employee
+        02 F        Request approved by HRA
+        03 F        Request rejected by HRA
+        04 F        Request sent back to employee
+        05 F        Request approved by HRA and sent to HRO
+        06 F        Request approved by HRO, end of process
+        07 F        Request sent back to HRA 
         */
 
 

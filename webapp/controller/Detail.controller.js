@@ -128,8 +128,8 @@ sap.ui.define([
 
 					t.bindElement({
 						path: path,
-						// Note: Pas d'expand ici - ToEduGrantDetail, ToClaimItems et ToAdvanceItems 
-						// ne sont pas encore implémentés côté ABAP pour cette route
+						// Note: No expand here - ToEduGrantDetail, ToClaimItems and ToAdvanceItems 
+						// are not yet implemented on the ABAP side for this route
 						// parameters: {
 						//     expand: "ToEduGrantDetail,ToClaimItems,ToAdvanceItems"
 						// },
@@ -250,11 +250,10 @@ sap.ui.define([
 
 			if (!oContext) {
 				console.error("No binding context available");
-				this.fError();
 				return;
 			}
 
-			// Vérifier s'il y a des changements pending
+			// Check if there are pending changes
 			if (!oModel.hasPendingChanges()) {
 				console.log("No pending changes to submit");
 				oView.byId("draftIndicator").showDraftSaved();
@@ -265,70 +264,34 @@ sap.ui.define([
 			const oViewModel = this.getModel("detailView");
 			oViewModel.setProperty("/busy", true);
 
-			// Pour deep insert, récupérer les données du formulaire et créer un nouvel objet
+			// For deep insert, retrieve form data and create a new object
 			const oRequestData = oModel.getObject(oContext.getPath());
 			const oEduGrantDetail = oModel.getObject(oContext.getPath() + "/ToEduGrantDetail");
 
-			// Générer un nouveau GUID pour le deep insert
-			const sNewGuid = this._generateGuid();
-
-			// Construire l'objet pour deep insert avec nouveau GUID
+			// Build the object for deep insert with new GUID
 			const oDeepInsertData = {
-				// Propriétés du header - nouveau GUID
-				Guid: oRequestData.Guid,
-				RequestType: oRequestData.RequestType,
-				Title: oRequestData.Title,
-				RequestStatus: oRequestData.RequestStatus || "01", // Status initial
-				// Ajouter autres propriétés header nécessaires
-				
-				// Association deep insert avec les données du formulaire
-				ToEduGrantDetail: oEduGrantDetail ? {
-					Guid: sNewGuid, // Même GUID que le header pour la relation
-					Egage: oEduGrantDetail.Egage,
-					Egsst: oEduGrantDetail.Egsst,
-					Egcst: oEduGrantDetail.Egcst,
-					Egdis: oEduGrantDetail.Egdis,
-					Egsar: oEduGrantDetail.Egsar,
-					Egcrs: oEduGrantDetail.Egcrs,
-					Dstat: oEduGrantDetail.Dstat,
-					Egdds: oEduGrantDetail.Egdds,
-					Natio: oEduGrantDetail.Natio,
-					Cttyp: oEduGrantDetail.Cttyp,
-					Ctedt: oEduGrantDetail.Ctedt,
-					Egfac: oEduGrantDetail.Egfac,
-					Egpro: oEduGrantDetail.Egpro,
-					Egopr: oEduGrantDetail.Egopr,
-					Egcur: oEduGrantDetail.Egcur,
-					Egc01: oEduGrantDetail.Egc01,
-					Egbrs: oEduGrantDetail.Egbrs,
-					Egssl: oEduGrantDetail.Egssl,
-					Egsna: oEduGrantDetail.Egsna,
-					Egsty: oEduGrantDetail.Egsty,
-					Egsct: oEduGrantDetail.Egsct,
-					Egcdf: oEduGrantDetail.Egcdf,
-					Ort01: oEduGrantDetail.Ort01,
-					Waers: oEduGrantDetail.Waers,
-					Egyea: oEduGrantDetail.Egyea,
-					Egyfr: oEduGrantDetail.Egyfr,
-					Egyto: oEduGrantDetail.Egyto,
-					Eggrd: oEduGrantDetail.Eggrd
-				} : null
+				// Header properties - new GUID
+				...oRequestData,
+				// Deep insert association with form data
+				ToEduGrantDetail: {
+					...oEduGrantDetail,
+				}
 			};
 
-			// Utiliser create() pour deep insert d'un nouvel enregistrement
+			// Use create() for deep insert of a new record
 			oModel.create("/RequestHeaderSet", oDeepInsertData, {
 				success: function (oData, oResponse) {
 					oViewModel.setProperty("/busy", false);
 					
-					// Succès - nettoyer les messages et indiquer le save
+					// Success - clean messages and indicate save
 					sap.ui.getCore().getMessageManager().removeAllMessages();
 					that._resetValidationChecks && that._resetValidationChecks();
 					oView.byId("draftIndicator").showDraftSaved();
 					
-					// Reset pending changes car le nouvel objet a été créé
+					// Reset pending changes because the new object has been created
 					oModel.resetChanges();
 					
-					// Navigation vers le nouvel objet créé
+					// Navigate to the newly created object
 					that.getRouter().navTo("RouteDetail", {
 						benefitRequestId: oData.Guid
 					});
@@ -433,14 +396,14 @@ sap.ui.define([
 			};
 
 			// Get existing claims or create empty array
-			// Note: ClaimItems est une propriété locale, pas une association ABAP
+			// Note: ClaimItems is a local property, not an ABAP association
 			const sPath = oContext.getPath();
 			const aCurrentClaims = oModel.getProperty(sPath + "/ClaimItems") || [];
 
 			// Add new claim to the array
 			aCurrentClaims.push(oNewClaim);
 
-			// Update the model (local only - pas de persistance backend pour le moment)
+			// Update the model (local only - no backend persistence for now)
 			oModel.setProperty(sPath + "/ClaimItems", aCurrentClaims);
 
 			// Show success message
@@ -523,14 +486,14 @@ sap.ui.define([
 			};
 
 			// Get existing advances or create empty array
-			// Note: AdvanceItems est une propriété locale, pas une association ABAP
+			// Note: AdvanceItems is a local property, not an ABAP association
 			const sPath = oContext.getPath();
 			const aCurrentAdvances = oModel.getProperty(sPath + "/AdvanceItems") || [];
 
 			// Add new advance to the array
 			aCurrentAdvances.push(oNewAdvance);
 
-			// Update the model (local only - pas de persistance backend pour le moment)
+			// Update the model (local only - no backend persistence for now)
 			oModel.setProperty(sPath + "/AdvanceItems", aCurrentAdvances);
 
 			// Show success message
@@ -553,7 +516,7 @@ sap.ui.define([
 
 			// Get the parent path (request)
 			const sRequestPath = sPath.substring(0, sPath.lastIndexOf("/AdvanceItems"));
-			// Note: AdvanceItems est une propriété locale, pas une association ABAP
+			// Note: AdvanceItems is a local property, not an ABAP association
 			const aCurrentAdvances = oModel.getProperty(sRequestPath + "/AdvanceItems") || [];
 
 			// Find and remove the advance
@@ -566,7 +529,7 @@ sap.ui.define([
 
 			if (iIndex > -1) {
 				aCurrentAdvances.splice(iIndex, 1);
-				// Update local model only - pas de persistance backend pour le moment
+				// Update local model only - no backend persistence for now
 				oModel.setProperty(sRequestPath + "/AdvanceItems", aCurrentAdvances);
 				sap.m.MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("advanceDeleted"));
 			}
@@ -770,11 +733,11 @@ sap.ui.define([
 						break; // Mandatory
 				}
 
-				// Cherche le contrôle par son id (qui doit matcher Field)
+				// Find the control by its id (which must match Field)
 				const oCtrl = oView.byId(r.Field);
 				if (oCtrl) {
 					console.info(" Field =", r.Field, " Editable =", editable, " Hidden =", hidden, " Required =", required);
-					// applique dynamiquement
+					// apply dynamically
 					if (oCtrl.setEditable) {
 						oCtrl.setEditable(editable);
 					}
@@ -807,22 +770,22 @@ sap.ui.define([
 
 			oViewModel.setProperty("/busy", false);
 
-			// (+) Par Vincent : Vérifier si on a déjà un binding et le refresh si nécessaire
+			// (+) By Vincent : Check if we already have a binding and refresh if necessary
 			const oElementBinding = oView.getElementBinding();
 			if (oElementBinding && oElementBinding.getPath() === sObjectPath) {
-				// (+) Par Vincent : Même path = retour sur une request déjà visitée
-				// (+) Par Vincent : Force refresh pour recharger ToEduGrantDetail
-				oElementBinding.refresh(true); // (+) Par Vincent : true = force refresh
+				// (+) By Vincent : Same path = return to an already visited request
+				// (+) By Vincent : Force refresh to reload ToEduGrantDetail
+				oElementBinding.refresh(true); // (+) By Vincent : true = force refresh
 				return;
 			}
 
 			this.getView().bindElement({
 				path: sObjectPath,
-				// Réactivé pour deep insert - ToEduGrantDetail doit être chargé pour le save
+				// Reactivated for deep insert - ToEduGrantDetail must be loaded for save
 				parameters: {
 					expand: "ToEduGrantDetail"
 				},
-				// Note: ToClaimItems et ToAdvanceItems ne sont pas encore implémentés côté ABAP
+				// Note: ToClaimItems and ToAdvanceItems are not yet implemented on the ABAP side
 				// expand: "ToEduGrantDetail,ToClaimItems,ToAdvanceItems"
 				events: {
 					change: this._onBindingChange.bind(this),
@@ -831,7 +794,7 @@ sap.ui.define([
 					},
 					dataReceived: function (oEvent) {
 						oViewModel.setProperty("/busy", false);
-						// (+) Par Vincent : Décommenter cette ligne pour que les UISettings fonctionnent
+						// (+) By Vincent : Uncomment this line for UISettings to work
 						that._getUISettings();
 					}
 				}
@@ -880,7 +843,7 @@ sap.ui.define([
 				oModel.setProperty(sEduGrantDetailPath + "/Egsct", "");
 				oModel.setProperty(sEduGrantDetailPath + "/Egsty", "");
 
-				// Vider aussi la description du champ School Country Input
+				// Also clear the School Country Input field description
 				const oSchoolCountryInput = oView.byId("EGSCT");
 				if (oSchoolCountryInput && oSchoolCountryInput.setDescription) {
 					oSchoolCountryInput.setDescription("");
@@ -900,7 +863,7 @@ sap.ui.define([
 						oModel.setProperty(sEduGrantDetailPath + "/Egsct", oData.Egsct || "");
 						oModel.setProperty(sEduGrantDetailPath + "/Egsty", oData.Egsty || "");
 
-						// Mettre à jour la description du champ School Country
+						// Update the School Country field description
 						if (oData.Egsct) {
 							this._updateSchoolCountryDescription(oData.Egsct);
 						}
@@ -923,7 +886,7 @@ sap.ui.define([
 			const oModel = this.getView().getModel();
 			const oView = this.getView();
 
-			// Chercher la description du pays dans GenericVHSet
+			// Search for the country description in GenericVHSet
 			const aFilters = [
 				new Filter("Method", FilterOperator.EQ, "GET_SCHOOL_COUNTRY_LIST"),
 				new Filter("Id", FilterOperator.EQ, sCountryCode)
@@ -934,14 +897,14 @@ sap.ui.define([
 				success: (oData) => {
 					console.log("GenericVHSet results:", oData.results);
 					if (oData.results && oData.results.length > 0) {
-						// Filtrer côté client pour être sûr de trouver le bon pays
+						// Filter client-side to make sure we find the right country
 						const aCountries = oData.results.filter(country => country.Id === sCountryCode);
 						console.log("Filtered countries:", aCountries);
 
 						if (aCountries.length > 0) {
 							const sCountryDescription = aCountries[0].Txt;
 							console.log("Setting description:", sCountryDescription);
-							// Mettre la description dans l'Input (EGSCT)
+							// Set the description in the Input (EGSCT)
 							const oSchoolCountryInput = oView.byId("EGSCT");
 							if (oSchoolCountryInput && oSchoolCountryInput.setDescription) {
 								oSchoolCountryInput.setDescription(sCountryDescription);

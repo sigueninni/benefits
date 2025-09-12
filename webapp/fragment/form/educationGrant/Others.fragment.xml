@@ -28,7 +28,7 @@
                 <core:Item key="USD" text="USD" />
                 <core:Item key="EUR" text="EUR" />
                 <core:Item key="CHF" text="CHF" />
-                <!-- Ajoute d'autres devises si besoin -->
+                <!-- Add other currencies if needed -->
             </Select>
 
             <Label text="{i18n>comments}" labelFor="comments"/>

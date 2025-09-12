@@ -3,7 +3,27 @@
 <!--* Module           :  Benefits Request			             		    *-->
 <!--* Auteur           :  Saad Igueninni                            		*-->
 <!--* Societe      	   :  KYWAN                                          	*-->
-<!--* Date de creation :  08/07/2025                               		    *-->
+<!--* Date de creation :  08/07/2025                                                   }
+
+                        // OK → retrieve the created entry
+                        const change = batch.__changeResponses && batch.__changeResponses[0];                 }
+
+                        // OK → retrieve the created entry
+                        const change = batch.__changeResponses && batch.__changeResponses[0];           if (err) {
+                            this._showODataError(); // always generic
+                            return;
+                        }
+
+                        // OK → retrieve the created entry
+                        const change = batch.__changeResponses && batch.__changeResponses[0];               }
+
+                        // OK → retrieve the created entry
+                        const change = batch.__changeResponses && batch.__changeResponses[0];
+                        if (!change || !change.data) {
+                            this._showODataError(); // security                    // OK → retrieve the created entry                  }
+
+                        // OK → retrieve the created entry
+                        const change = batch.__changeResponses && batch.__changeResponses[0];                      // OK → retrieve the created entry                       // OK → retrieve the created entry                  		    *-->
 <!--* Version	       :  Initial											*-->
 <!--* Description  	   :  Master(Dashboard) Controller for Benefits         *-->
 <!--*                     Request App                                       *-->
@@ -34,7 +54,7 @@ sap.ui.define([
                     oViewModel = this._createViewModel(),
                     iOriginalBusyDelay = oList.getBusyIndicatorDelay();
 
-                //TODO : ajouter le groupSortState    
+                //TODO : add the groupSortState    
                 // this._oGroupSortState = new GroupSortState(oViewModel, grouper.groupUnitNumber(this.getResourceBundle()));
 
                 this._oList = oList;
@@ -317,7 +337,7 @@ sap.ui.define([
 
             onConfirmTypeReqButtonPress: function (oEvent) {
 
-                // Validation des dates obligatoires
+                // Validation of mandatory dates
 
                 const aFieldsToValidate = ['begda', 'endda', 'requestType'];
                 const errorValidation = this.isAFieldEmpty(aFieldsToValidate);
@@ -402,17 +422,17 @@ sap.ui.define([
                             return;
                         }
 
-                        // détecte une erreur encapsulée dans le batch 200
+                        // detect an error encapsulated in the batch 200
                         const err = this._parseODataErrorFromBatch ? this._parseODataErrorFromBatch(batch) : null;
                         if (err) {
-                            this._showODataError(); // toujours générique
+                            this._showODataError(); // always generic
                             return;
                         }
 
                         // OK → récupérer l’entry créée
                         const change = batch.__changeResponses && batch.__changeResponses[0];
                         if (!change || !change.data) {
-                            this._showODataError(); // sécurité
+                            this._showODataError(); // security
                             return;
                         }
 
