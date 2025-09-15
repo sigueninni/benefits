@@ -22,6 +22,12 @@ sap.ui.define([
 		/* =========================================================== */
 		/* lifecycle methods                                           */
 		/* =========================================================== */
+		
+		/**
+		 * Called when a controller is instantiated and its View controls (if available) are already created.
+		 * Initializes the detail view with models, route patterns, and validation events.
+		 * @public
+		 */
 		onInit: function () {
 			const oCore = sap.ui.getCore();
 			const oView = this.getView();
@@ -103,31 +109,31 @@ sap.ui.define([
 
 		// 	}.bind(this));
 		// },
-		_onObjectMatched: function (e, routeName) {
+		_onObjectMatched: function (oEvent, routeName) {
 			if (routeName === "RouteDetailOnly") {
-				const t = this.getView();
-				const s = t.getModel();
-				const args = e.getParameter("arguments") || {};
-				const n = args.benefitRequestId;
+				const oView = this.getView();
+				const oModel = oView.getModel();
+				const oArguments = oEvent.getParameter("arguments") || {};
+				const sBenefitRequestId = oArguments.benefitRequestId;
 
-				console.log("Route arguments:", args);
+				console.log("Route arguments:", oArguments);
 				console.log("Matched route:", routeName);
-				console.log("benefitRequestId received:", n);
+				console.log("benefitRequestId received:", sBenefitRequestId);
 
-				if (!n || n === "00000000-0000-0000-0000-000000000000" || n === "undefined" || n === "null") {
-					console.warn("Skipping _onObjectMatched due to invalid or undefined GUID:", n);
+				if (!sBenefitRequestId || sBenefitRequestId === "00000000-0000-0000-0000-000000000000" || sBenefitRequestId === "undefined" || sBenefitRequestId === "null") {
+					console.warn("Skipping _onObjectMatched due to invalid or undefined GUID:", sBenefitRequestId);
 					return;
 				}
 
 				this.getModel().metadataLoaded().then(function () {
-					if (s.hasPendingChanges()) {
-						s.resetChanges();
+					if (oModel.hasPendingChanges()) {
+						oModel.resetChanges();
 					}
 
-					const path = "/RequestHeaderSet(guid'" + n + "')";
+					const sPath = "/RequestHeaderSet(guid'" + sBenefitRequestId + "')";
 
-					t.bindElement({
-						path: path,
+					oView.bindElement({
+						path: sPath,
 						// Note: No expand here - ToEduGrantDetail, ToClaimItems and ToAdvanceItems 
 						// are not yet implemented on the ABAP side for this route
 						// parameters: {
@@ -135,38 +141,43 @@ sap.ui.define([
 						// },
 						events: {
 							dataRequested: function () {
-								t.setBusy(true);
+								oView.setBusy(true);
 							},
 							dataReceived: function () {
-								t.setBusy(false);
+								oView.setBusy(false);
 
-								const ctx = t.getBindingContext();
-								if (!ctx || !ctx.getObject()) {
-									console.warn("No data returned for GUID:", n);
+								const oContext = oView.getBindingContext();
+								if (!oContext || !oContext.getObject()) {
+									console.warn("No data returned for GUID:", sBenefitRequestId);
 									this.getRouter().navTo("detailObjectNotFound");
 								} else {
-									console.log("Context loaded successfully:", ctx.getObject());
+									console.log("Context loaded successfully:", oContext.getObject());
 								}
 							}.bind(this)
 						}
 					});
 				}.bind(this));
 			} else if (routeName === "RouteDetail") {
-				const t = this.getView();
-				const s = t.getModel();
-				const n = e.getParameter("arguments").benefitRequestId;
+				const oView = this.getView();
+				const oModel = oView.getModel();
+				const sBenefitRequestId = oEvent.getParameter("arguments").benefitRequestId;
 				this.getModel().metadataLoaded().then(function () {
-					if (s.hasPendingChanges()) {
-						s.resetChanges()
+					if (oModel.hasPendingChanges()) {
+						oModel.resetChanges();
 					}
-					const e = this.getModel().createKey("RequestHeaderSet", {
-						Guid: n
+					const sObjectPath = this.getModel().createKey("RequestHeaderSet", {
+						Guid: sBenefitRequestId
 					});
-					this._bindView("/" + e)
-				}.bind(this))
+					this._bindView("/" + sObjectPath);
+				}.bind(this));
 			}
 		},
 
+		/**
+		 * Handles binding changes and updates the view state accordingly.
+		 * Navigates to object not found page if no binding context is available.
+		 * @private
+		 */
 		_onBindingChange: function () {
 			const oView = this.getView(),
 				oElementBinding = oView.getElementBinding();
@@ -235,78 +246,19 @@ sap.ui.define([
 		},
 
 		/**
-		 * Event handler for the button save 
-		 * @param {sap.ui.base.Event} oEvent the button Click event
+		 * Event handler for the save button.
+		 * Calls the private save method without status override.
 		 * @public
 		 */
 		onSaveBenefitRequestObject: function () {
-			const that = this;
-			const oView = this.getView();
-			const oModel = oView.getModel();
-			const oContext = oView.getBindingContext();
-			
-			// set status to saved draft
-			oView.byId("draftIndicator").showDraftSaving();
-
-			if (!oContext) {
-				console.error("No binding context available");
-				return;
-			}
-
-			// Check if there are pending changes
-			if (!oModel.hasPendingChanges()) {
-				console.log("No pending changes to submit");
-				oView.byId("draftIndicator").showDraftSaved();
-				return;
-			}
-
-			// set busy indicator during save
-			const oViewModel = this.getModel("detailView");
-			oViewModel.setProperty("/busy", true);
-
-			// For deep insert, retrieve form data and create a new object
-			const oRequestData = oModel.getObject(oContext.getPath());
-			const oEduGrantDetail = oModel.getObject(oContext.getPath() + "/ToEduGrantDetail");
-
-			// Build the object for deep insert with new GUID
-			const oDeepInsertData = {
-				// Header properties - new GUID
-				...oRequestData,
-				// Deep insert association with form data
-				ToEduGrantDetail: {
-					...oEduGrantDetail,
-				}
-			};
-
-			// Use create() for deep insert of a new record
-			oModel.create("/RequestHeaderSet", oDeepInsertData, {
-				success: function (oData, oResponse) {
-					oViewModel.setProperty("/busy", false);
-					
-					// Success - clean messages and indicate save
-					sap.ui.getCore().getMessageManager().removeAllMessages();
-					that._resetValidationChecks && that._resetValidationChecks();
-					oView.byId("draftIndicator").showDraftSaved();
-					
-					// Reset pending changes because the new object has been created
-					oModel.resetChanges();
-					
-					// Navigate to the newly created object
-					that.getRouter().navTo("RouteDetail", {
-						benefitRequestId: oData.Guid
-					});
-					
-					console.log("Deep insert successful:", oData);
-				},
-				error: function (oError) {
-					oViewModel.setProperty("/busy", false);
-					console.error("Deep insert error:", oError);
-					that.fError();
-					oView.byId("draftIndicator").clearDraftState();
-				}
-			});
+			this._saveBenefitRequestObject();
 		},
 
+		/**
+		 * Called when metadata is loaded for the OData model.
+		 * Sets up initial busy state and delays for the detail view.
+		 * @private
+		 */
 		_onMetadataLoaded: function () {
 			// Store original busy indicator delay for the detail view
 			const iOriginalViewBusyDelay = this.getView().getBusyIndicatorDelay(),
@@ -540,8 +492,9 @@ sap.ui.define([
 		/*************************************************************************************************/
 
 		/**
-		 * Event handler for the ValueHelpPress event
-		 * @param {sap.ui.base.Event} oEvent for OrgUnit
+		 * Event handler for school country value help button press.
+		 * Opens a dialog to select school country from available options.
+		 * @param {sap.ui.base.Event} oEvent - The button press event
 		 * @public
 		 */
 		onSchoolCountryValueHelpPress: function (oEvent) {
@@ -558,6 +511,12 @@ sap.ui.define([
 			this.fragments._oSchoolCountryDialog.open();
 		},
 
+		/**
+		 * Event handler for searching in the school country select dialog.
+		 * Filters the available countries based on the search term.
+		 * @param {sap.ui.base.Event} oEvent - The search event
+		 * @public
+		 */
 		onSearchSchoolCountrySelectDialog: function (oEvent) {
 			debugger;
 			const sValue = oEvent.getParameter("value").toString();
@@ -571,6 +530,12 @@ sap.ui.define([
 			}
 		},
 
+		/**
+		 * Event handler for confirming school country selection.
+		 * Sets the selected country values back to the form fields.
+		 * @param {sap.ui.base.Event} oEvent - The confirm event with selected contexts
+		 * @public
+		 */
 		onConfirmSchoolCountrySelectDialogPress: function (oEvent) {
 			debugger;
 			const oView = this.getView();
@@ -599,6 +564,7 @@ sap.ui.define([
 		/**
 		 * Event handler for school selection change in education grant form
 		 * @param {sap.ui.base.Event} oEvent - The change event
+		 * @public
 		 */
 		onSchoolChange(oEvent) {
 			const oSelect = oEvent.getSource();
@@ -640,8 +606,11 @@ sap.ui.define([
 			});
 		},
 
-
-
+		/**
+		 * Saves position request object with pending changes.
+		 * Uses submitChanges for batch processing and handles success/error responses.
+		 * @private
+		 */
 		_savePosRequestObject: function () {
 			const that = this;
 			const oView = this.getView();
@@ -677,11 +646,9 @@ sap.ui.define([
 			}
 		},
 
-
-
 		/**
-		 * GetUI settings
-		 * @function
+		 * Retrieves UI settings for form fields based on request type and status.
+		 * Applies dynamic visibility, editability and requirement rules to form controls.
 		 * @private
 		 */
 		_getUISettings: function () {
@@ -703,9 +670,11 @@ sap.ui.define([
 		},
 
 		/**
-		 * Success callback for UI5PropertySet read
+		 * Success callback for UI5PropertySet read operation.
+		 * Processes UI settings and applies them to form controls dynamically.
 		 * @param {object} oData - Response data from the service
 		 * @param {object} oResponse - Full response object
+		 * @private
 		 */
 		getUI5PropertySetSuccess: function (oData) {
 			const a = oData?.results || [];
@@ -803,6 +772,7 @@ sap.ui.define([
 
 		/**
 		 * Removes and destroys the Add Claim dialog
+		 * @private
 		 */
 		_removeClaimAddDialog: function () {
 			if (this.fragments._oAddClaimDialog) {
@@ -814,6 +784,7 @@ sap.ui.define([
 
 		/**
 		 * Removes and destroys the Add Advance dialog
+		 * @private
 		 */
 		_removeAdvanceAddDialog: function () {
 			if (this.fragments._oAddAdvanceDialog) {
@@ -919,6 +890,85 @@ sap.ui.define([
 				error: (oError) => {
 					console.error("Error loading country description:", oError);
 					this.fError();
+				}
+			});
+		},
+
+		/**
+		 * Private method to save benefit request object.
+		 * Performs deep insert operation to save benefit request with education grant details.
+		 * @param {string} sStatus - Optional status to override the current request status
+		 * @private
+		 */
+		_saveBenefitRequestObject: function (sStatus) {
+			const that = this;
+			const oView = this.getView();
+			const oModel = oView.getModel();
+			const oContext = oView.getBindingContext();
+			
+			// set status to saved draft
+			oView.byId("draftIndicator").showDraftSaving();
+
+			if (!oContext) {
+				console.error("No binding context available");
+				return;
+			}
+
+			// Check if there are pending changes
+			if (!oModel.hasPendingChanges()) {
+				console.log("No pending changes to submit");
+				oView.byId("draftIndicator").showDraftSaved();
+				return;
+			}
+
+			// set busy indicator during save
+			const oViewModel = this.getModel("detailView");
+			oViewModel.setProperty("/busy", true);
+
+			// For deep insert, retrieve form data and create a new object
+			const oRequestData = oModel.getObject(oContext.getPath());
+			const oEduGrantDetail = oModel.getObject(oContext.getPath() + "/ToEduGrantDetail");
+
+			// Build the object for deep insert with new GUID
+			const oDeepInsertData = {
+				// Header properties - new GUID
+				...oRequestData,
+				// Deep insert association with form data
+				ToEduGrantDetail: {
+					...oEduGrantDetail,
+				}
+			};
+
+			// Override status if provided as parameter
+			if (sStatus) {
+				oDeepInsertData.RequestStatus = sStatus;
+			}
+
+			// Use create() for deep insert of a new record
+			oModel.create("/RequestHeaderSet", oDeepInsertData, {
+				success: function (oData, oResponse) {
+					oViewModel.setProperty("/busy", false);
+					
+					// Success - clean messages and indicate save
+					sap.ui.getCore().getMessageManager().removeAllMessages();
+					that._resetValidationChecks && that._resetValidationChecks();
+					oView.byId("draftIndicator").showDraftSaved();
+					
+					// Reset pending changes because the new object has been created
+					oModel.resetChanges();
+					
+					// Navigate to the newly created object
+					that.getRouter().navTo("RouteDetail", {
+						benefitRequestId: oData.Guid
+					});
+					
+					console.log("Deep insert successful:", oData);
+				},
+				error: function (oError) {
+					oViewModel.setProperty("/busy", false);
+					console.error("Deep insert error:", oError);
+					that.fError();
+					oView.byId("draftIndicator").clearDraftState();
 				}
 			});
 		}

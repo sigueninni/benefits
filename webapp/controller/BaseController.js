@@ -5,8 +5,9 @@ sap.ui.define([
 	"sap/m/MessageToast",
 	"sap/m/Dialog",
 	"sap/m/Button",
-	"sap/m/Text"
-], function (Controller, History, MessageToast, Dialog, Button, Text) {
+	"sap/m/Text",
+	"com/un/zhrbenefrequests/model/constants"
+], function (Controller, History, MessageToast, Dialog, Button, Text, Constants) {
 	"use strict";
 
 	return Controller.extend("com.un.zhrbenefrequests.controller.BaseController", {
@@ -26,6 +27,15 @@ sap.ui.define([
 
 		getResourceBundle: function () {
 			return this.getOwnerComponent().getModel("i18n").getResourceBundle();
+		},
+
+		/**
+		 * Get request status constants
+		 * @returns {object} Request status constants
+		 * @public
+		 */
+		getRequestStatus: function() {
+			return Constants.REQUEST_STATUS;
 		},
 
 		onNavBack: function () {

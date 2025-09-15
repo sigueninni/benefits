@@ -397,7 +397,7 @@ sap.ui.define([
                     groupId: sGroupId,
                     properties: {
                         "Seqnr": "001",
-                        "RequestStatus": "00",
+                        "RequestStatus": this.getRequestStatus().DRAFT,
                         "RequestType": ReqType,
                         "Isclaim": Isclaim,
                         "Isadvance": Isadvance,

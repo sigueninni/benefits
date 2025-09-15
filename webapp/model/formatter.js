@@ -1,38 +1,39 @@
-sap.ui.define([], function () {
+sap.ui.define([
+    "com/un/zhrbenefrequests/model/constants"
+], function (constants) {
     "use strict";
     return {
 
         /* 
-        00 F        Draft
-        01 F        Request submitted by employee
-        02 F        Request approved by HRA
-        03 F        Request rejected by HRA
-        04 F        Request sent back to employee
-        05 F        Request approved by HRA and sent to HRO
-        06 F        Request approved by HRO, end of process
-        07 F        Request sent back to HRA 
+        Status codes with descriptions:
+        00 - Draft
+        01 - Request submitted by employee
+        02 - Request approved by HRA
+        03 - Request rejected by HRA
+        04 - Request sent back to employee
+        05 - Request approved by HRA and sent to HRO
+        06 - Request approved by HRO, end of process
+        07 - Request sent back to HRA 
         */
-
 
         requestStatusStateText: function (iStatus) {
             if (iStatus) {
                 switch (iStatus) {
-                    case '00':
+                    case constants.REQUEST_STATUS.DRAFT:
                         return "None";
-                    case '01':
+                    case constants.REQUEST_STATUS.SUBMITTED:
                         return "None";
-                    case '02':
+                    case constants.REQUEST_STATUS.APPROVED_HRA:
                         return "Success";
-                    case '03':
+                    case constants.REQUEST_STATUS.REJECTED_HRA:
                         return "Error";
-                    case '04':
+                    case constants.REQUEST_STATUS.RETURNED_TO_EMPLOYEE:
                         return "Warning";
-                    case '05':
+                    case constants.REQUEST_STATUS.APPROVED_SENT_TO_H:
                         return "None";
-                    case '06':
+                    case constants.REQUEST_STATUS.APPROVED_HRO_END:
                         return "Success";
-
-                    case '07':
+                    case constants.REQUEST_STATUS.RETURNED_TO_HRA:
                         return "Warning";
                     default:
                         return "None";

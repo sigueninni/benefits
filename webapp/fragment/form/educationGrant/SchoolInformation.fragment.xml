@@ -32,7 +32,7 @@
 
             <Label
                 text="{i18n>school}"
-                required="true"
+                required="false"
                 labelFor="EGSSL"
             />
             <Select

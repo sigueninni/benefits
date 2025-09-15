@@ -6,9 +6,13 @@
 - ~~verifier qu'on mets à jour subty du 0965~~
 - ~~rendre begda/endda mandatory dans la pop de choix du type~~
 - ~~init tous les champs automatique de EG comme dans linfotype~~
+- ~~save~~
 
 ## 📋 Ongoing Tasks
-- save
+
+- compléter le save sur les zones coté Abap
+- Factoriser dans des méthodes le 'Save'
+- Submit
 - Mettre a jour la table history en // de la table header -> Nicolas a aussi uen methode ...
 
 ## ⏳ Pending Tasks
