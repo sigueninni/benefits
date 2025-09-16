@@ -51,7 +51,10 @@
                 value="{ToEduGrantDetail/Egage}"
             />
             <Label text="{i18n>egSystemStatus}" />
-            <Select id="EGSST">
+            <Select 
+                id="EGSST"
+                selectedKey="{ToEduGrantDetail/Egsst}"
+            >
                 <core:Item
                     key=""
                     text="{i18n>eligible}"
@@ -117,7 +120,6 @@
             <Label text="{i18n>changeReason}" />
             <!--     <Select  forceSelection="false"
                 items="{/ChangeReasonVHSet}"
-                enabled="{RequestSettings/IsFormEditable}"
             > -->
             <Select
                 id="EGCRS"
@@ -128,7 +130,7 @@
                                             { path : 'Method', operator : 'EQ', value1 :'GET_CHANGE_REASON_LIST' }
                                         ]
                                         }"
-                selectedKey="{ReqType}"
+                selectedKey="{ToEduGrantDetail/Egcrs}"
             >
                 <core:Item
                     text="{Txt}"
@@ -179,12 +181,12 @@
             <Label text="{i18n>changeProrationFactor}" />
             <CheckBox
                 id="EGPRO"
-                selected="false"
+                selected="{ToEduGrantDetail/Egpro}"
             />
             <Label text="{i18n>overrideProrationFactor}" />
             <CheckBox
                 id="EGOPR"
-                selected="false"
+                selected="{ToEduGrantDetail/Egopr}"
             />
 
             <!-- Entitlment Fields -->
@@ -199,7 +201,7 @@
             <Label text="{i18n>eligibilityBoarding}" />
             <Switch
                 id="EGC01"
-                state="false"
+                state="{ToEduGrantDetail/Egc01}"
                 customTextOn="{i18n>yes}"
                 customTextOff="{i18n>no}"
             />
@@ -207,6 +209,7 @@
             <Select
                 id="EGBRS"
                 forceSelection="false"
+                selectedKey="{ToEduGrantDetail/Egbrs}"
                 items="{
                     path : '/GenericVHSet',
                     filters : [
@@ -221,29 +224,41 @@
             </Select>
             <Label text="{i18n>boardingProrationFactor}" />
             <Input
-                id="boardingProrationFactor"
-                type="Text"
-                value=""
+                id="EGBPR"
+                type="Number"
+                value="{ToEduGrantDetail/Egbpr}"
             />
             <Label text="{i18n>overrideBoardProration}" />
             <CheckBox
-                id="overrideBoardProration"
-                selected="false"
+                id="EGBROVR"
+                selected="{ToEduGrantDetail/Egbrovr}"
             />
             <Label text="{i18n>overrideCAFProration}" />
             <CheckBox
-                id="overrideCAFProration"
-                selected="false"
+                id="EGCAFPRO"
+                selected="{ToEduGrantDetail/Egcafpro}"
             />
             <Label text="{i18n>multipleAttendance}" />
-            <CheckBox
-                id="multipleAttendance"
-                selected="false"
-            />
+            <Select
+                id="EGMUL"
+                forceSelection="false"
+                selectedKey="{ToEduGrantDetail/Egmul}"
+                items="{
+                    path : '/GenericVHSet',
+                    filters : [
+                        { path : 'Method', operator : 'EQ', value1 :'GET_MULTIPLE_ATTENDANCE_LIST' }
+                    ]
+                    }"
+            >
+                <core:Item
+                    text="{Txt}"
+                    key="{Id}"
+                />
+            </Select>
             <Label text="{i18n>applyTwoThirdRule}" />
             <CheckBox
-                id="applyTwoThirdRule"
-                selected="false"
+                id="EGRUL"
+                selected="{ToEduGrantDetail/Egrul}"
             />
         </form:content>
     </form:SimpleForm>

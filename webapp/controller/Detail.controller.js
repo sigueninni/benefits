@@ -46,11 +46,11 @@ sap.ui.define([
 
 			// attach navigation route pattern event
 			// this.getRouter().getRoute("RouteDetail").attachPatternMatched(this._onObjectMatched, this);
-			this.getRouter().getRoute("RouteDetail").attachPatternMatched(function (e) {
-				this._onObjectMatched(e, "RouteDetail");
+			this.getRouter().getRoute("RouteDetail").attachPatternMatched(function (oEvent) {
+				this._onObjectMatched(oEvent, "RouteDetail");
 			}.bind(this));
-			this.getRouter().getRoute("RouteDetailOnly").attachPatternMatched(function (e) {
-				this._onObjectMatched(e, "RouteDetailOnly");
+			this.getRouter().getRoute("RouteDetailOnly").attachPatternMatched(function (oEvent) {
+				this._onObjectMatched(oEvent, "RouteDetailOnly");
 			}.bind(this));
 
 			// attach validation events
@@ -594,19 +594,6 @@ sap.ui.define([
 		/* =========================================================== */
 
 		/**
-		 * Generate a new GUID for deep insert
-		 * @returns {string} New GUID
-		 * @private
-		 */
-		_generateGuid: function() {
-			return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-				const r = Math.random() * 16 | 0;
-				const v = c === 'x' ? r : (r & 0x3 | 0x8);
-				return v.toString(16);
-			});
-		},
-
-		/**
 		 * Saves position request object with pending changes.
 		 * Uses submitChanges for batch processing and handles success/error responses.
 		 * @private
@@ -677,16 +664,16 @@ sap.ui.define([
 		 * @private
 		 */
 		getUI5PropertySetSuccess: function (oData) {
-			const a = oData?.results || [];
+			const aUIProperties = oData?.results || [];
 			const oView = this.getView();
 
-			for (const r of a) {
+			for (const oUIProperty of aUIProperties) {
 				let editable = false,
 					enabled = false,
 					hidden = false,
 					required = false;
 
-				switch (r.Property) {
+				switch (oUIProperty.Property) {
 					case "01":
 						hidden = true;
 						break; // Hidden
@@ -703,9 +690,9 @@ sap.ui.define([
 				}
 
 				// Find the control by its id (which must match Field)
-				const oCtrl = oView.byId(r.Field);
+				const oCtrl = oView.byId(oUIProperty.Field);
 				if (oCtrl) {
-					console.info(" Field =", r.Field, " Editable =", editable, " Hidden =", hidden, " Required =", required);
+					console.info(" Field =", oUIProperty.Field, " Editable =", editable, " Hidden =", hidden, " Required =", required);
 					// apply dynamically
 					if (oCtrl.setEditable) {
 						oCtrl.setEditable(editable);
@@ -720,7 +707,7 @@ sap.ui.define([
 						oCtrl.setRequired(required);
 					}
 				} else {
-					console.warn("Field non trouvé =", r.Field);
+					console.warn("Field non trouvé =", oUIProperty.Field);
 				}
 			}
 		},
@@ -764,7 +751,7 @@ sap.ui.define([
 					dataReceived: function (oEvent) {
 						oViewModel.setProperty("/busy", false);
 						// (+) By Vincent : Uncomment this line for UISettings to work
-						that._getUISettings();
+						//that._getUISettings();
 					}
 				}
 			});

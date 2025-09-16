@@ -99,6 +99,7 @@
             <!-- Technical Fields -->
             <core:Title text="{i18n>childIndormationtechnicalFields}" />
 
+            <!-- EG Number - Hidden/Commented out
             <Label
                 text="{i18n>egNumber}"
                 labelFor="EXMNR"
@@ -107,9 +108,11 @@
             <Input
                 id="EXMNR"
                 type="Text"
-                value="{JobGroup}"
+                value="{ToEduGrantDetail/Exmnr}"
             />
+            -->
 
+            <!-- IT record Number - Hidden/Commented out
             <Label
                 text="{i18n>itRecordNumber}"
                 labelFor="SEQNR"
@@ -118,8 +121,9 @@
             <Input
                 id="SEQNR"
                 type="Text"
-                value="{JobGroup}"
+                value="{ToEduGrantDetail/Seqnr}"
             />
+            -->
 
             <core:Title text="" />
         </form:content>

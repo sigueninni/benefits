@@ -32,7 +32,6 @@
 
             <Label
                 text="{i18n>school}"
-                required="false"
                 labelFor="EGSSL"
             />
             <Select
@@ -44,10 +43,14 @@
                     ]
                     }"
                 selectedKey="{ToEduGrantDetail/Egssl}"
-                enabled="{RequestSettings/IsFormEditable}"
                 forceSelection="false"
                 change="onSchoolChange"
             >
+                <!-- Empty option -->
+                <core:Item
+                    key=""
+                    text=""
+                />
                 <core:Item
                     text="{Txt}"
                     key="{Id}"
@@ -56,19 +59,16 @@
 
             <Label
                 text="{i18n>schoolName}"
-                required="true"
                 labelFor="EGSNA"
             />
             <Input
                 id="EGSNA"
                 type="Text"
                 value="{ToEduGrantDetail/Egsna}"
-                editable="{RequestSettings/IsFormEditable}"
             />
 
             <Label
                 text="{i18n>schoolType}"
-                required="true"
                 labelFor="EGSTY"
             />
 
@@ -81,7 +81,6 @@
                     ]
                     }"
                 selectedKey="{ToEduGrantDetail/Egsty}"
-                enabled="{RequestSettings/IsFormEditable}"
                 forceSelection="false"
             >
                 <core:Item
@@ -93,38 +92,38 @@
             <core:Title text="{i18n>schoolLocationAdditional}" />
             <Label
                 text="{i18n>firstPostSecondaryDegree}"
-                labelFor="firstPostSecondaryDegree"
+                labelFor="EGFPDA"
             />
             <Switch
-                id="firstPostSecondaryDegree"
-                state="false"
-                customTextOn="Yes"
-                customTextOff="No"
-                enabled="true"
+                id="EGFPDA"
+                state="{ToEduGrantDetail/Egfpda}"
+                customTextOn="{i18n>yes}"
+                customTextOff="{i18n>no}"
             />
             <Label
                 text="{i18n>yearOfEntryPostSecondary}"
-                labelFor="yearOfEntryPostSecondary"
+                labelFor="YYPSYEAR"
             />
             <Input
-                id="yearOfEntryPostSecondary"
-                type="Text"
-                value=""
-                editable="true"
+                id="YYPSYEAR"
+                type="Number"
+                value="{ToEduGrantDetail/YyPsYear}"
+                maxLength="4"
+                placeholder="YYYY"
             />
             <Label
                 text="{i18n>grade}"
-                labelFor="EGGRD"
+                labelFor="EGTYPATT"
             />
             <Select
-                id="EGGRD"
+                id="EGTYPATT"
                 items="{
                     path : '/GenericVHSet',
                     filters : [
                         { path : 'Method', operator : 'EQ', value1 :'GET_ATTEND_SCHOOL_GRADE_LIST' }
                     ]
                     }"
-                enabled="{RequestSettings/IsFormEditable}"
+                selectedKey="{ToEduGrantDetail/Egtypatt}"
             >
                 <core:Item
                     text="{Txt}"
@@ -135,12 +134,22 @@
                 text="{i18n>typeOfAttendance}"
                 labelFor="typeOfAttendance"
             />
-            <Input
+            <Select
                 id="typeOfAttendance"
-                type="Text"
-                value=""
-                editable="true"
-            />
+                items="{
+                    path : '/GenericVHSet',
+                    filters : [
+                        { path : 'Method', operator : 'EQ', value1 :'GET_TYPE_OF_ATTENDANCE_LIST' }
+                    ]
+                    }"
+                selectedKey="{ToEduGrantDetail/TypeOfAttendance}"
+                forceSelection="false"
+            >
+                <core:Item
+                    text="{Txt}"
+                    key="{Id}"
+                />
+            </Select>
 
             <!-- Application N°
 Starting from 
@@ -152,7 +161,7 @@ Grade-->
                 labelFor="EGSCT"
             />
 
-<!--             <Select
+            <!--             <Select
                 id="EGSCT"
                 items="{
                     path : '/GenericVHSet',
@@ -161,7 +170,6 @@ Grade-->
                     ]
                     }"
                 selectedKey="{ToEduGrantDetail/Egsct}"
-                enabled="{RequestSettings/IsFormEditable}"
                 forceSelection="false"
             >
                 <core:Item
@@ -176,32 +184,28 @@ Grade-->
                 value="{ToEduGrantDetail/Egsct}"
                 showValueHelp="true"
                 valueHelpOnly="true"
-                valueHelpRequest="onSchoolCountryValueHelpPress"               
+                valueHelpRequest="onSchoolCountryValueHelpPress"
             />
 
             <Label
                 text="{i18n>schoolCity}"
-                required="true"
                 labelFor="ORT01"
             />
             <Input
                 id="ORT01"
                 type="Text"
                 value="{ToEduGrantDetail/Ort01}"
-                editable="{RequestSettings/IsFormEditable}"
             />
 
             <Label
                 text="{i18n>commutingDistance}"
-                required="true"
                 labelFor="EGCDF"
             />
             <Switch
                 id="EGCDF"
-                state="false"
-                customTextOn="Yes"
-                customTextOff="No"
-                enabled="true"
+                state="{ToEduGrantDetail/Egcdf}"
+                customTextOn="{i18n>yes}"
+                customTextOff="{i18n>no}"
             />
 
             <Label
@@ -211,23 +215,22 @@ Grade-->
             <Input
                 id="WAERS"
                 type="Text"
-                value=""
-                editable="true"
+                value="{ToEduGrantDetail/TuitionWaers}"
                 showValueHelp="true"
             />
 
             <Label
                 text="{i18n>childBoarder}"
-                labelFor="childBoarder"
+                labelFor="EGCHBRD"
             />
             <Switch
-                id="childBoarder"
-                state="false"
-                customTextOn="Yes"
-                customTextOff="No"
-                enabled="true"
+                id="EGCHBRD"
+                state="{ToEduGrantDetail/Egchbrd}"
+                customTextOn="{i18n>yes}"
+                customTextOff="{i18n>no}"
             />
 
+            <!-- Application Number - Hidden/Commented out
             <Label
                 text="{i18n>applicationNumber}"
                 labelFor="EGYEA"
@@ -238,6 +241,7 @@ Grade-->
                 value=""
                 editable="true"
             />
+            -->
 
             <Label
                 text="{i18n>startingFrom}"
@@ -245,8 +249,7 @@ Grade-->
             />
             <DatePicker
                 id="EGYFR"
-                value="{ path: 'Begda', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy' }}"
-                editable="true"
+                value="{ path: 'ToEduGrantDetail/EGYFR', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy' }}"
             />
 
             <Label
@@ -255,8 +258,7 @@ Grade-->
             />
             <DatePicker
                 id="EGYTO"
-                value="{ path: 'Endda', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy' }}"
-                editable="true"
+                value="{ path: 'ToEduGrantDetail/EGYTO', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy' }}"
             />
         </form:content>
     </form:SimpleForm>

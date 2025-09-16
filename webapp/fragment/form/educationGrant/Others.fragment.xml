@@ -18,13 +18,12 @@
         columnsXL="2"
         columnsL="2"
         columnsM="2"
-        editable="true"
     >
         <form:content>
             <core:Title text="{i18n>othersData}" />
           
-            <Label text="{i18n>currencyOfPayment}" required="true" labelFor="currencyOfPayment"/>
-            <Select id="currencyOfPayment" selectedKey="{currencyOfPayment}" editable="{RequestSettings/IsFormEditable}">
+            <Label text="{i18n>currencyOfPayment}" labelFor="currencyOfPayment"/>
+            <Select id="currencyOfPayment" selectedKey="{ToEduGrantDetail/Text1}">
                 <core:Item key="USD" text="USD" />
                 <core:Item key="EUR" text="EUR" />
                 <core:Item key="CHF" text="CHF" />
@@ -32,7 +31,7 @@
             </Select>
 
             <Label text="{i18n>comments}" labelFor="comments"/>
-            <TextArea id="comments" value="{comments}" editable="{RequestSettings/IsFormEditable}" rows="3"/>
+            <TextArea id="comments" value="{ToEduGrantDetail/Text2}" rows="3"/>
         </form:content>
     </form:SimpleForm>
 </core:FragmentDefinition>
