@@ -110,6 +110,7 @@
                 value="{ToEduGrantDetail/YyPsYear}"
                 maxLength="4"
                 placeholder="YYYY"
+                width="6rem"
             />
             <Label
                 text="{i18n>grade}"
@@ -182,6 +183,7 @@ Grade-->
                 id="EGSCT"
                 type="Text"
                 value="{ToEduGrantDetail/Egsct}"
+                description="{ToEduGrantDetail/EgsctTxt}"
                 showValueHelp="true"
                 valueHelpOnly="true"
                 valueHelpRequest="onSchoolCountryValueHelpPress"
@@ -217,6 +219,8 @@ Grade-->
                 type="Text"
                 value="{ToEduGrantDetail/TuitionWaers}"
                 showValueHelp="true"
+                valueHelpOnly="true"
+                valueHelpRequest="onCurrencyValueHelpPress"
             />
 
             <Label
@@ -249,7 +253,7 @@ Grade-->
             />
             <DatePicker
                 id="EGYFR"
-                value="{ path: 'ToEduGrantDetail/EGYFR', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy' }}"
+                value="{ path: 'ToEduGrantDetail/Egyfr', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy' }}"
             />
 
             <Label
@@ -258,7 +262,7 @@ Grade-->
             />
             <DatePicker
                 id="EGYTO"
-                value="{ path: 'ToEduGrantDetail/EGYTO', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy' }}"
+                value="{ path: 'ToEduGrantDetail/Egyto', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy' }}"
             />
         </form:content>
     </form:SimpleForm>

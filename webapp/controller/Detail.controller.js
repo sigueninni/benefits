@@ -518,7 +518,6 @@ sap.ui.define([
 		 * @public
 		 */
 		onSearchSchoolCountrySelectDialog: function (oEvent) {
-			debugger;
 			const sValue = oEvent.getParameter("value").toString();
 			if (sValue !== "") {
 				let oFilter = new Filter("Txt", sap.ui.model.FilterOperator.Contains, sValue);
@@ -587,6 +586,112 @@ sap.ui.define([
 
 		/*************************************************************************************************/
 		/********************************  End of School management ******************************************/
+		/*************************************************************************************************/
+
+		/*************************************************************************************************/
+		/********************************  Begin of Currency Management ***********************************/
+		/*************************************************************************************************/
+
+		/**
+		 * Event handler for currency value help button press.
+		 * Opens a dialog to select currency from available options.
+		 * Automatically detects the source field from the event.
+		 * @param {sap.ui.base.Event} oEvent - The button press event
+		 * @public
+		 */
+		onCurrencyValueHelpPress: function (oEvent) {
+			// Get the ID of the control that triggered the event
+			const sSourceFieldId = oEvent.getSource().getId();
+			// Extract just the field ID (remove view prefix if present)
+			const sFieldId = sSourceFieldId.split("--").pop();
+			this._openCurrencyDialog(sFieldId);
+		},
+
+		/**
+		 * Private method to open currency dialog and store source field.
+		 * @param {string} sSourceFieldId - The ID of the field that triggered the dialog
+		 * @private
+		 */
+		_openCurrencyDialog: function (sSourceFieldId) {
+			const oView = this.getView();
+			
+			// Store the source field ID for later use
+			this._sCurrencySourceField = sSourceFieldId;
+			
+			if (!this.fragments._oCurrencyDialog) {
+				this.fragments._oCurrencyDialog = sap.ui.xmlfragment(
+					"com.un.zhrbenefrequests.fragment.form.educationGrant.CurrencyChoice", this);
+				this.getView().addDependent(this.fragments._oCurrencyDialog);
+				// forward compact/cozy style into Dialog
+				this.fragments._oCurrencyDialog.addStyleClass(this.getOwnerComponent().getContentDensityClass());
+			}
+
+			this.fragments._oCurrencyDialog.open();
+		},
+
+		/**
+		 * Event handler for searching in the currency select dialog.
+		 * Filters the available currencies based on the search term.
+		 * @param {sap.ui.base.Event} oEvent - The search event
+		 * @public
+		 */
+		onSearchCurrencySelectDialog: function (oEvent) {
+			const sValue = oEvent.getParameter("value").toString();
+			if (sValue !== "") {
+				let oFilter = new Filter("Txt", sap.ui.model.FilterOperator.Contains, sValue);
+				let oBinding = oEvent.getSource().getBinding("items");
+				oBinding.filter([oFilter]);
+			} else {
+				// clear filters
+				oEvent.getSource().getBinding("items").filter([]);
+			}
+		},
+
+		/**
+		 * Event handler for confirming currency selection.
+		 * Sets the selected currency values back to the appropriate form field.
+		 * @param {sap.ui.base.Event} oEvent - The confirm event with selected contexts
+		 * @public
+		 */
+		onConfirmCurrencySelectDialogPress: function (oEvent) {
+			const oView = this.getView();
+			const aContexts = oEvent.getParameter("selectedContexts");
+			
+			// get back the selected entry data
+			if (aContexts && aContexts.length) {
+				let sCurrencyName = aContexts.map(function (oContext) {
+					return oContext.getObject().Txt;
+				}).join(", ");
+				let sCurrencyId = aContexts.map(function (oContext) {
+					return oContext.getObject().Id;
+				}).join(", ");
+				
+				// Update the appropriate field based on source
+				const oTargetField = oView.byId(this._sCurrencySourceField);
+				if (oTargetField) {
+					if (oTargetField.setDescription) {
+						oTargetField.setDescription(sCurrencyName);
+					}
+					if (oTargetField.setValue) {
+						oTargetField.setValue(sCurrencyId);
+					} else if (oTargetField.setSelectedKey) {
+						// For Select controls like currencyOfPayment
+						oTargetField.setSelectedKey(sCurrencyId);
+					}
+				}
+			}
+			
+			// clear filters
+			oEvent.getSource().getBinding("items").filter([]);
+			// destroy the dialog
+			if (this.fragments._oCurrencyDialog) {
+				this.fragments._oCurrencyDialog.destroy();
+				delete this.fragments._oCurrencyDialog;
+			}
+		},
+
+		/*************************************************************************************************/
+		/********************************  End of Currency Management *************************************/
 		/*************************************************************************************************/
 
 		/* =========================================================== */

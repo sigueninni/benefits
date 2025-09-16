@@ -23,12 +23,14 @@
             <core:Title text="{i18n>othersData}" />
           
             <Label text="{i18n>currencyOfPayment}" labelFor="currencyOfPayment"/>
-            <Select id="currencyOfPayment" selectedKey="{ToEduGrantDetail/Text1}">
-                <core:Item key="USD" text="USD" />
-                <core:Item key="EUR" text="EUR" />
-                <core:Item key="CHF" text="CHF" />
-                <!-- Add other currencies if needed -->
-            </Select>
+            <Input 
+                id="currencyOfPayment" 
+                type="Text"
+                value="{ToEduGrantDetail/Text1}"
+                showValueHelp="true"
+                valueHelpOnly="true"
+                valueHelpRequest="onCurrencyValueHelpPress"
+            />
 
             <Label text="{i18n>comments}" labelFor="comments"/>
             <TextArea id="comments" value="{ToEduGrantDetail/Text2}" rows="3"/>

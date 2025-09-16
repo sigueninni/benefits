@@ -83,6 +83,7 @@
                 id="FANAT"
                 type="Text"
                 value="{ToEduGrantDetail/Fanat}"
+                description="{ToEduGrantDetail/FanatTxt}"
             />
 
             <Label
@@ -94,12 +95,14 @@
                 id="FASEX"
                 type="Text"
                 value="{ToEduGrantDetail/Fasex}"
+                description="{ToEduGrantDetail/FasexTxt}"
             />
 
-            <!-- Technical Fields -->
+           <!-- EG Number - Hidden/Commented out
+          Technical Fields 
             <core:Title text="{i18n>childIndormationtechnicalFields}" />
 
-            <!-- EG Number - Hidden/Commented out
+            
             <Label
                 text="{i18n>egNumber}"
                 labelFor="EXMNR"

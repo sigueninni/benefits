@@ -24,6 +24,7 @@
 - Gestion de l'éligibilité
 - Eligibility for Boarding	EGC01	ToDo	Logic to be extracted from the infotype
 - Timeline à ajouter
+- Filtres des Fragments Choice : currency et country
 - Ajouter les descriptions des zones avec clé( comme natio fasex etc...)
 - Vérifications : begda < endda et type de requête obligatoire
 - Enlever setTimeout

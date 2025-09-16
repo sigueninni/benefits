@@ -142,6 +142,7 @@
                 id="DSTAT"
                 type="Text"
                 value="{ToEduGrantDetail/Dstat}"
+                description="{ToEduGrantDetail/DstatTxt}"
                 showValueHelp="true"
             />
             <Label text="{i18n>designatedDS}" />
@@ -156,6 +157,7 @@
                 id="NATIO"
                 type="Text"
                 value="{ToEduGrantDetail/Natio}"
+                description="{ToEduGrantDetail/NatioTxt}"
                 showValueHelp="true"
             />
             <Label text="{i18n>contractType}" />
@@ -163,6 +165,7 @@
                 id="CTTYP"
                 type="Text"
                 value="{ToEduGrantDetail/Cttyp}"
+                description="{ToEduGrantDetail/CttypTxt}"
             />
             <Label text="{i18n>validTo}" />
             <DatePicker
@@ -197,6 +200,8 @@
                 type="Text"
                 value="{ToEduGrantDetail/Egcur}"
                 showValueHelp="true"
+                valueHelpOnly="true"
+                valueHelpRequest="onCurrencyValueHelpPress"
             />
             <Label text="{i18n>eligibilityBoarding}" />
             <Switch
