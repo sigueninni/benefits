@@ -44,6 +44,29 @@ sap.ui.define([
 			});
 			this.setModel(oViewModel, "detailView");
 
+			// Create separate JSON models for value helps to avoid key collisions
+			const oGradeModel = new JSONModel();
+			const oSchoolTypeAdditModel = new JSONModel();
+			const oSchoolListModel = new JSONModel();
+			const oSchoolTypeModel = new JSONModel();
+			const oAttendanceTypeModel = new JSONModel();
+			const oSpecialArrangementModel = new JSONModel();
+			const oChangeReasonModel = new JSONModel();
+			const oReasonBoardingModel = new JSONModel();
+			const oCurrencyModel = new JSONModel();
+			const oSchoolCountryModel = new JSONModel();
+			
+			this.setModel(oGradeModel, "gradeModel");
+			this.setModel(oSchoolTypeAdditModel, "schoolTypeAdditModel");
+			this.setModel(oSchoolListModel, "schoolListModel");
+			this.setModel(oSchoolTypeModel, "schoolTypeModel");
+			this.setModel(oAttendanceTypeModel, "attendanceTypeModel");
+			this.setModel(oSpecialArrangementModel, "specialArrangementModel");
+			this.setModel(oChangeReasonModel, "changeReasonModel");
+			this.setModel(oReasonBoardingModel, "reasonBoardingModel");
+			this.setModel(oCurrencyModel, "currencyModel");
+			this.setModel(oSchoolCountryModel, "schoolCountryModel");
+
 			// attach navigation route pattern event
 			// this.getRouter().getRoute("RouteDetail").attachPatternMatched(this._onObjectMatched, this);
 			this.getRouter().getRoute("RouteDetail").attachPatternMatched(function (oEvent) {
@@ -154,6 +177,8 @@ sap.ui.define([
 								} else {
 									console.log("Context loaded successfully:", oContext.getObject());
 									this._handleFooterButton(role);
+									// Load value help data for dropdown lists
+									this._loadValueHelpData();
 								}
 							}.bind(this)
 						}
@@ -171,6 +196,8 @@ sap.ui.define([
 						Guid: sBenefitRequestId
 					});
 					this._bindView("/" + sObjectPath);
+					// Load value help data for dropdown lists
+					this._loadValueHelpData();
 				}.bind(this));
 			}
 		},
@@ -1132,6 +1159,294 @@ sap.ui.define([
 					oView.byId("draftIndicator").clearDraftState();
 				}
 			});
+		},
+
+		/**
+		 * Load value help data into separate JSON models to avoid key collisions
+		 * @private
+		 */
+		_loadValueHelpData: function() {
+			// Configuration mapping: modelName -> method name
+			const aValueHelpConfig = [
+				{ modelName: "gradeModel", method: "GET_ATTEND_SCHOOL_GRADE_LIST" },
+				{ modelName: "schoolTypeAdditModel", method: "GET_SCHOOL_TYPE_ADDIT_LIST" },
+				{ modelName: "schoolListModel", method: "GET_SCHOOL_LIST" },
+				{ modelName: "schoolTypeModel", method: "GET_SCHOOL_TYPE_LIST" },
+				{ modelName: "attendanceTypeModel", method: "GET_ATTENDANCE_TYPE_LIST" },
+				{ modelName: "specialArrangementModel", method: "GET_SPECIAL_ARRANGEMENT_LIST" },
+				{ modelName: "changeReasonModel", method: "GET_CHANGE_REASON_LIST" },
+				{ modelName: "reasonBoardingModel", method: "GET_REASON_BOARDING_LIST" },
+				{ modelName: "currencyModel", method: "GET_CURRENCY_LIST" },
+				{ modelName: "schoolCountryModel", method: "GET_SCHOOL_COUNTRY_LIST" }
+			];
+
+			// Load all models dynamically
+			aValueHelpConfig.forEach(config => {
+				this._loadGenericData(config.modelName, config.method);
+			});
+		},
+
+		/**
+		 * Generic method to load data from GenericVHSet into a specific JSON model
+		 * @param {string} sModelName - Name of the JSON model to populate
+		 * @param {string} sMethod - Method name for the GenericVHSet filter
+		 * @private
+		 */
+		_loadGenericData: function(sModelName, sMethod) {
+			const oModel = this.getModel();
+			const aFilters = [new sap.ui.model.Filter("Method", sap.ui.model.FilterOperator.EQ, sMethod)];
+			
+			oModel.read("/GenericVHSet", {
+				filters: aFilters,
+				success: (oData) => {
+					this.getModel(sModelName).setData({
+						items: oData.results
+					});
+					console.log(`${sModelName} data loaded (${sMethod}):`, oData.results);
+				},
+				error: (oError) => {
+					console.error(`Error loading ${sModelName} data (${sMethod}):`, oError);
+				}
+			});
+		},
+
+		/**
+		 * Load school list data for EGSSL field
+		 * @private
+		 */
+		_loadSchoolListData: function() {
+			const oModel = this.getModel();
+			const aFilters = [new sap.ui.model.Filter("Method", sap.ui.model.FilterOperator.EQ, "GET_SCHOOL_LIST")];
+			
+			oModel.read("/GenericVHSet", {
+				filters: aFilters,
+				success: (oData) => {
+					this.getModel("schoolListModel").setData({
+						items: oData.results
+					});
+					console.log("School list data loaded:", oData.results);
+				},
+				error: (oError) => {
+					console.error("Error loading school list data:", oError);
+				}
+			});
+		},
+
+		/**
+		 * Load school type data for EGSTY field
+		 * @private
+		 */
+		_loadSchoolTypeData: function() {
+			const oModel = this.getModel();
+			const aFilters = [new sap.ui.model.Filter("Method", sap.ui.model.FilterOperator.EQ, "GET_SCHOOL_TYPE_LIST")];
+			
+			oModel.read("/GenericVHSet", {
+				filters: aFilters,
+				success: (oData) => {
+					this.getModel("schoolTypeModel").setData({
+						items: oData.results
+					});
+					console.log("School type data loaded:", oData.results);
+				},
+				error: (oError) => {
+					console.error("Error loading school type data:", oError);
+				}
+			});
+		},
+
+		/**
+		 * Load attendance type data for typeOfAttendance field
+		 * @private
+		 */
+		_loadAttendanceTypeData: function() {
+			const oModel = this.getModel();
+			const aFilters = [new sap.ui.model.Filter("Method", sap.ui.model.FilterOperator.EQ, "GET_ATTENDANCE_TYPE_LIST")];
+			
+			oModel.read("/GenericVHSet", {
+				filters: aFilters,
+				success: (oData) => {
+					this.getModel("attendanceTypeModel").setData({
+						items: oData.results
+					});
+					console.log("Attendance type data loaded:", oData.results);
+				},
+				error: (oError) => {
+					console.error("Error loading attendance type data:", oError);
+				}
+			});
+		},
+
+		/**
+		 * Load special arrangement data for EGSAR field
+		 * @private
+		 */
+		_loadSpecialArrangementData: function() {
+			const oModel = this.getModel();
+			const aFilters = [new sap.ui.model.Filter("Method", sap.ui.model.FilterOperator.EQ, "GET_SPECIAL_ARRANGEMENT_LIST")];
+			
+			oModel.read("/GenericVHSet", {
+				filters: aFilters,
+				success: (oData) => {
+					this.getModel("specialArrangementModel").setData({
+						items: oData.results
+					});
+					console.log("Special arrangement data loaded:", oData.results);
+				},
+				error: (oError) => {
+					console.error("Error loading special arrangement data:", oError);
+				}
+			});
+		},
+
+		/**
+		 * Load change reason data for EGCRS field
+		 * @private
+		 */
+		_loadChangeReasonData: function() {
+			const oModel = this.getModel();
+			const aFilters = [new sap.ui.model.Filter("Method", sap.ui.model.FilterOperator.EQ, "GET_CHANGE_REASON_LIST")];
+			
+			oModel.read("/GenericVHSet", {
+				filters: aFilters,
+				success: (oData) => {
+					this.getModel("changeReasonModel").setData({
+						items: oData.results
+					});
+					console.log("Change reason data loaded:", oData.results);
+				},
+				error: (oError) => {
+					console.error("Error loading change reason data:", oError);
+				}
+			});
+		},
+
+		/**
+		 * Load reason boarding data for EGBRS field
+		 * @private
+		 */
+		_loadReasonBoardingData: function() {
+			const oModel = this.getModel();
+			const aFilters = [new sap.ui.model.Filter("Method", sap.ui.model.FilterOperator.EQ, "GET_REASON_BOARDING_LIST")];
+			
+			oModel.read("/GenericVHSet", {
+				filters: aFilters,
+				success: (oData) => {
+					this.getModel("reasonBoardingModel").setData({
+						items: oData.results
+					});
+					console.log("Reason boarding data loaded:", oData.results);
+				},
+				error: (oError) => {
+					console.error("Error loading reason boarding data:", oError);
+				}
+			});
+		},
+
+		/**
+		 * Load currency data for currency selection dialog
+		 * @private
+		 */
+		_loadCurrencyData: function() {
+			const oModel = this.getModel();
+			const aFilters = [new sap.ui.model.Filter("Method", sap.ui.model.FilterOperator.EQ, "GET_CURRENCY_LIST")];
+			
+			oModel.read("/GenericVHSet", {
+				filters: aFilters,
+				success: (oData) => {
+					this.getModel("currencyModel").setData({
+						items: oData.results
+					});
+					console.log("Currency data loaded:", oData.results);
+				},
+				error: (oError) => {
+					console.error("Error loading currency data:", oError);
+				}
+			});
+		},
+
+		/**
+		 * Load school country data for school country selection dialog
+		 * @private
+		 */
+		_loadSchoolCountryData: function() {
+			const oModel = this.getModel();
+			const aFilters = [new sap.ui.model.Filter("Method", sap.ui.model.FilterOperator.EQ, "GET_SCHOOL_COUNTRY_LIST")];
+			
+			oModel.read("/GenericVHSet", {
+				filters: aFilters,
+				success: (oData) => {
+					this.getModel("schoolCountryModel").setData({
+						items: oData.results
+					});
+					console.log("School country data loaded:", oData.results);
+				},
+				error: (oError) => {
+					console.error("Error loading school country data:", oError);
+				}
+			});
+		},
+
+		/**
+		 * Load grade data for EGTYPATT field
+		 * @private
+		 */
+		_loadGradeData: function() {
+			const oModel = this.getModel();
+			const aFilters = [new sap.ui.model.Filter("Method", sap.ui.model.FilterOperator.EQ, "GET_ATTEND_SCHOOL_GRADE_LIST")];
+			
+			oModel.read("/GenericVHSet", {
+				filters: aFilters,
+				success: (oData) => {
+					this.getModel("gradeModel").setData({
+						items: oData.results
+					});
+					console.log("Grade data loaded:", oData.results);
+				},
+				error: (oError) => {
+					console.error("Error loading grade data:", oError);
+				}
+			});
+		},
+
+		/**
+		 * Load school type additional data for EGTYP field
+		 * @private
+		 */
+		_loadSchoolTypeAdditData: function() {
+			const oModel = this.getModel();
+			const aFilters = [new sap.ui.model.Filter("Method", sap.ui.model.FilterOperator.EQ, "GET_SCHOOL_TYPE_ADDIT_LIST")];
+			
+			oModel.read("/GenericVHSet", {
+				filters: aFilters,
+				success: (oData) => {
+					this.getModel("schoolTypeAdditModel").setData({
+						items: oData.results
+					});
+					console.log("School type addit data loaded:", oData.results);
+				},
+				error: (oError) => {
+					console.error("Error loading school type addit data:", oError);
+				}
+			});
+		},
+
+		/**
+		 * Handler pour le changement d'état du switch multiple attendance
+		 * Convertit l'état du switch en valeur pour le modèle
+		 * @param {sap.ui.base.Event} oEvent - L'événement de changement du switch
+		 */
+		onMultipleAttendanceChange: function(oEvent) {
+			var bState = oEvent.getParameter("state");
+			var sValue = bState ? 'N' : '';
+			
+			// Mettre à jour le modèle avec la valeur convertie
+			var oContext = this.getView().getBindingContext();
+			if (oContext) {
+				this.getModel().setProperty(
+					oContext.getPath() + "/ToEduGrantDetail/Egmul", 
+					sValue
+				);
+			}
 		}
 
 	});

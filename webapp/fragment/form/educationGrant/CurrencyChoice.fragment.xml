@@ -9,16 +9,11 @@
         title="{i18n>selectCurrency}"
         search="onSearchCurrencySelectDialog"
         confirm="onConfirmCurrencySelectDialogPress"
-        items="{
-                    path : '/GenericVHSet',
-                    filters : [
-                        { path : 'Method', operator : 'EQ', value1 :'GET_CURRENCY_LIST' }
-                    ]
-                    }"
+        items="{currencyModel>/items}"
         rememberSelections="false"
     >
-        <ObjectListItem title="{Id}">
-            <ObjectAttribute text="{Txt}" />
+        <ObjectListItem title="{currencyModel>Id}">
+            <ObjectAttribute text="{currencyModel>Txt}" />
         </ObjectListItem>
     </SelectDialog>
 </core:FragmentDefinition>

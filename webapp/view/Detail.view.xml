@@ -45,15 +45,28 @@
                         press="onEditButtonPress"
                     /> -->
                     <Button
+                        text="{i18n>approve}"
+                        type="Accept"
+                        press="onApproveButtonPress"
+                    />
+                    <Button
+                        text="{i18n>reject}"
+                        type="Reject"
+                        press="onRejectButtonPress"
+                    />
+                    <Button
+                        text="{i18n>return}"
+                        type="Emphasized"
+                        press="onReturnButtonPress"
+                    />
+                    <Button
                         text="{i18n>submit}"
                         type="Emphasized"
-                        visible="{RequestSettings/IsSubmitEnabled}"
                         press="onSubmitButtonPress"
                     />
                     <Button
                         text="{i18n>delete}"
                         type="Default"
-                        visible="{RequestSettings/IsDeleteEnabled}"
                         press="onDeleteButtonPress"
                     />
                     <!--                     <Button
@@ -308,13 +321,11 @@
             >
                 <uxap:subSections>
                     <uxap:ObjectPageSubSection id="attachmentsSubSection">
-                      
-                           <core:Fragment
-                               fragmentName="com.un.zhrbenefrequests.fragment.form.educationGrant.Attachments"
-                               type="XML"
-                               xmlns:core="sap.ui.core"
-                           />
-                       
+                        <core:Fragment
+                            fragmentName="com.un.zhrbenefrequests.fragment.form.educationGrant.Attachments"
+                            type="XML"
+                            xmlns:core="sap.ui.core"
+                        />
                     </uxap:ObjectPageSubSection>
                 </uxap:subSections>
             </uxap:ObjectPageSection>
@@ -373,14 +384,14 @@
                     />
                     <ToolbarSpacer width="" />
                     <Button
-                    	id="saveButton"
+                        id="saveButton"
                         text="{i18n>save}"
                         press="onSaveBenefitRequestObject"
                         type="Emphasized"
                         visible="{RequestSettings/IsDraftHandlingEnabled}"
                     />
                     <Button
-                    	id="cancelButton"
+                        id="cancelButton"
                         text="{i18n>cancel}"
                         press="onCancelButtonPress"
                         visible="{RequestSettings/IsDraftHandlingEnabled}"

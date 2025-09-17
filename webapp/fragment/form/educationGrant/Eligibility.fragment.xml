@@ -101,18 +101,13 @@
             <Select
                 id="EGSAR"
                 forceSelection="false"
-                items="{
-                        path : '/GenericVHSet',
-                        filters : [
-                            { path : 'Method', operator : 'EQ', value1 :'GET_SPECIAL_ARRANGEMENT_LIST' }
-                        ]
-                        }"
+                items="{specialArrangementModel>/items}"
                 selectedKey="{ToEduGrantDetail/Egsar}"
                 visible="{ToEduGrantDetail/Egdis}"
             >
                 <core:Item
-                    text="{Txt}"
-                    key="{Id}"
+                    text="{specialArrangementModel>Txt}"
+                    key="{specialArrangementModel>Id}"
                 />
             </Select>
 
@@ -124,17 +119,12 @@
             <Select
                 id="EGCRS"
                 forceSelection="false"
-                items="{
-                                        path : '/GenericVHSet',
-                                        filters : [
-                                            { path : 'Method', operator : 'EQ', value1 :'GET_CHANGE_REASON_LIST' }
-                                        ]
-                                        }"
+                items="{changeReasonModel>/items}"
                 selectedKey="{ToEduGrantDetail/Egcrs}"
             >
                 <core:Item
-                    text="{Txt}"
-                    key="{Id}"
+                    text="{changeReasonModel>Txt}"
+                    key="{changeReasonModel>Id}"
                 />
             </Select>
             <Label text="{i18n>dutyStationSM}" />
@@ -215,16 +205,11 @@
                 id="EGBRS"
                 forceSelection="false"
                 selectedKey="{ToEduGrantDetail/Egbrs}"
-                items="{
-                    path : '/GenericVHSet',
-                    filters : [
-                        { path : 'Method', operator : 'EQ', value1 :'GET_REASON_BOARDING_LIST' }
-                    ]
-                    }"
+                items="{reasonBoardingModel>/items}"
             >
                 <core:Item
-                    text="{Txt}"
-                    key="{Id}"
+                    text="{reasonBoardingModel>Txt}"
+                    key="{reasonBoardingModel>Id}"
                 />
             </Select>
             <Label text="{i18n>boardingProrationFactor}" />
@@ -244,22 +229,13 @@
                 selected="{ToEduGrantDetail/Egcafpro}"
             />
             <Label text="{i18n>multipleAttendance}" />
-            <Select
+            <Switch
                 id="EGMUL"
-                forceSelection="false"
-                selectedKey="{ToEduGrantDetail/Egmul}"
-                items="{
-                    path : '/GenericVHSet',
-                    filters : [
-                        { path : 'Method', operator : 'EQ', value1 :'GET_MULTIPLE_ATTENDANCE_LIST' }
-                    ]
-                    }"
-            >
-                <core:Item
-                    text="{Txt}"
-                    key="{Id}"
-                />
-            </Select>
+                state="{path: 'ToEduGrantDetail/Egmul', formatter: '.formatter.formatMultipleAttendanceState'}"
+                change="onMultipleAttendanceChange"
+                customTextOn="{i18n>yes}"
+                customTextOff="{i18n>no}"
+            />
             <Label text="{i18n>applyTwoThirdRule}" />
             <CheckBox
                 id="EGRUL"

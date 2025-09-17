@@ -9,16 +9,11 @@
         title="{i18n>selectSchoolCountry}"
         search="onSearchSchoolCountrySelectDialog"
         confirm="onConfirmSchoolCountrySelectDialogPress"
-        items="{
-                    path : '/GenericVHSet',
-                    filters : [
-                        { path : 'Method', operator : 'EQ', value1 :'GET_SCHOOL_COUNTRY_LIST' }
-                    ]
-                    }"
+        items="{schoolCountryModel>/items}"
         rememberSelections="false"
     >
-        <ObjectListItem title="{Id}">
-            <ObjectAttribute text="{Txt}" />
+        <ObjectListItem title="{schoolCountryModel>Id}">
+            <ObjectAttribute text="{schoolCountryModel>Txt}" />
         </ObjectListItem>
     </SelectDialog>
 </core:FragmentDefinition>

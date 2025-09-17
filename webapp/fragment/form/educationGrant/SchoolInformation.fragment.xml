@@ -36,12 +36,7 @@
             />
             <Select
                 id="EGSSL"
-                items="{
-                    path : '/GenericVHSet',
-                    filters : [
-                        { path : 'Method', operator : 'EQ', value1 :'GET_SCHOOL_LIST' }
-                    ]
-                    }"
+                items="{schoolListModel>/items}"
                 selectedKey="{ToEduGrantDetail/Egssl}"
                 forceSelection="false"
                 change="onSchoolChange"
@@ -52,8 +47,8 @@
                     text=""
                 />
                 <core:Item
-                    text="{Txt}"
-                    key="{Id}"
+                    text="{schoolListModel>Txt}"
+                    key="{schoolListModel>Id}"
                 />
             </Select>
 
@@ -68,28 +63,38 @@
             />
 
             <Label
-                text="{i18n>schoolType}"
+                text="{i18n>type}"
                 labelFor="EGSTY"
             />
 
             <Select
                 id="EGSTY"
-                items="{
-                    path : '/GenericVHSet',
-                    filters : [
-                        { path : 'Method', operator : 'EQ', value1 :'GET_SCHOOL_TYPE_LIST' }
-                    ]
-                    }"
+                items="{schoolTypeModel>/items}"
                 selectedKey="{ToEduGrantDetail/Egsty}"
                 forceSelection="false"
             >
                 <core:Item
-                    text="{Txt}"
-                    key="{Id}"
+                    text="{schoolTypeModel>Txt}"
+                    key="{schoolTypeModel>Id}"
                 />
             </Select>
 
             <core:Title text="{i18n>schoolLocationAdditional}" />
+            <Label
+                text="{i18n>schoolType}"
+                labelFor="EGTYP"
+            />
+            <Select
+                id="EGTYP"
+                items="{schoolTypeAdditModel>/items}"
+                selectedKey="{ToEduGrantDetail/Egtyp}"
+                forceSelection="false"
+            >
+                <core:Item
+                    text="{schoolTypeAdditModel>Txt}"
+                    key="{schoolTypeAdditModel>Id}"
+                />
+            </Select>
             <Label
                 text="{i18n>firstPostSecondaryDegree}"
                 labelFor="EGFPDA"
@@ -118,17 +123,12 @@
             />
             <Select
                 id="EGTYPATT"
-                items="{
-                    path : '/GenericVHSet',
-                    filters : [
-                        { path : 'Method', operator : 'EQ', value1 :'GET_ATTEND_SCHOOL_GRADE_LIST' }
-                    ]
-                    }"
+                items="{gradeModel>/items}"
                 selectedKey="{ToEduGrantDetail/Egtypatt}"
             >
                 <core:Item
-                    text="{Txt}"
-                    key="{Id}"
+                    text="{gradeModel>Txt}"
+                    key="{gradeModel>Id}"
                 />
             </Select>
             <Label
@@ -137,18 +137,13 @@
             />
             <Select
                 id="typeOfAttendance"
-                items="{
-                    path : '/GenericVHSet',
-                    filters : [
-                        { path : 'Method', operator : 'EQ', value1 :'GET_ATTENDANCE_TYPE_LIST' }
-                    ]
-                    }"
+                items="{attendanceTypeModel>/items}"
                 selectedKey="{ToEduGrantDetail/TypeOfAttendance}"
                 forceSelection="false"
             >
                 <core:Item
-                    text="{Txt}"
-                    key="{Id}"
+                    text="{attendanceTypeModel>Txt}"
+                    key="{attendanceTypeModel>Id}"
                 />
             </Select>
 

@@ -57,6 +57,17 @@ sap.ui.define([
             return null;
         },
 
+        /**
+         * Formatter pour convertir la valeur du modèle en état du switch
+         * true (state ON) correspond à 'N' dans le modèle
+         * false (state OFF) correspond à '' (vide) dans le modèle
+         * @param {string} sValue - La valeur du modèle ('N' ou '')
+         * @returns {boolean} - L'état du switch
+         */
+        formatMultipleAttendanceState: function(sValue) {
+            return sValue === 'N';
+        }
+
     };
 
 
