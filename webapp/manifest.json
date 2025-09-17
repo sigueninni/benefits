@@ -33,6 +33,14 @@
                     "localUri": "localService/commonService/metadata.xml",
                     "odataVersion": "2.0"
                 }
+            },
+            "ZHR_BENEFITS_REQ_APPROVAL_SRV": {
+                "uri": "/sap/opu/odata/sap/ZHR_BENEFITS_REQ_APPROVAL_SRV/",
+                "type": "OData",
+                "settings": {
+                    "odataVersion": "2.0",
+                    "localUri": "localService/metadata.xml"
+                }
             }
         }
     },
@@ -96,6 +104,17 @@
                     "defaultCountMode": "Inline"
                 },
                 "preload": true
+            },
+            "approveModel": {
+                "dataSource": "ZHR_BENEFITS_REQ_APPROVAL_SRV",
+                "settings": {
+                    "metadataUrlParams": {
+                        "sap-documentation": "heading"
+                    },
+                    "defaultBindingMode": "TwoWay",
+                    "defaultCountMode": "Inline"
+                },
+                "preload": true
             }
         },
         "resources": {
@@ -139,7 +158,7 @@
                 },
                 {
                     "name": "RouteDetailOnly",
-                    "pattern": "DetailOnly/{benefitRequestId}",
+                    "pattern": "DetailOnly/{benefitRequestId}/{role}/{nextActorCode}/{requestStatus}/{requestType}",
                     "target": [
                         "TargetDetail"
                     ],

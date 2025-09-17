@@ -355,7 +355,7 @@
             </uxap:ObjectPageSection>
         </uxap:sections>
         <uxap:footer>
-            <OverflowToolbar>
+            <OverflowToolbar id="actionFooter">
                 <content>
                     <Button
                         id="messagePopoverBtn"
@@ -373,12 +373,14 @@
                     />
                     <ToolbarSpacer width="" />
                     <Button
+                    	id="saveButton"
                         text="{i18n>save}"
                         press="onSaveBenefitRequestObject"
                         type="Emphasized"
                         visible="{RequestSettings/IsDraftHandlingEnabled}"
                     />
                     <Button
+                    	id="cancelButton"
                         text="{i18n>cancel}"
                         press="onCancelButtonPress"
                         visible="{RequestSettings/IsDraftHandlingEnabled}"

@@ -115,6 +115,7 @@ sap.ui.define([
 				const oModel = oView.getModel();
 				const oArguments = oEvent.getParameter("arguments") || {};
 				const sBenefitRequestId = oArguments.benefitRequestId;
+				const role =  oArguments.role;
 
 				console.log("Route arguments:", oArguments);
 				console.log("Matched route:", routeName);
@@ -152,6 +153,7 @@ sap.ui.define([
 									this.getRouter().navTo("detailObjectNotFound");
 								} else {
 									console.log("Context loaded successfully:", oContext.getObject());
+									this._handleFooterButton(role);
 								}
 							}.bind(this)
 						}
@@ -824,6 +826,73 @@ sap.ui.define([
 		 * @param {string} sObjectPath path to the object to be bound to the view.
 		 * @private
 		 */
+		 _handleFooterButton: function(role) {
+			  const oFooterToolbar = this.getView().byId("actionFooter");
+			  if (!oFooterToolbar) {
+			    console.warn("OverflowToolbar not found.");
+			    return;
+			  }
+			
+			  // Hide Save and Cancel buttons
+			  const oSaveButton = this.getView().byId("saveButton");
+			  const oCancelButton = this.getView().byId("cancelButton");
+			
+			  if (oSaveButton) {
+			    oSaveButton.setVisible(false);
+			  } else {
+			    console.warn("Save button not found.");
+			  }
+			
+			  if (oCancelButton) {
+			    oCancelButton.setVisible(false);
+			  } else {
+			    console.warn("Cancel button not found.");
+			  }
+			
+			if (role === "HRA"){
+				  // Add new action buttons
+				  const aButtons = [
+				    new sap.m.Button({
+				      text: "Approve",
+				      type: "Accept"
+				      //press: this._onApproveHRA.bind(this)
+				    }),
+				    new sap.m.Button({
+				      text: "Reject",
+				      type: "Reject"
+				      //press: this._onRejectHRA.bind(this)
+				    }),
+				    new sap.m.Button({
+				      text: "Return",
+				      type: "Default"
+				      //press: this._onReturnHRA.bind(this)
+				    })
+				  ];
+				
+				  aButtons.forEach(function(oBtn) {
+				    oFooterToolbar.addContent(oBtn);
+				  });
+			} else if (role === "HRO"){
+					// Add new action buttons
+				  const aButtons = [
+				    new sap.m.Button({
+				      text: "Approve",
+				      type: "Accept"
+				      //press: this._onApproveHRO.bind(this)
+				    }),
+				    new sap.m.Button({
+				      text: "Return",
+				      type: "Default"
+				      //press: this._onReturnHRO.bind(this)
+				    })
+				  ];
+				
+				  aButtons.forEach(function(oBtn) {
+				    oFooterToolbar.addContent(oBtn);
+				  });
+			}
+			  
+		},
 		_bindView: function (sObjectPath) {
 			let that = this;
 			const oView = this.getView();

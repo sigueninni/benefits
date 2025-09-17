@@ -140,7 +140,7 @@
                 items="{
                     path : '/GenericVHSet',
                     filters : [
-                        { path : 'Method', operator : 'EQ', value1 :'GET_TYPE_OF_ATTENDANCE_LIST' }
+                        { path : 'Method', operator : 'EQ', value1 :'GET_ATTENDANCE_TYPE_LIST' }
                     ]
                     }"
                 selectedKey="{ToEduGrantDetail/TypeOfAttendance}"
