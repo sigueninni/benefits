@@ -56,7 +56,7 @@
                     />
                     <Button
                         text="{i18n>return}"
-                        type="Emphasized"
+                        type="Emphasized"   
                         press="onReturnButtonPress"
                     />
                     <Button
@@ -119,14 +119,16 @@
             </l:VerticalLayout> -->
 
             <l:VerticalLayout>
-                <VBox height="63px">
-                    <Label text="Completeness" />
+                <VBox height="63px" class="sapUiMediumMarginBegin">
+                    <Label text="{i18n>completeness}" />
                     <ProgressIndicator
-                        percentValue="30"
-                        displayValue="30%"
+                        percentValue="{path: 'Completion', formatter: '.formatter.formatCompletionValue'}"
+                        state="{path: 'Completion', formatter: '.formatter.getCompletionState'}"
+                        displayValue="{path: 'Completion', formatter: '.formatter.formatCompletionDisplay'}"
                         showValue="true"
-                        state="None"
                     />
+                    <!-- BOUTON TEMPORAIRE POUR DEBUG -->
+                    <Button text="🧪 Test Completion" press="onTestCompletion" type="Emphasized" class="sapUiTinyMarginTop"/>
                 </VBox>
             </l:VerticalLayout>
 
@@ -140,7 +142,7 @@
         <!-- Section and forms  : Rental Subsidy-->
         <uxap:sections>
             <uxap:ObjectPageSection
-                id="educationGrantFormSection"
+                id="rentalSubsidyFormSection"
                 showTitle="true"
                 title="{i18n>rentalSubsidyRequestForm}"
                 titleUppercase="true"
@@ -179,7 +181,7 @@
 
             <!-- Section and forms  : Education Grant-->
             <uxap:ObjectPageSection
-                id="rentalSubsidyFormSection"
+                id="educationGrantFormSection"
                 showTitle="true"
                 title="{i18n>educationGrantRequestForm}"
                 titleUppercase="true"

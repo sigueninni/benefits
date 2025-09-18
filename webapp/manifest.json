@@ -41,6 +41,10 @@
                     "odataVersion": "2.0",
                     "localUri": "localService/metadata.xml"
                 }
+            },
+            "commentData_alias": {
+                "uri": "model/localData/comments.json",
+                "type": "JSON"
             }
         }
     },
@@ -115,6 +119,10 @@
                     "defaultCountMode": "Inline"
                 },
                 "preload": true
+            },
+             "commentData": {
+                "type": "sap.ui.model.json.JSONModel",
+                "dataSource": "commentData_alias"
             }
         },
         "resources": {

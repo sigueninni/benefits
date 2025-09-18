@@ -66,6 +66,86 @@ sap.ui.define([
          */
         formatMultipleAttendanceState: function(sValue) {
             return sValue === 'N';
+        },
+
+        /**
+         * Formatter pour déterminer l'état de la barre de progression basé sur le pourcentage de completion
+         * @param {string|number} vPercentage - Pourcentage de completion (peut être string "75" ou number 75)
+         * @returns {string} État UI5 (Success, Information, Warning, None, Error)
+         */
+        getCompletionState: function(vPercentage) {
+            console.log("🎨 getCompletionState called with:", vPercentage, "type:", typeof vPercentage);
+            
+            // Toujours commencer par Error comme valeur par défaut
+            let sResult = "Error";
+            
+            try {
+                // Convertir en nombre et gérer les cas null/undefined/empty/espaces
+                let iPercentage = 0;
+                
+                if (vPercentage !== null && vPercentage !== undefined) {
+                    if (typeof vPercentage === "string") {
+                        const cleanValue = vPercentage.trim();
+                        if (cleanValue !== "") {
+                            iPercentage = parseFloat(cleanValue) || 0;
+                        }
+                    } else if (typeof vPercentage === "number") {
+                        iPercentage = vPercentage;
+                    }
+                }
+                
+                // Déterminer l'état basé sur le pourcentage
+                if (iPercentage >= 90) {
+                    sResult = "Success";      // Vert - Presque complet (90%+)
+                } else if (iPercentage >= 75) {
+                    sResult = "Information";  // Bleu - Presque fini
+                } else if (iPercentage >= 50) {
+                    sResult = "Warning";      // Orange - À moitié
+                } else if (iPercentage >= 25) {
+                    sResult = "None";         // Défaut - En cours
+                } else {
+                    sResult = "Error";        // Rouge - Peu rempli (inclut 0%)
+                }
+                
+            } catch (oError) {
+                console.error("Error in getCompletionState:", oError);
+                sResult = "Error"; // Fallback sûr
+            }
+            
+            console.log("🎨 getCompletionState returns:", sResult);
+            return sResult;
+        },
+
+        /**
+         * Formatter pour la valeur de la ProgressIndicator
+         * @param {string} vPercentage - Valeur du champ Completion
+         * @returns {number} Valeur numérique pour percentValue
+         */
+        formatCompletionValue: function(vPercentage) {
+            if (vPercentage !== null && vPercentage !== undefined && vPercentage !== "") {
+                const cleanValue = typeof vPercentage === "string" ? vPercentage.trim() : vPercentage;
+                if (cleanValue !== "") {
+                    return parseFloat(cleanValue) || 0;
+                }
+            }
+            return 0;
+        },
+
+        /**
+         * Formatter pour l'affichage de la ProgressIndicator  
+         * @param {string} vPercentage - Valeur du champ Completion
+         * @returns {string} Texte d'affichage (ex: "75%")
+         */
+        formatCompletionDisplay: function(vPercentage) {
+            // Logique similaire à formatCompletionValue mais pour l'affichage
+            let iPercentage = 0;
+            if (vPercentage !== null && vPercentage !== undefined && vPercentage !== "") {
+                const cleanValue = typeof vPercentage === "string" ? vPercentage.trim() : vPercentage;
+                if (cleanValue !== "") {
+                    iPercentage = parseFloat(cleanValue) || 0;
+                }
+            }
+            return iPercentage + "%";
         }
 
     };

@@ -40,7 +40,9 @@ sap.ui.define([
 				delay: 0,
 				isMandatory: true,
 				isVoluntary: false,
-				mimePath: this._sMIMESpath
+				mimePath: this._sMIMESpath,
+				completionPercentage: 0,
+				completionState: "Error"
 			});
 			this.setModel(oViewModel, "detailView");
 
@@ -133,6 +135,9 @@ sap.ui.define([
 		// 	}.bind(this));
 		// },
 		_onObjectMatched: function (oEvent, routeName) {
+			// Only detach previous listeners when navigating to avoid conflicts
+			this._detachCompletionListeners();
+			
 			if (routeName === "RouteDetailOnly") {
 				const oView = this.getView();
 				const oModel = oView.getModel();
@@ -179,6 +184,9 @@ sap.ui.define([
 									this._handleFooterButton(role);
 									// Load value help data for dropdown lists
 									this._loadValueHelpData();
+									// Restore or calculate form completion once data is received
+									this._restoreFormCompletion();
+									this._attachCompletionListeners();
 								}
 							}.bind(this)
 						}
@@ -198,6 +206,7 @@ sap.ui.define([
 					this._bindView("/" + sObjectPath);
 					// Load value help data for dropdown lists
 					this._loadValueHelpData();
+					// Form completion will be calculated in dataReceived event of _bindView
 				}.bind(this));
 			}
 		},
@@ -953,6 +962,10 @@ sap.ui.define([
 						oViewModel.setProperty("/busy", false);
 						// (+) By Vincent : Uncomment this line for UISettings to work
 						//that._getUISettings();
+						
+						// Restore or calculate form completion once data is received
+						that._restoreFormCompletion();
+						that._attachCompletionListeners();
 					}
 				}
 			});
@@ -1483,6 +1496,298 @@ sap.ui.define([
 					sValue
 				);
 			}
+			
+			// Recalculer la complétude après changement
+			this._calculateFormCompletion();
+		},
+
+		/**
+		 * Get all visible form fields (Input, Select, CheckBox, etc.)
+		 * Filters fields based on the current request type to avoid counting fields from inactive forms
+		 * @returns {Array} Array of visible form controls for the active request type
+		 * @private
+		 */
+		_getVisibleFormFields: function() {
+			const oView = this.getView();
+			const oContext = oView.getBindingContext();
+			
+			if (!oContext) {
+				console.log("❌ No context in _getVisibleFormFields");
+				return [];
+			}
+			
+			// Get current request type
+			const sRequestType = oContext.getProperty("RequestType");
+			console.log("🔍 Request type for field detection:", sRequestType);
+			
+			// Get the appropriate form section based on request type (maintenant les IDs correspondent au contenu)
+			let oFormSection;
+			if (sRequestType === '01') {
+				// Education Grant 
+				oFormSection = oView.byId("educationGrantFormSection"); 
+			} else if (sRequestType === '02') {
+				// Rental Subsidy 
+				oFormSection = oView.byId("rentalSubsidyFormSection"); 
+			}
+			
+			if (!oFormSection) {
+				console.log("❌ Form section not found for request type:", sRequestType);
+				return [];
+			}
+			
+			if (!oFormSection.getVisible()) {
+				console.log("❌ Form section not visible for request type:", sRequestType);
+				return [];
+			}
+			
+			console.log("✅ Using form section:", oFormSection.getId());
+			
+			// Find all form controls within the active section only
+			const aInputs = oFormSection.findAggregatedObjects(true, function(oControl) {
+				return (oControl.isA("sap.m.Input") || 
+						oControl.isA("sap.m.Select") || 
+						oControl.isA("sap.m.CheckBox") || 
+						oControl.isA("sap.m.Switch") ||
+						oControl.isA("sap.m.DatePicker")) && 
+						oControl.getVisible();
+			});
+			
+			console.log(`🎯 Request Type: ${sRequestType}, Form Section: ${oFormSection.getId()}, Fields found: ${aInputs.length}`);
+			
+			return aInputs;
+		},
+
+		/**
+		 * Check if a field is filled
+		 * @param {sap.ui.core.Control} oControl - The control to check
+		 * @returns {boolean} True if field has value
+		 * @private
+		 */
+		_isFieldFilled: function(oControl) {
+			if (!oControl || !oControl.getVisible()) {
+				return false;
+			}
+			
+			if (oControl.isA("sap.m.Input")) {
+				return !!oControl.getValue();
+			} else if (oControl.isA("sap.m.Select")) {
+				return !!oControl.getSelectedKey();
+			} else if (oControl.isA("sap.m.CheckBox")) {
+				return oControl.getSelected();
+			} else if (oControl.isA("sap.m.Switch")) {
+				return oControl.getState();
+			} else if (oControl.isA("sap.m.DatePicker")) {
+				return !!oControl.getValue();
+			}
+			
+			return false;
+		},
+
+		/**
+		 * Restore completion values from the current request context
+		 * @private
+		 */
+		_restoreFormCompletion: function() {
+			const oContext = this.getView().getBindingContext();
+			
+			if (oContext) {
+				const oModel = this.getView().getModel();
+				const sPath = oContext.getPath();
+				
+				// Récupérer la valeur stockée dans le champ Completion du modèle header
+				const sCompletion = oModel.getProperty(sPath + "/Completion");
+				console.log("🔄 _restoreFormCompletion - Completion from backend:", JSON.stringify(sCompletion), "Type:", typeof sCompletion);
+				
+				if (sCompletion !== undefined && sCompletion !== null && sCompletion !== "") {
+					// Vérifier si c'est une valeur valide (pas juste des espaces)
+					const sTrimmed = String(sCompletion).trim();
+					console.log("🔄 After trim:", JSON.stringify(sTrimmed));
+					
+					if (sTrimmed !== "" && !isNaN(parseFloat(sTrimmed))) {
+						const sState = formatter.getCompletionState(sCompletion);
+						console.log(`✅ Restored completion for request: ${sTrimmed}% (${sState})`);
+						return; // On a une valeur valide, pas besoin de recalculer
+					}
+				}
+				
+				// Pas de valeur stockée (création), lancer le calcul initial
+				console.log("🆕 New request detected or empty completion, calculating initial completion");
+				this._calculateFormCompletion();
+			}
+		},
+
+		/**
+		 * TEST MANUAL - à supprimer après debug
+		 */
+		onTestCompletion: function() {
+			console.log("🧪 TEST MANUAL - Triggering completion calculation");
+			this._calculateFormCompletion();
+		},
+
+		/**
+		 * Calculate form completion percentage based on visible fields
+		 * @private
+		 */
+		_calculateFormCompletion: function() {
+			try {
+				console.log("🔄 _calculateFormCompletion STARTED");
+				
+				// Reset completion to default state at start of calculation
+				let oViewModel = this.getModel("detailView");
+				if (oViewModel) {
+					oViewModel.setProperty("/completionPercentage", 0);
+					oViewModel.setProperty("/completionState", "Error");
+				}
+				
+				const aVisibleFields = this._getVisibleFormFields();
+				console.log("🔍 Found visible fields:", aVisibleFields ? aVisibleFields.length : 0);
+				
+				// Early return if no fields found
+				if (!aVisibleFields || aVisibleFields.length === 0) {
+					console.log("📊 No visible fields found for completion calculation");
+					return;
+				}
+				
+				let iFilledCount = 0;
+				const aFieldDetails = [];
+				
+				aVisibleFields.forEach(oControl => {
+					const bIsFilled = this._isFieldFilled(oControl);
+					const sControlId = oControl.getId() ? oControl.getId().split("--").pop() : "unknown";
+					const sControlType = oControl.getMetadata().getName();
+					let sValue = "";
+					
+					// Get current value for debugging
+					try {
+						if (oControl.isA("sap.m.Input") || oControl.isA("sap.m.DatePicker")) {
+							sValue = oControl.getValue() || "";
+						} else if (oControl.isA("sap.m.Select")) {
+							sValue = oControl.getSelectedKey() || "";
+						} else if (oControl.isA("sap.m.CheckBox")) {
+							sValue = oControl.getSelected() ? "true" : "false";
+						} else if (oControl.isA("sap.m.Switch")) {
+							sValue = oControl.getState() ? "true" : "false";
+						}
+					} catch (oError) {
+						console.warn("Error getting value from control:", sControlId, oError);
+						sValue = "error";
+					}
+					
+					aFieldDetails.push({
+						id: sControlId,
+						type: sControlType,
+						value: sValue,
+						filled: bIsFilled
+					});
+					
+					if (bIsFilled) {
+						iFilledCount++;
+					}
+				});
+				
+				const iPercentage = aVisibleFields.length > 0 ? 
+					Math.round((iFilledCount / aVisibleFields.length) * 100) : 0;
+				
+				const sState = formatter.getCompletionState(iPercentage);
+				
+				// Stocker la valeur de completion dans le modèle header
+				const oContext = this.getView().getBindingContext();
+				if (oContext) {
+					const oModel = this.getView().getModel();
+					const sPath = oContext.getPath();
+					
+					// Stocker le pourcentage comme string pour correspondre au format backend string
+					const sCompletionValue = iPercentage.toString();
+					oModel.setProperty(sPath + "/Completion", sCompletionValue);
+					console.log(`💾 Stored completion in model: ${sCompletionValue}% (${sState})`);
+				}
+				
+				console.log(`📊 Form Completion: ${iFilledCount}/${aVisibleFields.length} fields (${iPercentage}%) - State: ${sState}`);
+				console.log("📋 Field Details:", aFieldDetails);
+				
+			} catch (oError) {
+				console.error("Error in _calculateFormCompletion:", oError);
+			}
+		},
+
+		/**
+		 * Reset form completion values and detach listeners when navigating between requests
+		 * @private
+		 */
+		_resetFormCompletion: function() {
+			// Detach previous listeners to avoid conflicts
+			this._detachCompletionListeners();
+			
+			console.log("🔄 Form completion listeners reset for new request navigation");
+		},
+
+		/**
+		 * Detach previous completion listeners to avoid collisions when navigating between requests
+		 * @private
+		 */
+		_detachCompletionListeners: function() {
+			// Detach from all form fields in the view to avoid conflicts
+			const oView = this.getView();
+			const aAllControls = oView.findAggregatedObjects(true, function(oControl) {
+				return (oControl.isA("sap.m.Input") || 
+						oControl.isA("sap.m.Select") || 
+						oControl.isA("sap.m.CheckBox") || 
+						oControl.isA("sap.m.Switch") ||
+						oControl.isA("sap.m.DatePicker"));
+			});
+			
+			aAllControls.forEach(oControl => {
+				if (oControl.isA("sap.m.Input") || oControl.isA("sap.m.DatePicker")) {
+					oControl.detachChange(this._calculateFormCompletion, this);
+				} else if (oControl.isA("sap.m.Select")) {
+					oControl.detachChange(this._calculateFormCompletion, this);
+				} else if (oControl.isA("sap.m.CheckBox")) {
+					oControl.detachSelect(this._calculateFormCompletion, this);
+				} else if (oControl.isA("sap.m.Switch")) {
+					oControl.detachChange(this._calculateFormCompletion, this);
+				}
+			});
+			
+			console.log(`🧹 Detached completion listeners from ${aAllControls.length} controls`);
+		},
+
+		/**
+		 * Attach event listeners to all form fields for real-time completion calculation
+		 * @private
+		 */
+		_attachCompletionListeners: function() {
+			console.log("🎯 _attachCompletionListeners STARTED");
+			
+			// First detach any existing listeners to avoid duplicates
+			this._detachCompletionListeners();
+			
+			const aVisibleFields = this._getVisibleFormFields();
+			console.log(`🎯 Found ${aVisibleFields.length} fields to attach listeners to`);
+			
+			let iAttachedCount = 0;
+			aVisibleFields.forEach(oControl => {
+				const sControlId = oControl.getId() ? oControl.getId().split("--").pop() : "unknown";
+				
+				if (oControl.isA("sap.m.Input") || oControl.isA("sap.m.DatePicker")) {
+					oControl.attachChange(this._calculateFormCompletion, this);
+					console.log(`📎 Attached change listener to Input/DatePicker: ${sControlId}`);
+					iAttachedCount++;
+				} else if (oControl.isA("sap.m.Select")) {
+					oControl.attachChange(this._calculateFormCompletion, this);
+					console.log(`📎 Attached change listener to Select: ${sControlId}`);
+					iAttachedCount++;
+				} else if (oControl.isA("sap.m.CheckBox")) {
+					oControl.attachSelect(this._calculateFormCompletion, this);
+					console.log(`📎 Attached select listener to CheckBox: ${sControlId}`);
+					iAttachedCount++;
+				} else if (oControl.isA("sap.m.Switch")) {
+					oControl.attachChange(this._calculateFormCompletion, this);
+					console.log(`📎 Attached change listener to Switch: ${sControlId}`);
+					iAttachedCount++;
+				}
+			});
+			
+			console.log(`🎯 Successfully attached completion listeners to ${iAttachedCount}/${aVisibleFields.length} form fields`);
 		}
 
 	});
