@@ -74,8 +74,6 @@ sap.ui.define([
          * @returns {string} État UI5 (Success, Information, Warning, None, Error)
          */
         getCompletionState: function(vPercentage) {
-            console.log("🎨 getCompletionState called with:", vPercentage, "type:", typeof vPercentage);
-            
             // Toujours commencer par Error comme valeur par défaut
             let sResult = "Error";
             
@@ -108,11 +106,9 @@ sap.ui.define([
                 }
                 
             } catch (oError) {
-                console.error("Error in getCompletionState:", oError);
                 sResult = "Error"; // Fallback sûr
             }
             
-            console.log("🎨 getCompletionState returns:", sResult);
             return sResult;
         },
 

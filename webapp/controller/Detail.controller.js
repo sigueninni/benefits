@@ -1512,13 +1512,11 @@ sap.ui.define([
 			const oContext = oView.getBindingContext();
 			
 			if (!oContext) {
-				console.log("❌ No context in _getVisibleFormFields");
 				return [];
 			}
 			
 			// Get current request type
 			const sRequestType = oContext.getProperty("RequestType");
-			console.log("🔍 Request type for field detection:", sRequestType);
 			
 			// Get the appropriate form section based on request type (maintenant les IDs correspondent au contenu)
 			let oFormSection;
@@ -1531,16 +1529,12 @@ sap.ui.define([
 			}
 			
 			if (!oFormSection) {
-				console.log("❌ Form section not found for request type:", sRequestType);
 				return [];
 			}
 			
 			if (!oFormSection.getVisible()) {
-				console.log("❌ Form section not visible for request type:", sRequestType);
 				return [];
 			}
-			
-			console.log("✅ Using form section:", oFormSection.getId());
 			
 			// Find all form controls within the active section only
 			const aInputs = oFormSection.findAggregatedObjects(true, function(oControl) {
@@ -1596,32 +1590,20 @@ sap.ui.define([
 				
 				// Récupérer la valeur stockée dans le champ Completion du modèle header
 				const sCompletion = oModel.getProperty(sPath + "/Completion");
-				console.log("🔄 _restoreFormCompletion - Completion from backend:", JSON.stringify(sCompletion), "Type:", typeof sCompletion);
 				
 				if (sCompletion !== undefined && sCompletion !== null && sCompletion !== "") {
 					// Vérifier si c'est une valeur valide (pas juste des espaces)
 					const sTrimmed = String(sCompletion).trim();
-					console.log("🔄 After trim:", JSON.stringify(sTrimmed));
 					
 					if (sTrimmed !== "" && !isNaN(parseFloat(sTrimmed))) {
 						const sState = formatter.getCompletionState(sCompletion);
-						console.log(`✅ Restored completion for request: ${sTrimmed}% (${sState})`);
 						return; // On a une valeur valide, pas besoin de recalculer
 					}
 				}
 				
 				// Pas de valeur stockée (création), lancer le calcul initial
-				console.log("🆕 New request detected or empty completion, calculating initial completion");
 				this._calculateFormCompletion();
 			}
-		},
-
-		/**
-		 * TEST MANUAL - à supprimer après debug
-		 */
-		onTestCompletion: function() {
-			console.log("🧪 TEST MANUAL - Triggering completion calculation");
-			this._calculateFormCompletion();
 		},
 
 		/**
@@ -1630,8 +1612,6 @@ sap.ui.define([
 		 */
 		_calculateFormCompletion: function() {
 			try {
-				console.log("🔄 _calculateFormCompletion STARTED");
-				
 				// Reset completion to default state at start of calculation
 				let oViewModel = this.getModel("detailView");
 				if (oViewModel) {
@@ -1640,11 +1620,9 @@ sap.ui.define([
 				}
 				
 				const aVisibleFields = this._getVisibleFormFields();
-				console.log("🔍 Found visible fields:", aVisibleFields ? aVisibleFields.length : 0);
 				
 				// Early return if no fields found
 				if (!aVisibleFields || aVisibleFields.length === 0) {
-					console.log("📊 No visible fields found for completion calculation");
 					return;
 				}
 				
@@ -1669,16 +1647,8 @@ sap.ui.define([
 							sValue = oControl.getState() ? "true" : "false";
 						}
 					} catch (oError) {
-						console.warn("Error getting value from control:", sControlId, oError);
 						sValue = "error";
 					}
-					
-					aFieldDetails.push({
-						id: sControlId,
-						type: sControlType,
-						value: sValue,
-						filled: bIsFilled
-					});
 					
 					if (bIsFilled) {
 						iFilledCount++;
@@ -1699,14 +1669,10 @@ sap.ui.define([
 					// Stocker le pourcentage comme string pour correspondre au format backend string
 					const sCompletionValue = iPercentage.toString();
 					oModel.setProperty(sPath + "/Completion", sCompletionValue);
-					console.log(`💾 Stored completion in model: ${sCompletionValue}% (${sState})`);
 				}
 				
-				console.log(`📊 Form Completion: ${iFilledCount}/${aVisibleFields.length} fields (${iPercentage}%) - State: ${sState}`);
-				console.log("📋 Field Details:", aFieldDetails);
-				
 			} catch (oError) {
-				console.error("Error in _calculateFormCompletion:", oError);
+				// Silently handle errors
 			}
 		},
 
@@ -1756,38 +1722,22 @@ sap.ui.define([
 		 * @private
 		 */
 		_attachCompletionListeners: function() {
-			console.log("🎯 _attachCompletionListeners STARTED");
-			
 			// First detach any existing listeners to avoid duplicates
 			this._detachCompletionListeners();
 			
 			const aVisibleFields = this._getVisibleFormFields();
-			console.log(`🎯 Found ${aVisibleFields.length} fields to attach listeners to`);
 			
-			let iAttachedCount = 0;
 			aVisibleFields.forEach(oControl => {
-				const sControlId = oControl.getId() ? oControl.getId().split("--").pop() : "unknown";
-				
 				if (oControl.isA("sap.m.Input") || oControl.isA("sap.m.DatePicker")) {
 					oControl.attachChange(this._calculateFormCompletion, this);
-					console.log(`📎 Attached change listener to Input/DatePicker: ${sControlId}`);
-					iAttachedCount++;
 				} else if (oControl.isA("sap.m.Select")) {
 					oControl.attachChange(this._calculateFormCompletion, this);
-					console.log(`📎 Attached change listener to Select: ${sControlId}`);
-					iAttachedCount++;
 				} else if (oControl.isA("sap.m.CheckBox")) {
 					oControl.attachSelect(this._calculateFormCompletion, this);
-					console.log(`📎 Attached select listener to CheckBox: ${sControlId}`);
-					iAttachedCount++;
 				} else if (oControl.isA("sap.m.Switch")) {
 					oControl.attachChange(this._calculateFormCompletion, this);
-					console.log(`📎 Attached change listener to Switch: ${sControlId}`);
-					iAttachedCount++;
 				}
 			});
-			
-			console.log(`🎯 Successfully attached completion listeners to ${iAttachedCount}/${aVisibleFields.length} form fields`);
 		}
 
 	});

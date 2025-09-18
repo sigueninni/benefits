@@ -119,17 +119,14 @@
             </l:VerticalLayout> -->
 
             <l:VerticalLayout>
-                <VBox height="63px" class="sapUiMediumMarginBegin">
-                    <Label text="{i18n>completeness}" />
-                    <ProgressIndicator
-                        percentValue="{path: 'Completion', formatter: '.formatter.formatCompletionValue'}"
-                        state="{path: 'Completion', formatter: '.formatter.getCompletionState'}"
-                        displayValue="{path: 'Completion', formatter: '.formatter.formatCompletionDisplay'}"
-                        showValue="true"
-                    />
-                    <!-- BOUTON TEMPORAIRE POUR DEBUG -->
-                    <Button text="🧪 Test Completion" press="onTestCompletion" type="Emphasized" class="sapUiTinyMarginTop"/>
-                </VBox>
+                <Label text="{i18n>completeness}" />
+                <ProgressIndicator
+                    percentValue="{path: 'Completion', formatter: '.formatter.formatCompletionValue'}"
+                    state="{path: 'Completion', formatter: '.formatter.getCompletionState'}"
+                    displayValue="{path: 'Completion', formatter: '.formatter.formatCompletionDisplay'}"
+                    showValue="true"
+                    class="sapUiMediumMarginBegin"
+                />
             </l:VerticalLayout>
 
             <!--      <ObjectStatus
