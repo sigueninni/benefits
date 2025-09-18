@@ -1132,6 +1132,13 @@ sap.ui.define([
 				oDeepInsertData.RequestStatus = sStatus;
 			}
 
+			// 🔍 CONSOLE LOG - Objet complet envoyé au deep insert
+			console.log("=== DEEP INSERT DATA ===");
+			console.log("Header Data (RequestHeaderSet):", JSON.stringify(oRequestData, null, 2));
+			console.log("Education Grant Detail (ToEduGrantDetail):", JSON.stringify(oEduGrantDetail, null, 2));
+			console.log("Complete Deep Insert Object:", JSON.stringify(oDeepInsertData, null, 2));
+			console.log("========================");
+
 			// Use create() for deep insert of a new record
 			oModel.create("/RequestHeaderSet", oDeepInsertData, {
 				success: function (oData, oResponse) {
@@ -1166,7 +1173,36 @@ sap.ui.define([
 		 * @private
 		 */
 		_loadValueHelpData: function() {
-			// Configuration mapping: modelName -> method name
+			// Load configuration from JSON file
+			const sConfigPath = sap.ui.require.toUrl("com/un/zhrbenefrequests/model/valueHelpConfig.json");
+			
+			fetch(sConfigPath)
+				.then(response => {
+					if (!response.ok) {
+						throw new Error(`HTTP error! status: ${response.status}`);
+					}
+					return response.json();
+				})
+				.then(oConfigData => {
+					const aValueHelpConfig = oConfigData.valueHelpConfig;
+					
+					// Load all models dynamically
+					aValueHelpConfig.forEach(config => {
+						this._loadGenericData(config.modelName, config.method);
+					});
+				})
+				.catch(oError => {
+					console.error("Error loading value help configuration:", oError);
+					// Fallback to hardcoded configuration if JSON loading fails
+					this._loadValueHelpDataFallback();
+				});
+		},
+
+		/**
+		 * Fallback method with hardcoded configuration in case JSON loading fails
+		 * @private
+		 */
+		_loadValueHelpDataFallback: function() {
 			const aValueHelpConfig = [
 				{ modelName: "gradeModel", method: "GET_ATTEND_SCHOOL_GRADE_LIST" },
 				{ modelName: "schoolTypeAdditModel", method: "GET_SCHOOL_TYPE_ADDIT_LIST" },
@@ -1255,7 +1291,7 @@ sap.ui.define([
 		},
 
 		/**
-		 * Load attendance type data for typeOfAttendance field
+		 * Load attendance type data for EGTYPATT field
 		 * @private
 		 */
 		_loadAttendanceTypeData: function() {
@@ -1387,7 +1423,7 @@ sap.ui.define([
 		},
 
 		/**
-		 * Load grade data for EGTYPATT field
+		 * Load grade data for EGGRD field
 		 * @private
 		 */
 		_loadGradeData: function() {

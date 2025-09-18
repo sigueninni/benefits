@@ -1,0 +1,44 @@
+{
+  "valueHelpConfig": [
+    {
+      "modelName": "gradeModel",
+      "method": "GET_ATTEND_SCHOOL_GRADE_LIST"
+    },
+    {
+      "modelName": "schoolTypeAdditModel",
+      "method": "GET_SCHOOL_TYPE_ADDIT_LIST"
+    },
+    {
+      "modelName": "schoolListModel",
+      "method": "GET_SCHOOL_LIST"
+    },
+    {
+      "modelName": "schoolTypeModel",
+      "method": "GET_SCHOOL_TYPE_LIST"
+    },
+    {
+      "modelName": "attendanceTypeModel",
+      "method": "GET_ATTENDANCE_TYPE_LIST"
+    },
+    {
+      "modelName": "specialArrangementModel",
+      "method": "GET_SPECIAL_ARRANGEMENT_LIST"
+    },
+    {
+      "modelName": "changeReasonModel",
+      "method": "GET_CHANGE_REASON_LIST"
+    },
+    {
+      "modelName": "reasonBoardingModel",
+      "method": "GET_REASON_BOARDING_LIST"
+    },
+    {
+      "modelName": "currencyModel",
+      "method": "GET_CURRENCY_LIST"
+    },
+    {
+      "modelName": "schoolCountryModel",
+      "method": "GET_SCHOOL_COUNTRY_LIST"
+    }
+  ]
+}

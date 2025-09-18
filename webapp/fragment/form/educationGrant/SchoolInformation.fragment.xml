@@ -119,12 +119,12 @@
             />
             <Label
                 text="{i18n>grade}"
-                labelFor="EGTYPATT"
+                labelFor="EGGRD"
             />
             <Select
-                id="EGTYPATT"
+                id="EGGRD"
                 items="{gradeModel>/items}"
-                selectedKey="{ToEduGrantDetail/Egtypatt}"
+                selectedKey="{ToEduGrantDetail/Eggrd}"
             >
                 <core:Item
                     text="{gradeModel>Txt}"
@@ -133,12 +133,12 @@
             </Select>
             <Label
                 text="{i18n>typeOfAttendance}"
-                labelFor="typeOfAttendance"
+                labelFor="EGTYPATT"
             />
             <Select
-                id="typeOfAttendance"
+                id="EGTYPATT"
                 items="{attendanceTypeModel>/items}"
-                selectedKey="{ToEduGrantDetail/TypeOfAttendance}"
+                selectedKey="{ToEduGrantDetail/Egtypatt}"
                 forceSelection="false"
             >
                 <core:Item
