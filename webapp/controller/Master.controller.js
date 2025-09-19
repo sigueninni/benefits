@@ -167,6 +167,31 @@ sap.ui.define([
                 oBinding.filter(aFilters);
             },
 
+            /**
+             * Event handler for the list updateFinished event
+             * Updates the counter in the master view when list changes
+             * @param {sap.ui.base.Event} oEvent the updateFinished event
+             * @public
+             */
+            onUpdateFinished: function (oEvent) {
+                // Update the counter in the master view title
+                const oList = oEvent.getSource();
+                const iTotalItems = oEvent.getParameter("total");
+                const oViewModel = this.getModel("masterView");
+                
+                if (oViewModel) {
+                    const sTitle = this.getResourceBundle().getText("masterTitleCount", [iTotalItems]);
+                    oViewModel.setProperty("/title", sTitle);
+                }
+                
+                // Update the list selector
+                this.getOwnerComponent().oListSelector.oWhenListLoadingIsDone.then(
+                    function () {
+                        // Selection handling after update finished
+                    }.bind(this)
+                );
+            },
+
 
 
             /**

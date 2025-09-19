@@ -181,7 +181,7 @@ sap.ui.define([
 									this.getRouter().navTo("detailObjectNotFound");
 								} else {
 									console.log("Context loaded successfully:", oContext.getObject());
-									this._handleFooterButton(role);
+									// this._handleFooterButton(role);
 									// Load value help data for dropdown lists
 									this._loadValueHelpData();
 									// Restore or calculate form completion once data is received
@@ -862,72 +862,56 @@ sap.ui.define([
 		 * @param {string} sObjectPath path to the object to be bound to the view.
 		 * @private
 		 */
-		 _handleFooterButton: function(role) {
-			  const oFooterToolbar = this.getView().byId("actionFooter");
-			  if (!oFooterToolbar) {
-			    console.warn("OverflowToolbar not found.");
+		 onApproveButtonPress: function() {
+			  const oModel = this.getView().getModel("approveModel");
+			
+			  // Get the current hash from the URL
+			  const sHash = sap.ui.core.routing.HashChanger.getInstance().getHash(); // e.g., YHR_BEN_REQ-display&//DetailOnly/005056be-9b02-1fd0-a58e-8d5b404d123d/02/02/01/01
+			
+			  // Extract the segments after the '&' symbol
+			  const aHashParts = sHash.split("&");
+			  const sDetailPath = aHashParts.find(part => part.includes("DetailOnly"));
+			
+			  if (!sDetailPath) {
+			    sap.m.MessageBox.error("Invalid URL format. Cannot extract parameters.");
 			    return;
 			  }
 			
-			  // Hide Save and Cancel buttons
-			  const oSaveButton = this.getView().byId("saveButton");
-			  const oCancelButton = this.getView().byId("cancelButton");
+			  // Split the DetailOnly path into segments
+			  const aSegments = sDetailPath.split("/").filter(Boolean); // Removes empty strings
 			
-			  if (oSaveButton) {
-			    oSaveButton.setVisible(false);
-			  } else {
-			    console.warn("Save button not found.");
-			  }
+			  // Extract Guid and ActorRole
+			  const sGuid = aSegments[1];       // 005056be-9b02-1fd0-a58e-8d5b404d123d
+			  const sActorRole = aSegments[2];  // 02
 			
-			  if (oCancelButton) {
-			    oCancelButton.setVisible(false);
-			  } else {
-			    console.warn("Cancel button not found.");
-			  }
+			  // Call the OData function with dynamic parameters
+			  oModel.callFunction("/ApproveRequest", {
+			    method: "POST",
+			    urlParameters: {
+			      Guid: sGuid,
+			      ActorRole: sActorRole,
+			      ApprovalComent: "Test"
+			    },
+			    success: (oData) => {
+			      const oResult = oData?.ApproveRequest;
+			      const sReturnCode = oResult?.ReturnCode?.trim();
+			      const sMessage = oResult?.Message || "No message returned";
 			
-			if (role === "HRA"){
-				  // Add new action buttons
-				  const aButtons = [
-				    new sap.m.Button({
-				      text: "Approve",
-				      type: "Accept"
-				      //press: this._onApproveHRA.bind(this)
-				    }),
-				    new sap.m.Button({
-				      text: "Reject",
-				      type: "Reject"
-				      //press: this._onRejectHRA.bind(this)
-				    }),
-				    new sap.m.Button({
-				      text: "Return",
-				      type: "Default"
-				      //press: this._onReturnHRA.bind(this)
-				    })
-				  ];
-				
-				  aButtons.forEach(function(oBtn) {
-				    oFooterToolbar.addContent(oBtn);
-				  });
-			} else if (role === "HRO"){
-					// Add new action buttons
-				  const aButtons = [
-				    new sap.m.Button({
-				      text: "Approve",
-				      type: "Accept"
-				      //press: this._onApproveHRO.bind(this)
-				    }),
-				    new sap.m.Button({
-				      text: "Return",
-				      type: "Default"
-				      //press: this._onReturnHRO.bind(this)
-				    })
-				  ];
-				
-				  aButtons.forEach(function(oBtn) {
-				    oFooterToolbar.addContent(oBtn);
-				  });
-			}
-			  
+			      if (sReturnCode === "0") {
+			        sap.m.MessageToast.show("Request approved successfully!");
+			      } else {
+			        sap.m.MessageBox.error(sMessage, {
+			          title: "Error",
+			          details: `Return Code: ${sReturnCode}`
+			        });
+			      }
+			    },
+			    error: () => {
+			      sap.m.MessageBox.error("Approval failed due to a technical error.", {
+			        title: "Error"
+			      });
+			    }
+			  });
 		},
 		_bindView: function (sObjectPath) {
 			let that = this;
