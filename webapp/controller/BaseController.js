@@ -6,8 +6,10 @@ sap.ui.define([
 	"sap/m/Dialog",
 	"sap/m/Button",
 	"sap/m/Text",
+	"sap/m/MessagePopover",
+	"sap/m/MessageItem",
 	"com/un/zhrbenefrequests/model/constants"
-], function (Controller, History, MessageToast, Dialog, Button, Text, Constants) {
+], function (Controller, History, MessageToast, Dialog, Button, Text, MessagePopover, MessageItem, Constants) {
 	"use strict";
 
 	return Controller.extend("com.un.zhrbenefrequests.controller.BaseController", {
@@ -206,6 +208,136 @@ sap.ui.define([
 			this.escapePreventDialog.removeAllContent();
 			this.escapePreventDialog.addContent(oText);
 			this.escapePreventDialog.open();
+		},
+
+		/* ===================== Message Manager Utilities ===================== */
+
+		/**
+		 * Utility method to add messages to the MessageManager
+		 * @param {string} sMessage - The main error message
+		 * @param {string} sDescription - Detailed description (optional)
+		 * @param {string} sTarget - Target field path (optional)
+		 * @param {string} sType - Message type (Error, Warning, Success, Information)
+		 * @public
+		 */
+		addMessage: function(sMessage, sDescription, sTarget, sType) {
+			const oMessageManager = sap.ui.getCore().getMessageManager();
+			const sMessageType = sType || sap.ui.core.MessageType.Error;
+			
+			oMessageManager.addMessages(
+				new sap.ui.core.message.Message({
+					message: sMessage,
+					type: sMessageType,
+					target: sTarget || "",
+					processor: this.getView().getModel(),
+					description: sDescription || "",
+					additionalText: new Date().toLocaleTimeString()
+				})
+			);
+		},
+
+		/**
+		 * Event handler for the messages button press.
+		 * Opens a MessagePopover to display all validation and error messages.
+		 * @param {sap.ui.base.Event} oEvent - The button press event
+		 * @public
+		 */
+		onMessagesButtonPress: function (oEvent) {
+			if (!this._oMessagePopover) {
+				this._oMessagePopover = new sap.m.MessagePopover({
+					items: {
+						path: "message>/",
+						template: new sap.m.MessageItem({
+							type: "{message>type}",
+							title: "{message>message}",
+							description: "{message>description}",
+							subtitle: "{message>additionalText}",
+							counter: "{message>counter}"
+						})
+					}
+				});
+				this.getView().addDependent(this._oMessagePopover);
+			}
+			this._oMessagePopover.toggle(oEvent.getSource());
+		},
+
+		/**
+		 * Clear all messages from the MessageManager
+		 * @public
+		 */
+		clearMessages: function() {
+			const oMessageManager = sap.ui.getCore().getMessageManager();
+			oMessageManager.removeAllMessages();
+		},
+
+		/**
+		 * Add an error message to the MessageManager
+		 * @param {string} sMessage - The error message
+		 * @param {string} sDescription - Detailed description (optional)
+		 * @param {string} sTarget - Target field path (optional)
+		 * @public
+		 */
+		addErrorMessage: function(sMessage, sDescription, sTarget) {
+			this.addMessage(sMessage, sDescription, sTarget, sap.ui.core.MessageType.Error);
+		},
+
+		/**
+		 * Add a warning message to the MessageManager
+		 * @param {string} sMessage - The warning message
+		 * @param {string} sDescription - Detailed description (optional)
+		 * @param {string} sTarget - Target field path (optional)
+		 * @public
+		 */
+		addWarningMessage: function(sMessage, sDescription, sTarget) {
+			this.addMessage(sMessage, sDescription, sTarget, sap.ui.core.MessageType.Warning);
+		},
+
+		/**
+		 * Add a success message to the MessageManager
+		 * @param {string} sMessage - The success message
+		 * @param {string} sDescription - Detailed description (optional)
+		 * @param {string} sTarget - Target field path (optional)
+		 * @public
+		 */
+		addSuccessMessage: function(sMessage, sDescription, sTarget) {
+			this.addMessage(sMessage, sDescription, sTarget, sap.ui.core.MessageType.Success);
+		},
+
+		/**
+		 * Add an information message to the MessageManager
+		 * @param {string} sMessage - The information message
+		 * @param {string} sDescription - Detailed description (optional)
+		 * @param {string} sTarget - Target field path (optional)
+		 * @public
+		 */
+		addInfoMessage: function(sMessage, sDescription, sTarget) {
+			this.addMessage(sMessage, sDescription, sTarget, sap.ui.core.MessageType.Information);
+		},
+
+		/**
+		 * Parse OData error and add it as a message
+		 * @param {object} oError - The OData error object
+		 * @param {string} sDefaultMessage - Default message if parsing fails
+		 * @param {string} sTarget - Target field path (optional)
+		 * @public
+		 */
+		addODataErrorMessage: function(oError, sDefaultMessage, sTarget) {
+			let sErrorMessage = sDefaultMessage || "Une erreur s'est produite";
+			let sErrorDetails = "Erreur technique";
+			
+			try {
+				if (oError.responseText) {
+					const oErrorData = JSON.parse(oError.responseText);
+					sErrorMessage = oErrorData.error?.message?.value || sErrorMessage;
+					sErrorDetails = oErrorData.error?.innererror?.errordetails?.[0]?.message || sErrorDetails;
+				} else if (oError.message) {
+					sErrorMessage = oError.message;
+				}
+			} catch (e) {
+				console.warn("Could not parse OData error response", e);
+			}
+			
+			this.addErrorMessage(sErrorMessage, sErrorDetails, sTarget);
 		}
 
 	});

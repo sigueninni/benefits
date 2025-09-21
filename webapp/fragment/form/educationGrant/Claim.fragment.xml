@@ -7,8 +7,8 @@
             id="claimTable"
             width="100%"
             noDataText="{i18n>noClaims}"
-            mode="{RequestSettings/ListMode}"
-            items="{ClaimItems}"
+            mode="Delete"
+            items="{localClaims>/claims}"
             delete="onDeleteClaimButtonPress"
         >
             <headerToolbar>
@@ -33,9 +33,9 @@
             <items>
                 <ColumnListItem>
                     <cells>
-                        <Text text="{ExpenseType}" />
-                        <ObjectNumber number="{Amount}" />
-                        <Text text="{Currency}" />
+                        <Text text="{localClaims>ExpenseType}" />
+                        <ObjectNumber number="{localClaims>Amount}" />
+                        <Text text="{localClaims>Currency}" />
                     </cells>
                 </ColumnListItem>
             </items>

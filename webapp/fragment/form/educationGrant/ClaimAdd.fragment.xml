@@ -43,13 +43,14 @@
             <Label text="{i18n>amount}" />
             <Input id="amountAdd" type="Number" value="{claimModel>/Amount}" required="true" />
             <Label text="{i18n>currency}" />
-            <Select id="currencyAdd" selectedKey="{claimModel>/Currency}">
-                <core:Item key="USD" text="USD" />
-                <core:Item key="EUR" text="EUR" />
-                <core:Item key="CHF" text="CHF" />
-            </Select>
-            <Label text="{i18n>comments}" />
-            <TextArea id="commentsAdd" value="{claimModel>/Comments}" rows="2" />
+            <Input 
+                id="currencyAdd" 
+                type="Text"
+                value="{claimModel>/Currency}"
+                showValueHelp="true"
+                valueHelpOnly="true"
+                valueHelpRequest="onCurrencyValueHelpPress"
+            />
         </form:content>
     </form:SimpleForm>
 </core:FragmentDefinition>

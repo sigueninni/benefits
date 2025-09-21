@@ -10,6 +10,13 @@ sap.ui.define([], function () {
             APPROVED_SENT_TO_H: "05",       // Request approved by HRA and sent to H
             APPROVED_HRO_END: "06",         // Request approved by HRO, end of process
             RETURNED_TO_HRA: "07"           // Request returned back to HRA
+        },
+        
+        USER_ROLES: {
+            NO_ACTOR: "00",                 // No Actor
+            EMPLOYEE: "01",                 // Employee - default role
+            HRA: "02",                      // Human Resources Assistant
+            HRO: "03"                       // Human Resources Officer
         }
     };
 });

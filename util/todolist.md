@@ -8,14 +8,16 @@
 - ~~Initialiser tous les champs automatiquement d'EG comme dans l'infotype~~
 - ~~Save~~
 - ~~Ajout zones spécifiques EG uniquement storage coté Fiori~~
+- ~~Ajouter les champs du form EG 'to be stored only on Fiori'~~
 
 ## 📋 Ongoing Tasks
 
 - dynamic display of child boarderer
+- probleme ovveride ne se save pas
+- problem proration factor si eq vide -> erreur
 - Compléter le save sur les zones côté ABAP   
 - Submit
 - Mettre à jour la table history en parallèle de la table header -> Nicolas a aussi une méthode...
-- Ajouter les champs du form EG 'to be stored only on Fiori'
 
 ## ⏳ Pending Tasks
 
