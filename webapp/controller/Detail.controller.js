@@ -171,11 +171,8 @@ sap.ui.define([
 		 * @private
 		 */
 		_submitBenefitRequest: function (sComment) {
-			// You can store the comment in a field if needed
-			// For example: this.getView().getModel().setProperty("/SubmissionComment", sComment);
-			
 			// Submit the request with status change to "Submitted" status
-			this._saveBenefitRequestObject("01"); // "01" is the submitted status
+			this._saveBenefitRequestObject("01", sComment); // Pass comment to save method
 		},
 
 		/*********************  Claim  *********************/
@@ -1219,9 +1216,10 @@ sap.ui.define([
 		 * Private method to save benefit request object.
 		 * Performs deep insert operation to save benefit request with education grant details.
 		 * @param {string} sStatus - Optional status to override the current request status
+		 * @param {string} sComment - Optional comment to store in Note field
 		 * @private
 		 */
-		_saveBenefitRequestObject: function (sStatus) {
+		_saveBenefitRequestObject: function (sStatus, sComment) {
 			const that = this;
 			const oView = this.getView();
 			const oModel = oView.getModel();
@@ -1233,6 +1231,11 @@ sap.ui.define([
 			if (!oContext) {
 				console.error("No binding context available");
 				return;
+			}
+
+			// Store comment in Note field if provided (common logic for creation and submit)
+			if (sComment) {
+				oModel.setProperty("Note", sComment, oContext);
 			}
 
 			// Remove the pending changes check - allow submit at any time
