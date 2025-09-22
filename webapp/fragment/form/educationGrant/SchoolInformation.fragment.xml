@@ -89,6 +89,7 @@
                 items="{schoolTypeAdditModel>/items}"
                 selectedKey="{ToEduGrantDetail/Egtyp}"
                 forceSelection="false"
+                change="onSchoolTypeChange"
             >
                 <core:Item
                     text="{schoolTypeAdditModel>Txt}"
@@ -218,15 +219,18 @@ Grade-->
                 valueHelpRequest="onCurrencyValueHelpPress"
             />
 
+            <!-- Child Boarder - Display only for children enrolled in primary or secondary school (EGTYP = 0002 or 0003) -->
             <Label
                 text="{i18n>childBoarder}"
                 labelFor="EGCHBRD"
+                visible="{= ${ToEduGrantDetail/Egtyp} === '0002' || ${ToEduGrantDetail/Egtyp} === '0003'}"
             />
             <Switch
                 id="EGCHBRD"
                 state="{ToEduGrantDetail/Egchbrd}"
                 customTextOn="{i18n>yes}"
                 customTextOff="{i18n>no}"
+                visible="{= ${ToEduGrantDetail/Egtyp} === '0002' || ${ToEduGrantDetail/Egtyp} === '0003'}"
             />
 
             <!-- Application Number - Hidden/Commented out

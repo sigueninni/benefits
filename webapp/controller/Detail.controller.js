@@ -150,6 +150,34 @@ sap.ui.define([
 			this._saveBenefitRequestObject();
 		},
 
+		/**
+		 * Event handler for the Submit button
+		 * Shows comment dialog before submitting the benefit request
+		 * @public
+		 */
+		onSubmitButtonPress: function () {
+			const that = this;
+			
+			// Show comment dialog and submit directly after comment
+			this.showCommentDialog((sComment) => {
+				// Submit directly with the comment - no second confirmation needed
+				that._submitBenefitRequest(sComment);
+			});
+		},
+		
+		/**
+		 * Internal method to submit the benefit request with comment
+		 * @param {string} sComment - The submission comment
+		 * @private
+		 */
+		_submitBenefitRequest: function (sComment) {
+			// You can store the comment in a field if needed
+			// For example: this.getView().getModel().setProperty("/SubmissionComment", sComment);
+			
+			// Submit the request with status change to "Submitted" status
+			this._saveBenefitRequestObject("01"); // "01" is the submitted status
+		},
+
 		/*********************  Claim  *********************/
 
 		/**
@@ -362,6 +390,27 @@ sap.ui.define([
 					oModel.setProperty("ORT01", "", oContext);
 					oModel.setProperty("EGSCT", "", oContext);
 					oModel.setProperty("EGSTY", "", oContext);
+				}
+			}
+		},
+
+		/**
+		 * Event handler for school type (EGTYP) change
+		 * Resets Child Boarder to false if school type is not primary (0002) or secondary (0003)
+		 * @param {sap.ui.base.Event} oEvent the change event
+		 * @public
+		 */
+		onSchoolTypeChange(oEvent) {
+			const oSelect = oEvent.getSource();
+			const sSelectedKey = oSelect.getSelectedKey();
+			const oContext = this.getView().getBindingContext();
+			
+			if (oContext) {
+				const oModel = this.getView().getModel();
+				
+				// If school type is not primary (0002) or secondary (0003), reset child boarder to false
+				if (sSelectedKey !== "0002" && sSelectedKey !== "0003") {
+					oModel.setProperty("ToEduGrantDetail/Egchbrd", false, oContext);
 				}
 			}
 		},
@@ -993,8 +1042,8 @@ sap.ui.define([
 					},
 					dataReceived: function (oEvent) {
 						oViewModel.setProperty("/busy", false);
-						// (+) By Vincent : Uncomment this line for UISettings to work
-						//that._getUISettings();
+			
+						that._getUISettings();
 						
 						// Restore or calculate form completion once data is received
 						that._restoreFormCompletion();
@@ -1186,12 +1235,12 @@ sap.ui.define([
 				return;
 			}
 
-			// Check if there are pending changes
-			if (!oModel.hasPendingChanges()) {
-				console.log("No pending changes to submit");
-				oView.byId("draftIndicator").showDraftSaved();
-				return;
-			}
+			// Remove the pending changes check - allow submit at any time
+			// if (!oModel.hasPendingChanges()) {
+			//     console.log("No pending changes to submit");
+			//     oView.byId("draftIndicator").showDraftSaved();
+			//     return;
+			// }
 
 			// set busy indicator during save
 			const oViewModel = this.getModel("detailView");
