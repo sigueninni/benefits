@@ -23,6 +23,7 @@
 
 - Factoriser dans des méthodes du 'Save'
 - Écran Claim/Advance
+- logic of pending last year
 - Gestion de l'éligibilité
 - Eligibility for Boarding	EGC01	ToDo	Logic to be extracted from the infotype
 - Timeline à ajouter

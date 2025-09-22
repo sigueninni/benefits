@@ -51,7 +51,9 @@ sap.ui.define([
 
 			// Initialize local models for claims and advances
 			const oLocalClaimsModel = new JSONModel({ claims: [] });
+			const oLocalAdvancesModel = new JSONModel({ advances: [] });
 			this.getView().setModel(oLocalClaimsModel, "localClaims");
+			this.getView().setModel(oLocalAdvancesModel, "localAdvances");
 
 			// Initialize value help models
 			this._initializeValueHelpModels();
@@ -239,34 +241,33 @@ sap.ui.define([
 
 
 		/**
-		 * Event handler for deleting an advance
+		 * Event handler for deleting an advance from the table
+		 * Removes the selected advance from the local advances model
+		 * @param {sap.ui.base.Event} oEvent - The delete event
+		 * @public
 		 */
 		onDeleteAdvanceButtonPress: function (oEvent) {
-			const oContext = oEvent.getParameter("listItem").getBindingContext();
-			const sPath = oContext.getPath();
-			const oModel = this.getView().getModel();
-
-			// Get the advance item to delete
-			const oAdvanceToDelete = oModel.getProperty(sPath);
-
-			// Get the parent path (request)
-			const sRequestPath = sPath.substring(0, sPath.lastIndexOf("/AdvanceItems"));
-			// Note: AdvanceItems is a local property, not an ABAP association
-			const aCurrentAdvances = oModel.getProperty(sRequestPath + "/AdvanceItems") || [];
-
-			// Find and remove the advance
-			const iIndex = aCurrentAdvances.findIndex(advance =>
-				advance.TempId === oAdvanceToDelete.TempId ||
-				(advance.ExpenseType === oAdvanceToDelete.ExpenseType &&
-					advance.Amount === oAdvanceToDelete.Amount &&
-					advance.Currency === oAdvanceToDelete.Currency)
-			);
-
-			if (iIndex > -1) {
-				aCurrentAdvances.splice(iIndex, 1);
-				// Update local model only - no backend persistence for now
-				oModel.setProperty(sRequestPath + "/AdvanceItems", aCurrentAdvances);
-				sap.m.MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("advanceDeleted"));
+			// Get the list item that was deleted
+			const oListItem = oEvent.getParameter("listItem");
+			const oBindingContext = oListItem.getBindingContext("localAdvances");
+			
+			if (oBindingContext) {
+				// Get the index of the item to delete
+				const sPath = oBindingContext.getPath();
+				const iIndex = parseInt(sPath.split("/").pop());
+				
+				// Get the local advances model
+				const oLocalModel = this.getView().getModel("localAdvances");
+				const aAdvances = oLocalModel.getProperty("/advances") || [];
+				
+				// Remove the advance at the specified index
+				aAdvances.splice(iIndex, 1);
+				
+				// Update the model
+				oLocalModel.setProperty("/advances", aAdvances);
+				
+				// Show confirmation message
+				sap.m.MessageToast.show("Advance supprimé");
 			}
 		},
 
@@ -652,30 +653,31 @@ sap.ui.define([
 				return;
 			}
 
-			// Get the current context and model
-			const oContext = this.getView().getBindingContext();
-			const oModel = this.getView().getModel();
-
 			// Create a new advance entry
 			const oNewAdvance = {
 				ExpenseType: oAdvanceData.ExpenseType,
 				Amount: parseFloat(oAdvanceData.Amount),
 				Currency: oAdvanceData.Currency,
 				Comments: oAdvanceData.Comments || "",
-				// Add a temporary ID for local handling
 				TempId: Date.now().toString()
 			};
 
-			// Get existing advances or create empty array
-			// Note: AdvanceItems is a local property, not an ABAP association
-			const sPath = oContext.getPath();
-			const aCurrentAdvances = oModel.getProperty(sPath + "/AdvanceItems") || [];
+			// Utiliser un modèle JSON local pour les advances
+			let oLocalModel = this.getView().getModel("localAdvances");
+			if (!oLocalModel) {
+				// Créer le modèle local s'il n'existe pas
+				oLocalModel = new sap.ui.model.json.JSONModel({ advances: [] });
+				this.getView().setModel(oLocalModel, "localAdvances");
+			}
 
-			// Add new advance to the array
-			aCurrentAdvances.push(oNewAdvance);
-
-			// Update the model (local only - no backend persistence for now)
-			oModel.setProperty(sPath + "/AdvanceItems", aCurrentAdvances);
+			// Récupérer les advances existants
+			const aAdvances = oLocalModel.getProperty("/advances") || [];
+			
+			// Ajouter le nouveau advance
+			aAdvances.push(oNewAdvance);
+			
+			// Mettre à jour le modèle local
+			oLocalModel.setProperty("/advances", aAdvances);
 
 			// Show success message
 			sap.m.MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("advanceAdded"));

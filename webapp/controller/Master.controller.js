@@ -124,13 +124,24 @@ sap.ui.define([
              */
             onClaimAdvanceChange: function (oEvent) {
                 const oSelectedButton = oEvent.getParameter("selectedButton");
+                
+                // Check if selectedButton exists to avoid errors
+                if (!oSelectedButton) {
+                    console.warn("No selected button found in onClaimAdvanceChange event");
+                    return;
+                }
+                
                 const sButtonId = oSelectedButton.getId();
                 const oTypeModel = this.fragments._oTypeReqDialog.getModel("typeModel");
 
-                if (sButtonId.includes("isClaim")) {
+                // More robust way: check the button's text or use index
+                const sButtonText = oSelectedButton.getText();
+                const oResourceBundle = this.getResourceBundle();
+                
+                if (sButtonId.includes("isClaim") || sButtonText === oResourceBundle.getText("isClaim")) {
                     oTypeModel.setProperty("/Isclaim", true);
                     oTypeModel.setProperty("/Isadvance", false);
-                } else if (sButtonId.includes("isAdvance")) {
+                } else if (sButtonId.includes("isAdvance") || sButtonText === oResourceBundle.getText("isAdvance")) {
                     oTypeModel.setProperty("/Isclaim", false);
                     oTypeModel.setProperty("/Isadvance", true);
                 }
@@ -151,7 +162,7 @@ sap.ui.define([
                     const aOrFilters = [
                         // new Filter("Begda", FilterOperator.Contains, sQuery),
                         new Filter("RequestKey", FilterOperator.Contains, sQuery),
-                        new Filter("Info1", FilterOperator.Contains, sQuery),
+                        new Filter("RequestStatusTxt", FilterOperator.Contains, sQuery),
                         new Filter("Info2", FilterOperator.Contains, sQuery),
                         new Filter("Info3", FilterOperator.Contains, sQuery)
                     ];
@@ -350,12 +361,15 @@ sap.ui.define([
                     Isadvance: false,  // Default to not advance
                     Begda: null,       // Start date
                     Endda: null,       // End date
+                    Comments: "",      // Comments field
+                    AttachedRequestGuid: "", // GUID of attached request for claims
                     startDateValueState: "None",     // Validation state for start date
                     endDateValueState: "None",       // Validation state for end date
                     startDateValueStateText: "",     // Validation message for start date
                     endDateValueStateText: ""        // Validation message for end date
                 });
                 this.fragments._oTypeReqDialog.setModel(oTypeModel, "typeModel");
+                
                 this.fragments._oTypeReqDialog.open();
 
             },
@@ -396,6 +410,8 @@ sap.ui.define([
                 let Isadvance = oTypeModel.getProperty("/Isadvance");
                 let Begda = oTypeModel.getProperty("/Begda");
                 let Endda = oTypeModel.getProperty("/Endda");
+                let Comments = oTypeModel.getProperty("/Comments");
+                let AttachedRequestGuid = oTypeModel.getProperty("/AttachedRequestGuid");
 
                 // Group & models
                 const sGroupId = "benefitRequest" + (new Date().getUTCMilliseconds());
@@ -430,7 +446,9 @@ sap.ui.define([
                         "Endda": Endda,
                         "RequestDesc": this.getResourceBundle().getText("newBenefitRequestTitle"),
                         "Subty": _famsa ? _famsa : "",
-                        "Objps": _objps ? _objps : ""
+                        "Objps": _objps ? _objps : "",
+                        "Note": Comments || ""
+                        // AttachedRequestGuid not sent to backend for now - frontend only
                     }
                 });
 

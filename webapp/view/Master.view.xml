@@ -83,7 +83,7 @@
                         <firstStatus>
 
                         <ObjectStatus
-                            text="{Info1}"
+                            text="{RequestStatusTxt}"
                              state="{ path: 'RequestStatus', formatter: '.formatter.requestStatusStateText' }"
                            />
              

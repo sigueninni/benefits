@@ -89,7 +89,7 @@
                 <ObjectAttribute text="{RequestKey}" />
                 <ObjectStatus
                     title="{i18n>status}"
-                    text="{Info1}"
+                    text="{RequestStatusTxt}"
                     state="{ path: 'RequestStatus', formatter: '.formatter.requestStatusStateText' }"
                     id="status"
                 />
@@ -105,7 +105,7 @@
             <!--            <l:VerticalLayout>
                 <ObjectStatus
                     title="{i18n>status}"
-                   text="{Info1}"
+                   text="{RequestStatusTxt}"
                              state="{ path: 'RequestStatus', formatter: '.formatter.requestStatusStateText' }"
                     id="status"
                     

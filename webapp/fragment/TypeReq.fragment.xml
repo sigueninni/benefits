@@ -73,6 +73,49 @@
                         selected="{typeModel>/Isadvance}"
                     />
                 </RadioButtonGroup>
+                
+                <Label 
+                    text="{i18n>attachedRequest}" 
+                    class="sapUiMediumMarginTop sapUiSmallMarginBottom"
+                    visible="{= ${typeModel>/RequestType} === '01' &amp;&amp; ${typeModel>/Isclaim} === true}"
+                />
+                <Select
+                    id="attachedRequestSelect"
+                    visible="{= ${typeModel>/RequestType} === '01' &amp;&amp; ${typeModel>/Isclaim} === true}"
+                    selectedKey="{typeModel>/AttachedRequestGuid}"
+                    width="100%"
+                >
+                    <core:ListItem
+                        text="EG0000000076"
+                        key="EG0000000076"
+                    />
+                    <core:ListItem
+                        text="EG0000000077"
+                        key="EG0000000077"
+                    />
+                    <core:ListItem
+                        text="EG0000000078"
+                        key="EG0000000078"
+                    />
+                    <core:ListItem
+                        text="EG0000000079"
+                        key="EG0000000079"
+                    />
+                    <core:ListItem
+                        text="EG0000000080"
+                        key="EG0000000080"
+                    />
+                </Select>
+                
+                <Label text="{i18n>comments}" class="sapUiMediumMarginTop sapUiSmallMarginBottom" />
+                <TextArea
+                    id="requestComments"
+                    value="{typeModel>/Comments}"
+                    rows="3"
+                    width="100%"
+                    placeholder="{i18n>enterComments}"
+                    maxLength="500"
+                />
             </VBox>
         </content>
         <beginButton>

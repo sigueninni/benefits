@@ -7,8 +7,8 @@
             id="advanceTable"
             width="100%"
             noDataText="{i18n>noAdvances}"
-            mode="{RequestSettings/ListMode}"
-            items="{AdvanceItems}"
+            mode="Delete"
+            items="{localAdvances>/advances}"
             delete="onDeleteAdvanceButtonPress"
         >
             <headerToolbar>
@@ -33,9 +33,9 @@
             <items>
                 <ColumnListItem>
                     <cells>
-                        <Text text="{ExpenseType}" />
-                        <ObjectNumber number="{Amount}" />
-                        <Text text="{Currency}" />
+                        <Text text="{localAdvances>ExpenseType}" />
+                        <ObjectNumber number="{localAdvances>Amount}" />
+                        <Text text="{localAdvances>Currency}" />
                     </cells>
                 </ColumnListItem>
             </items>
