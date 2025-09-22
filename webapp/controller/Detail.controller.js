@@ -991,7 +991,10 @@ sap.ui.define([
 			        const sMessage = oResult?.Message || oBundle.getText("approvalNoMessage");
 			
 			        if (sReturnCode === "0") {
-			          sap.m.MessageToast.show(oBundle.getText("approvalSuccess"));
+			          sap.m.MessageToast.show(oBundle.getText("approvalSuccess"), {
+					    duration: 2000
+					  });
+			          window.history.back();
 			        } else {
 			          sap.m.MessageBox.error(sMessage, {
 			            title: oBundle.getText("approvalErrorTitle"),
