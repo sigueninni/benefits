@@ -862,57 +862,106 @@ sap.ui.define([
 		 * @param {string} sObjectPath path to the object to be bound to the view.
 		 * @private
 		 */
-		 onApproveButtonPress: function() {
+		//  onApproveButtonPress: function() {
+		// 	  const oModel = this.getView().getModel("approveModel");
+			
+		// 	  // Get the current hash from the URL
+		// 	  const sHash = sap.ui.core.routing.HashChanger.getInstance().getHash(); // e.g., YHR_BEN_REQ-display&//DetailOnly/005056be-9b02-1fd0-a58e-8d5b404d123d/02/02/01/01
+			
+		// 	  // Extract the segments after the '&' symbol
+		// 	  const aHashParts = sHash.split("&");
+		// 	  const sDetailPath = aHashParts.find(part => part.includes("DetailOnly"));
+			
+		// 	  if (!sDetailPath) {
+		// 	    sap.m.MessageBox.error("Invalid URL format. Cannot extract parameters.");
+		// 	    return;
+		// 	  }
+			
+		// 	  // Split the DetailOnly path into segments
+		// 	  const aSegments = sDetailPath.split("/").filter(Boolean); // Removes empty strings
+			
+		// 	  // Extract Guid and ActorRole
+		// 	  const sGuid = aSegments[1];       // 005056be-9b02-1fd0-a58e-8d5b404d123d
+		// 	  const sActorRole = aSegments[2];  // 02
+			
+		// 	  // Call the OData function with dynamic parameters
+		// 	  oModel.callFunction("/ApproveRequest", {
+		// 	    method: "POST",
+		// 	    urlParameters: {
+		// 	      Guid: sGuid,
+		// 	      ActorRole: sActorRole,
+		// 	      ApprovalComent: "Test"
+		// 	    },
+		// 	    success: (oData) => {
+		// 	      const oResult = oData?.ApproveRequest;
+		// 	      const sReturnCode = oResult?.ReturnCode?.trim();
+		// 	      const sMessage = oResult?.Message || "No message returned";
+			
+		// 	      if (sReturnCode === "0") {
+		// 	        sap.m.MessageToast.show("Request approved successfully!");
+		// 	      } else {
+		// 	        sap.m.MessageBox.error(sMessage, {
+		// 	          title: "Error",
+		// 	          details: `Return Code: ${sReturnCode}`
+		// 	        });
+		// 	      }
+		// 	    },
+		// 	    error: () => {
+		// 	      sap.m.MessageBox.error("Approval failed due to a technical error.", {
+		// 	        title: "Error"
+		// 	      });
+		// 	    }
+		// 	  });
+		// },
+		onApproveButtonPress: function() {
+			  debugger;
 			  const oModel = this.getView().getModel("approveModel");
+			  const oBundle = this.getView().getModel("i18n").getResourceBundle();
 			
-			  // Get the current hash from the URL
-			  const sHash = sap.ui.core.routing.HashChanger.getInstance().getHash(); // e.g., YHR_BEN_REQ-display&//DetailOnly/005056be-9b02-1fd0-a58e-8d5b404d123d/02/02/01/01
-			
-			  // Extract the segments after the '&' symbol
+			  const sHash = sap.ui.core.routing.HashChanger.getInstance().getHash();
 			  const aHashParts = sHash.split("&");
 			  const sDetailPath = aHashParts.find(part => part.includes("DetailOnly"));
 			
 			  if (!sDetailPath) {
-			    sap.m.MessageBox.error("Invalid URL format. Cannot extract parameters.");
+			    sap.m.MessageBox.error(oBundle.getText("approvalInvalidUrl"));
 			    return;
 			  }
 			
-			  // Split the DetailOnly path into segments
-			  const aSegments = sDetailPath.split("/").filter(Boolean); // Removes empty strings
+			  const aSegments = sDetailPath.split("/").filter(Boolean);
+			  const sGuid = aSegments[1];
+			  const sActorRole = aSegments[2];
 			
-			  // Extract Guid and ActorRole
-			  const sGuid = aSegments[1];       // 005056be-9b02-1fd0-a58e-8d5b404d123d
-			  const sActorRole = aSegments[2];  // 02
+			  this.showCommentDialog((sComment) => {
+			    oModel.callFunction("/ApproveRequest", {
+			      method: "POST",
+			      urlParameters: {
+			        Guid: sGuid,
+			        ActorRole: sActorRole,
+			        ApprovalComent: sComment
+			      },
+			      success: (oData) => {
+			        const oResult = oData?.ApproveRequest;
+			        const sReturnCode = oResult?.ReturnCode?.trim();
+			        const sMessage = oResult?.Message || oBundle.getText("approvalNoMessage");
 			
-			  // Call the OData function with dynamic parameters
-			  oModel.callFunction("/ApproveRequest", {
-			    method: "POST",
-			    urlParameters: {
-			      Guid: sGuid,
-			      ActorRole: sActorRole,
-			      ApprovalComent: "Test"
-			    },
-			    success: (oData) => {
-			      const oResult = oData?.ApproveRequest;
-			      const sReturnCode = oResult?.ReturnCode?.trim();
-			      const sMessage = oResult?.Message || "No message returned";
-			
-			      if (sReturnCode === "0") {
-			        sap.m.MessageToast.show("Request approved successfully!");
-			      } else {
-			        sap.m.MessageBox.error(sMessage, {
-			          title: "Error",
-			          details: `Return Code: ${sReturnCode}`
+			        if (sReturnCode === "0") {
+			          sap.m.MessageToast.show(oBundle.getText("approvalSuccess"));
+			        } else {
+			          sap.m.MessageBox.error(sMessage, {
+			            title: oBundle.getText("approvalErrorTitle"),
+			            details: oBundle.getText("approvalErrorDetails", [sReturnCode])
+			          });
+			        }
+			      },
+			      error: () => {
+			        sap.m.MessageBox.error(oBundle.getText("approvalErrorTechnical"), {
+			          title: oBundle.getText("approvalErrorTitle")
 			        });
 			      }
-			    },
-			    error: () => {
-			      sap.m.MessageBox.error("Approval failed due to a technical error.", {
-			        title: "Error"
-			      });
-			    }
+			    });
 			  });
 		},
+
 		_bindView: function (sObjectPath) {
 			let that = this;
 			const oView = this.getView();

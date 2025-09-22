@@ -338,7 +338,51 @@ sap.ui.define([
 			}
 			
 			this.addErrorMessage(sErrorMessage, sErrorDetails, sTarget);
+		},
+		// comment container for approval, rejection and return
+		// BaseController.js
+		showCommentDialog: function(fnCallback) {
+			  const oBundle = this.getView().getModel("i18n").getResourceBundle();
+
+			  const oTextArea = new sap.m.TextArea({
+			    placeholder: oBundle.getText("commentPlaceholder"),
+			    rows: 5,
+			    width: "100%",
+			    growing: true,
+			    growingMaxLines: 10
+			  });
+			
+			  const oDialog = new sap.m.Dialog({
+			    title: oBundle.getText("commentDialogTitle"),
+			    content: [oTextArea],
+			    beginButton: new sap.m.Button({
+			      text: oBundle.getText("commentSubmit"),
+			      type: "Emphasized",
+			      press: function () {
+			        const sComment = oTextArea.getValue();
+			        oDialog.close();
+			        oDialog.destroy();
+			        if (typeof fnCallback === "function") {
+			          fnCallback(sComment);
+			        }
+			      }
+			    }),
+			    endButton: new sap.m.Button({
+			      text: oBundle.getText("commentCancel"),
+			      press: function () {
+			        oDialog.close();
+			        oDialog.destroy();
+			      }
+			    }),
+			    afterClose: function () {
+			      oDialog.destroy();
+			    }
+			  });
+			
+			  oDialog.open();
 		}
+
+
 
 	});
 });
