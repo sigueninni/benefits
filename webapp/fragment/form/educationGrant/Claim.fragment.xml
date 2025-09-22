@@ -27,14 +27,16 @@
             </headerToolbar>
             <columns>
                 <Column><Text text="{i18n>expenseType}" /></Column>
-                <Column><Text text="{i18n>amount}" /></Column>
+                <Column><Text text="{i18n>expenseAmount}" /></Column>
+                <Column><Text text="{i18n>advanceAmount}" /></Column>
                 <Column><Text text="{i18n>currency}" /></Column>
             </columns>
             <items>
                 <ColumnListItem>
                     <cells>
                         <Text text="{localClaims>ExpenseType}" />
-                        <ObjectNumber number="{localClaims>Amount}" />
+                        <ObjectNumber number="{localClaims>ExpenseAmount}" />
+                        <ObjectNumber number="{localClaims>AdvanceAmount}" />
                         <Text text="{localClaims>Currency}" />
                     </cells>
                 </ColumnListItem>

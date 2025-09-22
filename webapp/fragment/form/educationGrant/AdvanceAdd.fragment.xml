@@ -40,16 +40,17 @@
                 <core:Item key="transportation" text="{i18n>transportation}" />
                 <core:Item key="books" text="{i18n>books}" />
             </Select>
-            <Label text="{i18n>amount}" />
-            <Input id="amountAdvanceAdd" type="Number" value="{advanceModel>/Amount}" required="true" />
+            <Label text="{i18n>expenseAmount}" />
+            <Input id="amountAdvanceAdd" type="Number" value="{advanceModel>/ExpenseAmount}" />
             <Label text="{i18n>currency}" />
-            <Select id="currencyAdvanceAdd" selectedKey="{advanceModel>/Currency}">
-                <core:Item key="USD" text="USD" />
-                <core:Item key="EUR" text="EUR" />
-                <core:Item key="CHF" text="CHF" />
-            </Select>
-            <Label text="{i18n>comments}" />
-            <TextArea id="commentsAdvanceAdd" value="{advanceModel>/Comments}" rows="2" />
+            <Input 
+                id="currencyAdvanceAdd" 
+                type="Text"
+                value="{advanceModel>/Currency}"
+                showValueHelp="true"
+                valueHelpOnly="true"
+                valueHelpRequest="onCurrencyValueHelpPress"
+            />
         </form:content>
     </form:SimpleForm>
 </core:FragmentDefinition>

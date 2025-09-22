@@ -40,8 +40,10 @@
                 <core:Item key="transportation" text="{i18n>transportation}" />
                 <core:Item key="books" text="{i18n>books}" />
             </Select>
-            <Label text="{i18n>amount}" />
-            <Input id="amountAdd" type="Number" value="{claimModel>/Amount}" required="true" />
+            <Label text="{i18n>expenseAmount}" />
+            <Input id="expenseAmountAdd" type="Number" value="{claimModel>/ExpenseAmount}" />
+            <Label text="{i18n>advanceAmount}" />
+            <Input id="advanceAmountAdd" type="Number" value="{claimModel>/AdvanceAmount}" />
             <Label text="{i18n>currency}" />
             <Input 
                 id="currencyAdd" 

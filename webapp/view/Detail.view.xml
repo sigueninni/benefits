@@ -45,26 +45,31 @@
                         press="onEditButtonPress"
                     /> -->
                     <Button
+                        id="BTNAPPROVE"
                         text="{i18n>approve}"
                         type="Accept"
                         press="onApproveButtonPress"
                     />
                     <Button
+                        id="BTNREJECT"
                         text="{i18n>reject}"
                         type="Reject"
                         press="onRejectButtonPress"
                     />
                     <Button
+                        id="BTNRETURN"
                         text="{i18n>return}"
                         type="Emphasized"   
                         press="onReturnButtonPress"
                     />
                     <Button
+                        id="BTNSUBMIT"
                         text="{i18n>submit}"
                         type="Emphasized"
                         press="onSubmitButtonPress"
                     />
                     <Button
+                        id="BTNDELETE"
                         text="{i18n>delete}"
                         type="Default"
                         press="onDeleteButtonPress"
@@ -247,7 +252,7 @@
             <uxap:ObjectPageSection
                 id="claimsSection"
                 title="{i18n>Claims}"
-                visible="{Isclaim}"
+                visible="{= ${Isclaim} &amp;&amp; ${RequestType} === '01' }"
             >
                 <uxap:subSections>
                     <uxap:ObjectPageSubSection id="claimsSubSection">
@@ -266,7 +271,7 @@
             <uxap:ObjectPageSection
                 id="advancesSection"
                 title="{i18n>Advances}"
-                visible="{Isadvance}"
+                visible="{= ${Isadvance} &amp;&amp; ${RequestType} === '01' }"
             >
                 <uxap:subSections>
                     <uxap:ObjectPageSubSection id="advancesSubSection">
@@ -282,7 +287,7 @@
             </uxap:ObjectPageSection>
 
             <!-- Comment Section -->
-            <uxap:ObjectPageSection
+        <!--     <uxap:ObjectPageSection
                 id="commentsSection"
                 title="Comments"
             >
@@ -294,7 +299,7 @@
                                 showIcon="false"
                                 visible="{RequestSettings/IsCommentsEnabled}"
                             />
-                            <!-- items="{ path: 'Comments', sorter: { path: 'CreatedOn' } }" TODO -->
+                         
                             <List
                                 showSeparators="Inner"
                                 mode="Delete"
@@ -311,17 +316,35 @@
                         </VBox>
                     </uxap:ObjectPageSubSection>
                 </uxap:subSections>
-            </uxap:ObjectPageSection>
+            </uxap:ObjectPageSection> -->
 
-            <!-- Attachment Section -->
+            <!-- Attachment Section - Education Grant -->
             <uxap:ObjectPageSection
-                id="attachmentsSection"
-                title="Attachments"
+                id="educGrantAttachmentsSection"
+                title="Education Grant Attachments"
+                visible="{= ${RequestType} === '01' }"
             >
                 <uxap:subSections>
-                    <uxap:ObjectPageSubSection id="attachmentsSubSection">
+                    <uxap:ObjectPageSubSection id="educGrantAttachmentsSubSection">
                         <core:Fragment
                             fragmentName="com.un.zhrbenefrequests.fragment.form.educationGrant.Attachments"
+                            type="XML"
+                            xmlns:core="sap.ui.core"
+                        />
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
+
+            <!-- Attachment Section - Rental Subsidy -->
+            <uxap:ObjectPageSection
+                id="rentalSubsidyAttachmentsSection"
+                title="Rental Subsidy Attachments"
+                visible="{= ${RequestType} === '02' }"
+            >
+                <uxap:subSections>
+                    <uxap:ObjectPageSubSection id="rentalSubsidyAttachmentsSubSection">
+                        <core:Fragment
+                            fragmentName="com.un.zhrbenefrequests.fragment.form.rentalSubsidy.Attachments"
                             type="XML"
                             xmlns:core="sap.ui.core"
                         />
@@ -365,10 +388,10 @@
             </uxap:ObjectPageSection>
         </uxap:sections>
         <uxap:footer>
-            <OverflowToolbar id="actionFooter">
+            <OverflowToolbar id="BAR">
                 <content>
                     <Button
-                        id="messagePopoverBtn"
+                        id="BTNmessagePopover"
                         icon="sap-icon://message-popup"
                         type="Emphasized"
                         text="{=${message>/}.length}"
@@ -383,14 +406,14 @@
                     />
                     <ToolbarSpacer width="" />
                     <Button
-                        id="saveButton"
+                        id="BTNsave"
                         text="{i18n>save}"
                         press="onSaveBenefitRequestObject"
                         type="Emphasized"
                         visible="{RequestSettings/IsDraftHandlingEnabled}"
                     />
                     <Button
-                        id="cancelButton"
+                        id="BTNcancel"
                         text="{i18n>cancel}"
                         press="onCancelButtonPress"
                         visible="{RequestSettings/IsDraftHandlingEnabled}"

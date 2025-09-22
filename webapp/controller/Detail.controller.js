@@ -88,9 +88,6 @@ sap.ui.define([
 			/*******************************************************************************/
 			/*this below code for get the JSON Model form Manifest.json file*/
 			const commentsDataModel = this.getOwnerComponent().getModel("commentData");
-			console.log({
-				commentsDataModel
-			});
 			this.getView().setModel(commentsDataModel, "commentsModel");
 		},
 
@@ -152,11 +149,30 @@ sap.ui.define([
 
 		/**
 		 * Event handler for the Submit button
-		 * Shows comment dialog before submitting the benefit request
+		 * Validates required fields before showing comment dialog and submitting
 		 * @public
 		 */
 		onSubmitButtonPress: function () {
 			const that = this;
+			
+			// Validate required fields before proceeding
+			const aValidationErrors = this._validateRequiredFields();
+			
+			if (aValidationErrors.length > 0) {
+				// Show validation error message with details about missing fields
+				const sErrorMessage = this.getResourceBundle().getText("requiredFieldsValidation") || 
+					"Veuillez remplir tous les champs obligatoires avant de soumettre.";
+				const sFieldsList = aValidationErrors.join(", ");
+				const sDetailedMessage = sErrorMessage + "\n\nChamps manquants: " + sFieldsList;
+				
+				sap.m.MessageBox.error(sDetailedMessage, {
+					title: this.getResourceBundle().getText("validationErrorTitle") || "Erreur de validation"
+				});
+				
+				// Set focus on the first invalid field
+				this._focusFirstInvalidField(aValidationErrors);
+				return;
+			}
 			
 			// Show comment dialog and submit directly after comment
 			this.showCommentDialog((sComment) => {
@@ -529,16 +545,10 @@ sap.ui.define([
 			if (oArguments.role) {
 				this._currentRole = oArguments.role;
 			}
-			
-			console.log("Route arguments:", oArguments);
-			console.log("Matched route:", routeName);
-			console.log("benefitRequestId received:", sBenefitRequestId);
-			console.log("Current role:", this._currentRole);
 
 			// Validate GUID
 			if (!sBenefitRequestId || sBenefitRequestId === "00000000-0000-0000-0000-000000000000" || 
 				sBenefitRequestId === "undefined" || sBenefitRequestId === "null") {
-				console.warn("Invalid or undefined GUID:", sBenefitRequestId);
 				return;
 			}
 
@@ -881,7 +891,6 @@ sap.ui.define([
 				// Find the control by its id (which must match Field)
 				const oCtrl = oView.byId(oUIProperty.Field);
 				if (oCtrl) {
-					console.info(" Field =", oUIProperty.Field, " Editable =", editable, " Hidden =", hidden, " Required =", required);
 					// apply dynamically
 					if (oCtrl.setEditable) {
 						oCtrl.setEditable(editable);
@@ -895,8 +904,6 @@ sap.ui.define([
 					if (oCtrl.setRequired) {
 						oCtrl.setRequired(required);
 					}
-				} else {
-					console.warn("Field non trouvé =", oUIProperty.Field);
 				}
 			}
 		},
@@ -908,59 +915,7 @@ sap.ui.define([
 		 * @param {string} sObjectPath path to the object to be bound to the view.
 		 * @private
 		 */
-		//  onApproveButtonPress: function() {
-		// 	  const oModel = this.getView().getModel("approveModel");
-			
-		// 	  // Get the current hash from the URL
-		// 	  const sHash = sap.ui.core.routing.HashChanger.getInstance().getHash(); // e.g., YHR_BEN_REQ-display&//DetailOnly/005056be-9b02-1fd0-a58e-8d5b404d123d/02/02/01/01
-			
-		// 	  // Extract the segments after the '&' symbol
-		// 	  const aHashParts = sHash.split("&");
-		// 	  const sDetailPath = aHashParts.find(part => part.includes("DetailOnly"));
-			
-		// 	  if (!sDetailPath) {
-		// 	    sap.m.MessageBox.error("Invalid URL format. Cannot extract parameters.");
-		// 	    return;
-		// 	  }
-			
-		// 	  // Split the DetailOnly path into segments
-		// 	  const aSegments = sDetailPath.split("/").filter(Boolean); // Removes empty strings
-			
-		// 	  // Extract Guid and ActorRole
-		// 	  const sGuid = aSegments[1];       // 005056be-9b02-1fd0-a58e-8d5b404d123d
-		// 	  const sActorRole = aSegments[2];  // 02
-			
-		// 	  // Call the OData function with dynamic parameters
-		// 	  oModel.callFunction("/ApproveRequest", {
-		// 	    method: "POST",
-		// 	    urlParameters: {
-		// 	      Guid: sGuid,
-		// 	      ActorRole: sActorRole,
-		// 	      ApprovalComent: "Test"
-		// 	    },
-		// 	    success: (oData) => {
-		// 	      const oResult = oData?.ApproveRequest;
-		// 	      const sReturnCode = oResult?.ReturnCode?.trim();
-		// 	      const sMessage = oResult?.Message || "No message returned";
-			
-		// 	      if (sReturnCode === "0") {
-		// 	        sap.m.MessageToast.show("Request approved successfully!");
-		// 	      } else {
-		// 	        sap.m.MessageBox.error(sMessage, {
-		// 	          title: "Error",
-		// 	          details: `Return Code: ${sReturnCode}`
-		// 	        });
-		// 	      }
-		// 	    },
-		// 	    error: () => {
-		// 	      sap.m.MessageBox.error("Approval failed due to a technical error.", {
-		// 	        title: "Error"
-		// 	      });
-		// 	    }
-		// 	  });
-		// },
 		onApproveButtonPress: function() {
-			  debugger;
 			  const oModel = this.getView().getModel("approveModel");
 			  const oBundle = this.getView().getModel("i18n").getResourceBundle();
 			
@@ -1154,9 +1109,6 @@ sap.ui.define([
 					}
 				},
 				error: (oError) => {
-					console.error("Error loading school details:", oError);
-					
-					// 🔥 EXEMPLE: Ajouter un message d'erreur via BaseController
 					this.addODataErrorMessage(
 						oError,
 						"Erreur lors du chargement des détails de l'école",
@@ -1174,7 +1126,6 @@ sap.ui.define([
 		 * @private
 		 */
 		_updateSchoolCountryDescription(sCountryCode) {
-			console.log("Country code to find:", sCountryCode);
 			const oModel = this.getView().getModel();
 			const oView = this.getView();
 
@@ -1187,29 +1138,21 @@ sap.ui.define([
 			oModel.read("/GenericVHSet", {
 				filters: aFilters,
 				success: (oData) => {
-					console.log("GenericVHSet results:", oData.results);
 					if (oData.results && oData.results.length > 0) {
 						// Filter client-side to make sure we find the right country
 						const aCountries = oData.results.filter(country => country.Id === sCountryCode);
-						console.log("Filtered countries:", aCountries);
 
 						if (aCountries.length > 0) {
 							const sCountryDescription = aCountries[0].Txt;
-							console.log("Setting description:", sCountryDescription);
 							// Set the description in the Input (EGSCT)
 							const oSchoolCountryInput = oView.byId("EGSCT");
 							if (oSchoolCountryInput && oSchoolCountryInput.setDescription) {
 								oSchoolCountryInput.setDescription(sCountryDescription);
 							}
-						} else {
-							console.warn("No country found with code:", sCountryCode);
 						}
-					} else {
-						console.warn("No results from GenericVHSet");
 					}
 				},
 				error: (oError) => {
-					console.error("Error loading country description:", oError);
 					this.fError();
 				}
 			});
@@ -1232,7 +1175,6 @@ sap.ui.define([
 			oView.byId("draftIndicator").showDraftSaving();
 
 			if (!oContext) {
-				console.error("No binding context available");
 				return;
 			}
 
@@ -1240,13 +1182,6 @@ sap.ui.define([
 			if (sComment) {
 				oModel.setProperty("Note", sComment, oContext);
 			}
-
-			// Remove the pending changes check - allow submit at any time
-			// if (!oModel.hasPendingChanges()) {
-			//     console.log("No pending changes to submit");
-			//     oView.byId("draftIndicator").showDraftSaved();
-			//     return;
-			// }
 
 			// set busy indicator during save
 			const oViewModel = this.getModel("detailView");
@@ -1271,13 +1206,6 @@ sap.ui.define([
 				oDeepInsertData.RequestStatus = sStatus;
 			}
 
-			// 🔍 CONSOLE LOG - Objet complet envoyé au deep insert
-			console.log("=== DEEP INSERT DATA ===");
-			console.log("Header Data (RequestHeaderSet):", JSON.stringify(oRequestData, null, 2));
-			console.log("Education Grant Detail (ToEduGrantDetail):", JSON.stringify(oEduGrantDetail, null, 2));
-			console.log("Complete Deep Insert Object:", JSON.stringify(oDeepInsertData, null, 2));
-			console.log("========================");
-
 			// Use create() for deep insert of a new record
 			oModel.create("/RequestHeaderSet", oDeepInsertData, {
 				success: function (oData, oResponse) {
@@ -1299,12 +1227,9 @@ sap.ui.define([
 					that.getRouter().navTo("RouteDetail", {
 						benefitRequestId: oData.Guid
 					});
-					
-					console.log("Deep insert successful:", oData);
 				},
 				error: function (oError) {
 					oViewModel.setProperty("/busy", false);
-					console.error("Deep insert error:", oError);
 					
 					that.addODataErrorMessage(
 						oError,
@@ -1341,7 +1266,6 @@ sap.ui.define([
 					});
 				})
 				.catch(oError => {
-					console.error("Error loading value help configuration:", oError);
 					// Fallback to hardcoded configuration if JSON loading fails
 					this._loadValueHelpDataFallback();
 				});
@@ -1387,10 +1311,9 @@ sap.ui.define([
 					this.getModel(sModelName).setData({
 						items: oData.results
 					});
-					console.log(`${sModelName} data loaded (${sMethod}):`, oData.results);
 				},
 				error: (oError) => {
-					console.error(`Error loading ${sModelName} data (${sMethod}):`, oError);
+					// Handle error silently or with minimal logging
 				}
 			});
 		},
@@ -1409,10 +1332,9 @@ sap.ui.define([
 					this.getModel("schoolListModel").setData({
 						items: oData.results
 					});
-					console.log("School list data loaded:", oData.results);
 				},
 				error: (oError) => {
-					console.error("Error loading school list data:", oError);
+					// Handle error silently
 				}
 			});
 		},
@@ -1431,10 +1353,9 @@ sap.ui.define([
 					this.getModel("schoolTypeModel").setData({
 						items: oData.results
 					});
-					console.log("School type data loaded:", oData.results);
 				},
 				error: (oError) => {
-					console.error("Error loading school type data:", oError);
+					// Handle error silently
 				}
 			});
 		},
@@ -1453,10 +1374,9 @@ sap.ui.define([
 					this.getModel("attendanceTypeModel").setData({
 						items: oData.results
 					});
-					console.log("Attendance type data loaded:", oData.results);
 				},
 				error: (oError) => {
-					console.error("Error loading attendance type data:", oError);
+					// Handle error silently
 				}
 			});
 		},
@@ -1475,10 +1395,9 @@ sap.ui.define([
 					this.getModel("specialArrangementModel").setData({
 						items: oData.results
 					});
-					console.log("Special arrangement data loaded:", oData.results);
 				},
 				error: (oError) => {
-					console.error("Error loading special arrangement data:", oError);
+					// Handle error silently
 				}
 			});
 		},
@@ -1874,6 +1793,120 @@ sap.ui.define([
 					oControl.attachChange(this._calculateFormCompletion, this);
 				}
 			});
+		},
+
+		/**
+		 * Validates all required fields in the current form
+		 * @returns {Array} Array of field labels that are required but empty
+		 * @private
+		 */
+		_validateRequiredFields: function() {
+			const oView = this.getView();
+			const aValidationErrors = [];
+			const oResourceBundle = this.getResourceBundle();
+			
+			// Get all form controls that are visible and required
+			const aRequiredControls = this._getRequiredFormControls();
+			
+			aRequiredControls.forEach(function(oControlInfo) {
+				const oControl = oControlInfo.control;
+				const sFieldLabel = oControlInfo.label;
+				
+				if (!this._isFieldFilled(oControl)) {
+					// Set value state to error for visual feedback
+					if (oControl.setValueState) {
+						oControl.setValueState(sap.ui.core.ValueState.Error);
+						oControl.setValueStateText(oResourceBundle.getText("fieldRequired") || "Ce champ est obligatoire");
+					}
+					aValidationErrors.push(sFieldLabel);
+				} else {
+					// Clear error state if field is filled
+					if (oControl.setValueState) {
+						oControl.setValueState(sap.ui.core.ValueState.None);
+					}
+				}
+			}.bind(this));
+			
+			return aValidationErrors;
+		},
+
+		/**
+		 * Gets all required form controls that are currently visible
+		 * @returns {Array} Array of objects with control and label information
+		 * @private
+		 */
+		_getRequiredFormControls: function() {
+			const oView = this.getView();
+			const aRequiredControls = [];
+			
+			// Common field mappings with their labels
+			const aFieldMappings = [
+				// Child Information fields
+				{ id: "EGCNA", label: "Nom de l'enfant" },
+				{ id: "EGCFN", label: "Prénom de l'enfant" },
+				{ id: "EGCBD", label: "Date de naissance" },
+				{ id: "EGCRL", label: "Relation avec l'enfant" },
+				
+				// School Information fields
+				{ id: "EGSSL", label: "École" },
+				{ id: "EGSNA", label: "Nom de l'école" },
+				{ id: "EGSCT", label: "Pays de l'école" },
+				{ id: "EGSTY", label: "Type d'école" },
+				{ id: "EGGRD", label: "Classe/Niveau" },
+				{ id: "EGTYP", label: "Type d'école (additionnel)" },
+				{ id: "EGTYPATT", label: "Type de fréquentation" },
+				
+				// Eligibility fields
+				{ id: "EGPER", label: "Période" },
+				{ id: "EGBEG", label: "Date de début" },
+				{ id: "EGEND", label: "Date de fin" },
+				
+				// Other common fields
+				{ id: "EGSAR", label: "Arrangement spécial" },
+				{ id: "EGCRS", label: "Raison du changement" },
+				{ id: "EGBRS", label: "Raison de l'internat" }
+			];
+			
+			aFieldMappings.forEach(function(oFieldMapping) {
+				const oControl = oView.byId(oFieldMapping.id);
+				if (oControl && oControl.getVisible && oControl.getVisible() && 
+					oControl.getRequired && oControl.getRequired()) {
+					aRequiredControls.push({
+						control: oControl,
+						label: oFieldMapping.label,
+						id: oFieldMapping.id
+					});
+				}
+			});
+			
+			return aRequiredControls;
+		},
+
+		/**
+		 * Sets focus on the first invalid field for better user experience
+		 * @param {Array} aValidationErrors - Array of field labels with errors
+		 * @private
+		 */
+		_focusFirstInvalidField: function(aValidationErrors) {
+			if (aValidationErrors.length === 0) {
+				return;
+			}
+			
+			const oView = this.getView();
+			const aRequiredControls = this._getRequiredFormControls();
+			
+			// Find the first control with an error and set focus
+			for (let i = 0; i < aRequiredControls.length; i++) {
+				const oControlInfo = aRequiredControls[i];
+				if (aValidationErrors.includes(oControlInfo.label)) {
+					if (oControlInfo.control.focus) {
+						setTimeout(function() {
+							oControlInfo.control.focus();
+						}, 100);
+					}
+					break;
+				}
+			}
 		}
 
 	});

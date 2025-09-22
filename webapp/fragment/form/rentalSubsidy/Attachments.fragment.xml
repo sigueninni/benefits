@@ -1,0 +1,95 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+    xmlns:u="sap.ui.unified"
+    xmlns:form="sap.ui.layout.form"
+    xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
+
+    <VBox>
+        <Label text="{i18n>attachments}" class="sapUiMediumMarginBottom" />
+        
+        <HBox>
+            <!-- Left Column -->
+            <VBox class="sapUiMediumMarginEnd" width="50%">
+                <!-- Copy of signed lease agreement -->
+                <VBox class="sapUiSmallMarginBottom">
+                    <Label text="{i18n>signedLeaseAgreement}" class="sapUiSmallMarginBottom" />
+                    <u:FileUploader
+                        id="signedLeaseUpload"
+                        multiple="true"
+                        uploadUrl="/upload/signedlease"
+                        change="onSignedLeaseFileChange"
+                        fileType="pdf,jpg,jpeg,png"
+                        maximumFileSize="5"
+                        buttonText="{i18n>selectFiles}"
+                        placeholder="{i18n>chooseSignedLeaseFiles}"
+                    />
+                </VBox>
+                
+                <!-- Proof of payment of first month of rent -->
+                <VBox class="sapUiSmallMarginBottom">
+                    <Label text="{i18n>proofFirstMonthPayment}" class="sapUiSmallMarginBottom" />
+                    <u:FileUploader
+                        id="firstMonthPaymentUpload"
+                        multiple="true"
+                        uploadUrl="/upload/firstmonthpayment"
+                        change="onFirstMonthPaymentFileChange"
+                        fileType="pdf,jpg,jpeg,png"
+                        maximumFileSize="5"
+                        buttonText="{i18n>selectFiles}"
+                        placeholder="{i18n>chooseFirstMonthPaymentFiles}"
+                    />
+                </VBox>
+                
+                <!-- Brokers fees invoice (optional) -->
+                <VBox class="sapUiSmallMarginBottom">
+                    <Label text="{i18n>brokersFeesInvoice}" class="sapUiSmallMarginBottom" />
+                    <u:FileUploader
+                        id="brokersInvoiceUpload"
+                        multiple="true"
+                        uploadUrl="/upload/brokersinvoice"
+                        change="onBrokersInvoiceFileChange"
+                        fileType="pdf,jpg,jpeg,png"
+                        maximumFileSize="5"
+                        buttonText="{i18n>selectFiles}"
+                        placeholder="{i18n>chooseBrokersInvoiceFiles}"
+                    />
+                </VBox>
+            </VBox>
+            
+            <!-- Right Column -->
+            <VBox width="50%">
+                <!-- Proof of payment of brokers fees (optional) -->
+                <VBox class="sapUiSmallMarginBottom">
+                    <Label text="{i18n>proofBrokersFeesPayment}" class="sapUiSmallMarginBottom" />
+                    <u:FileUploader
+                        id="brokersPaymentUpload"
+                        multiple="true"
+                        uploadUrl="/upload/brokerspayment"
+                        change="onBrokersPaymentFileChange"
+                        fileType="pdf,jpg,jpeg,png"
+                        maximumFileSize="5"
+                        buttonText="{i18n>selectFiles}"
+                        placeholder="{i18n>chooseBrokersPaymentFiles}"
+                    />
+                </VBox>
+                
+                <!-- UNDP resident coordinator approval for d/s A to E -->
+                <VBox class="sapUiSmallMarginBottom">
+                    <Label text="{i18n>undpResidentCoordinatorApproval}" class="sapUiSmallMarginBottom" />
+                    <u:FileUploader
+                        id="undpApprovalUpload"
+                        multiple="true"
+                        uploadUrl="/upload/undpapproval"
+                        change="onUndpApprovalFileChange"
+                        fileType="pdf,jpg,jpeg,png"
+                        maximumFileSize="5"
+                        buttonText="{i18n>selectFiles}"
+                        placeholder="{i18n>chooseUndpApprovalFiles}"
+                    />
+                </VBox>
+            </VBox>
+        </HBox>
+    </VBox>
+    
+</core:FragmentDefinition>

@@ -24,85 +24,85 @@
             <!-- Rental Subsidy Fields -->
             <core:Title text="{i18n>rentalSubsidy}" />
 
-            <Label text="{i18n>PREAS}" />
+            <Label text="{i18n>applicationReason}" />
             <Select id="rental_PREAS" />
 
-            <Label text="{i18n>RSDRT}" />
+            <Label text="{i18n>dwellingRentType}" />
             <Select id="rental_RSDRT" />
 
-            <Label text="{i18n>RSREA}" />
+            <Label text="{i18n>reimbursementApplicationType}" />
             <Select id="rental_RSREA" />
 
-            <Label text="{i18n>LGART}" />
+            <Label text="{i18n>wageType}" />
             <Select id="rental_LGART" />
 
-            <Label text="{i18n>OPKEN}" />
+            <Label text="{i18n>operationIndicator}" />
             <Select id="rental_OPKEN" />
 
-            <Label text="{i18n>BETRG}" />
+            <Label text="{i18n>amount}" />
             <Input id="rental_BETRG" type="Number" />
 
-            <Label text="{i18n>WAERS}" />
+            <Label text="{i18n>currency}" />
             <Select id="rental_WAERS" />
 
-            <Label text="{i18n>RSAMT}" />
+            <Label text="{i18n>fixedValueOverwriting}" />
             <Input id="rental_RSAMT" type="Number" />
 
-            <Label text="{i18n>WAAMT}" />
+            <Label text="{i18n>currencyWage}" />
             <Select id="rental_WAAMT" />
 
-            <Label text="{i18n>RSBFA}" />
+            <Label text="{i18n>brokersFeeAmount}" />
             <Input id="rental_RSBFA" type="Number" />
 
-            <Label text="{i18n>WABFA}" />
+            <Label text="{i18n>currencyKey}" />
             <Select id="rental_WABFA" />
 
-            <Label text="{i18n>RSFMD}" />
+            <Label text="{i18n>brokersFeePayDate}" />
             <DatePicker id="rental_RSFMD" />
 
-            <Label text="{i18n>DSTXT}" />
+            <Label text="{i18n>dutyStation}" />
             <Input id="rental_DSTXT" type="Text" showValueHelp="true" />
 
-            <Label text="{i18n>RSADT}" />
+            <Label text="{i18n>arrivalDateDutyStation}" />
             <DatePicker id="rental_RSADT" />
 
-            <Label text="{i18n>RSEXD}" />
+            <Label text="{i18n>rentalSubsidyExpiryDate}" />
             <DatePicker id="rental_RSEXD" />
 
-            <Label text="{i18n>RSLBD}" />
+            <Label text="{i18n>rentalSubsidyLeaseBeginDate}" />
             <DatePicker id="rental_RSLBD" />
 
-            <Label text="{i18n>RSLED}" />
+            <Label text="{i18n>rentalSubsidyLeaseEndDate}" />
             <DatePicker id="rental_RSLED" />
 
-            <Label text="{i18n>RSDEP}" />
+            <Label text="{i18n>totalDependents}" />
             <Input id="rental_RSDEP" type="Number" />
 
-            <Label text="{i18n>RSDAS}" />
+            <Label text="{i18n>dependentsAway}" />
             <Input id="rental_RSDAS" type="Number" />
 
-            <Label text="{i18n>RSEIC}" />
+            <Label text="{i18n>electricityFlag}" />
             <Switch id="rental_RSEIC" customTextOn="{i18n>yes}" customTextOff="{i18n>no}" enabled="true" />
 
-            <Label text="{i18n>RSNBR}" />
+            <Label text="{i18n>numberOfBedrooms}" />
             <Input id="rental_RSNBR" type="Number" />
 
             <!-- Additional Fields -->
             <core:Title text="{i18n>additionalFields}" />
 
-            <Label text="{i18n>RSSCR}" />
+            <Label text="{i18n>sharedRent}" />
             <Switch id="rental_RSSCR" customTextOn="{i18n>yes}" customTextOff="{i18n>no}" enabled="true" />
 
-            <Label text="{i18n>DSYRS}" />
+            <Label text="{i18n>periodConsumptionYears}" />
             <Input id="rental_DSYRS" type="Number" />
 
-            <Label text="{i18n>DSMNT}" />
+            <Label text="{i18n>periodConsumptionMonths}" />
             <Input id="rental_DSMNT" type="Number" />
 
-            <Label text="{i18n>DSDAY}" />
+            <Label text="{i18n>periodConsumptionDays}" />
             <Input id="rental_DSDAY" type="Number" />
 
-            <Label text="{i18n>DSCLWOP}" />
+            <Label text="{i18n>lwopCalendarDays}" />
             <Input id="rental_DSCLWOP" type="Number" />
         </form:content>
     </form:SimpleForm>

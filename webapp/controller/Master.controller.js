@@ -36,9 +36,12 @@ sap.ui.define([
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator",
     "sap/ui/Device",
-    "sap/m/MessageToast"
+    "sap/m/MessageToast",
+    "sap/m/ViewSettingsDialog",
+    "sap/m/ViewSettingsItem",
+    "sap/ui/model/Sorter"
 ],
-    function (BaseController, JSONModel, formatter, Filter, FilterOperator, Device, MessageToast) {
+    function (BaseController, JSONModel, formatter, Filter, FilterOperator, Device, MessageToast, ViewSettingsDialog, ViewSettingsItem, Sorter) {
         "use strict";
 
         return BaseController.extend("com.un.zhrbenefrequests.controller.Master", {
@@ -501,6 +504,101 @@ sap.ui.define([
                         this._showODataError(); // toujours MSG_SERVICE_ERROR
                     }.bind(this)
                 });
+            },
+
+            /* =========================================================== */
+            /* Sort and Filter methods                                     */
+            /* =========================================================== */
+
+            /**
+             * Event handler for sort button
+             * @public
+             */
+            onSort: function () {
+                this._showViewSettingsDialog("sort");
+            },
+
+            /**
+             * Event handler for group button
+             * @public
+             */
+            onGroup: function () {
+                this._showViewSettingsDialog("group");
+            },
+
+            /**
+             * Shows the ViewSettingsDialog
+             * @param {string} sDialogMode - The mode of the dialog (sort, group)
+             * @private
+             */
+            _showViewSettingsDialog: function (sDialogMode) {
+                if (!this._oViewSettingsDialog) {
+                    this._oViewSettingsDialog = new ViewSettingsDialog({
+                        confirm: this._onViewSettingsConfirm.bind(this),
+                        sortItems: [
+                            new ViewSettingsItem({
+                                text: "{i18n>requestKey}",
+                                key: "RequestKey",
+                                selected: true
+                            }),
+                            new ViewSettingsItem({
+                                text: "{i18n>createdOn}",
+                                key: "Begda"
+                            }),
+                            new ViewSettingsItem({
+                                text: "{i18n>status}",
+                                key: "RequestStatusTxt"
+                            })
+                        ],
+                        groupItems: [
+                            new ViewSettingsItem({
+                                text: "{i18n>status}",
+                                key: "RequestStatusTxt"
+                            }),
+                            new ViewSettingsItem({
+                                text: "{i18n>requestType}",
+                                key: "RequestTypeTxt"
+                            })
+                        ]
+                    });
+                    this.getView().addDependent(this._oViewSettingsDialog);
+                }
+
+                // Set the dialog mode
+                if (sDialogMode === "sort") {
+                    this._oViewSettingsDialog.open("sort");
+                } else if (sDialogMode === "group") {
+                    this._oViewSettingsDialog.open("group");
+                }
+            },
+
+            /**
+             * Event handler for ViewSettingsDialog confirm
+             * @param {sap.ui.base.Event} oEvent the confirm event
+             * @private
+             */
+            _onViewSettingsConfirm: function (oEvent) {
+                const oParams = oEvent.getParameters();
+                const oBinding = this._oList.getBinding("items");
+                let aSorters = [];
+                let aGroupers = [];
+
+                // Apply sorting
+                if (oParams.sortItem) {
+                    const sSortPath = oParams.sortItem.getKey();
+                    const bDescending = oParams.sortDescending;
+                    aSorters.push(new Sorter(sSortPath, bDescending));
+                }
+
+                // Apply grouping
+                if (oParams.groupItem) {
+                    const sGroupPath = oParams.groupItem.getKey();
+                    const bDescending = oParams.groupDescending;
+                    aGroupers.push(new Sorter(sGroupPath, bDescending, true));
+                }
+
+                // Apply sorters and groupers to binding
+                oBinding.sort(aGroupers.concat(aSorters));
             }
 
 
