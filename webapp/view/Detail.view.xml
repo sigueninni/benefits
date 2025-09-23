@@ -49,30 +49,35 @@
                         text="{i18n>approve}"
                         type="Accept"
                         press="onApproveButtonPress"
+                        visible="{ path: 'RequestStatus', formatter: '.formatter.approvalButtonsVisibility' }"
                     />
                     <Button
                         id="BTNREJECT"
                         text="{i18n>reject}"
                         type="Reject"
                         press="onRejectButtonPress"
+                        visible="{ path: 'RequestStatus', formatter: '.formatter.approvalButtonsVisibility' }"
                     />
                     <Button
                         id="BTNRETURN"
                         text="{i18n>return}"
                         type="Emphasized"   
                         press="onReturnButtonPress"
+                        visible="{ path: 'RequestStatus', formatter: '.formatter.approvalButtonsVisibility' }"
                     />
                     <Button
                         id="BTNSUBMIT"
                         text="{i18n>submit}"
                         type="Emphasized"
                         press="onSubmitButtonPress"
+                        visible="{ path: 'RequestStatus', formatter: '.formatter.draftButtonsVisibility' }"
                     />
                     <Button
                         id="BTNDELETE"
                         text="{i18n>delete}"
                         type="Default"
                         press="onDeleteButtonPress"
+                        visible="{ path: 'RequestStatus', formatter: '.formatter.draftButtonsVisibility' }"
                     />
                     <!--                     <Button
                         icon="sap-icon://expense-report"
@@ -388,7 +393,7 @@
             </uxap:ObjectPageSection>
         </uxap:sections>
         <uxap:footer>
-            <OverflowToolbar id="BAR">
+            <OverflowToolbar id="BAR" visible="{ path: 'RequestStatus', formatter: '.formatter.draftButtonsVisibility' }">
                 <content>
                     <Button
                         id="BTNmessagePopover"

@@ -114,8 +114,8 @@ sap.ui.define([
 			const oView = this.getView();
 			const oModel = oView.getModel();
 
-			MessageBox.warning(this.getResourceBundle().getText("confirmDeletion"), {
-				title: this.getResourceBundle().getText("confirmDeletionTitle"),
+			MessageBox.warning(this.getText("confirmDeletion"), {
+				title: this.getText("confirmDeletionTitle"),
 				actions: [MessageBox.Action.OK, MessageBox.Action.CANCEL],
 				initialFocus: MessageBox.Action.OK,
 				onClose: function (oAction) {
@@ -127,12 +127,12 @@ sap.ui.define([
 						oModel.remove(oView.getBindingContext().getPath(), {
 							success: function (oSuccess) {
 								oViewModel.setProperty("/busy", false);
-								MessageToast.show(that.getResourceBundle().getText("requestDeleted"));
+								MessageToast.show(that.getText("requestDeleted"));
 								that.getRouter().navTo("RouteMaster", that);
 							}
 						});
 					} else { //Request cancelled
-						MessageToast.show(that.getResourceBundle().getText("deletionCancelled"));
+						MessageToast.show(that.getText("deletionCancelled"));
 					}
 				}
 			});
@@ -160,13 +160,13 @@ sap.ui.define([
 			
 			if (aValidationErrors.length > 0) {
 				// Show validation error message with details about missing fields
-				const sErrorMessage = this.getResourceBundle().getText("requiredFieldsValidation") || 
-					"Veuillez remplir tous les champs obligatoires avant de soumettre.";
+				const sErrorMessage = this.getText("requiredFieldsValidation");
 				const sFieldsList = aValidationErrors.join(", ");
-				const sDetailedMessage = sErrorMessage + "\n\nChamps manquants: " + sFieldsList;
+				const sMissingFieldsPrefix = this.getText("missingFieldsPrefix");
+				const sDetailedMessage = sErrorMessage + "\n\n" + sMissingFieldsPrefix + " " + sFieldsList;
 				
 				sap.m.MessageBox.error(sDetailedMessage, {
-					title: this.getResourceBundle().getText("validationErrorTitle") || "Erreur de validation"
+					title: this.getText("validationErrorTitle")
 				});
 				
 				// Set focus on the first invalid field
@@ -200,35 +200,37 @@ sap.ui.define([
 		onAddClaimButtonPress: function () {
 			const that = this;
 			const oView = this.getView();
-			// Create a new JSON model for the dialog if needed
-			const oDialogModel = new sap.ui.model.json.JSONModel({
-				ExpenseType: "",
-				Amount: "",
-				Currency: ""
-			});
+			
 			// Create dialog only once
 			if (!this.fragments._oAddClaimDialog) {
 				this.fragments._oAddClaimDialog = new sap.m.Dialog({
-					id: "claimAddDialog",
-					title: oView.getModel("i18n").getResourceBundle().getText("addClaim"),
+					title: this.getText("addClaim"),
 					content: sap.ui.xmlfragment("com.un.zhrbenefrequests.fragment.form.educationGrant.ClaimAdd", this),
 					beginButton: new sap.m.Button({
-						text: oView.getModel("i18n").getResourceBundle().getText("cancel"),
+						text: this.getText("cancel"),
 						press: function () {
 							that._removeClaimAddDialog();
 						}
 					}),
 					endButton: new sap.m.Button({
-						text: oView.getModel("i18n").getResourceBundle().getText("submit"),
+						text: this.getText("submit"),
 						press: function () {
 							that._onConfirmAddClaim();
 						}
 					})
 				});
 				this.fragments._oAddClaimDialog.setModel(oView.getModel("i18n"), "i18n");
-				this.fragments._oAddClaimDialog.setModel(oDialogModel, "claimModel");
 			}
-			// Set the context/model to the dialog
+			
+			// Create a fresh model for each dialog opening
+			const oDialogModel = new sap.ui.model.json.JSONModel({
+				ExpenseType: "tuition",
+				ExpenseAmount: "",
+				AdvanceAmount: "",
+				Currency: ""
+			});
+			oDialogModel.setDefaultBindingMode(sap.ui.model.BindingMode.TwoWay);
+			
 			this.fragments._oAddClaimDialog.setModel(oDialogModel, "claimModel");
 			oView.addDependent(this.fragments._oAddClaimDialog);
 			this.fragments._oAddClaimDialog.open();
@@ -244,39 +246,40 @@ sap.ui.define([
 		onAddAdvanceButtonPress: function () {
 			const that = this;
 			const oView = this.getView();
-			// Create a new JSON model for the dialog if needed
-			const oDialogModel = new sap.ui.model.json.JSONModel({
-				ExpenseType: "",
-				Amount: "",
-				Currency: "",
-				Comments: ""
-			});
+			
 			// Create dialog only once
 			if (!this.fragments._oAddAdvanceDialog) {
 				this.fragments._oAddAdvanceDialog = new sap.m.Dialog({
-					id: "advanceAddDialog",
-					title: oView.getModel("i18n").getResourceBundle().getText("addAdvance"),
+					title: this.getText("addAdvance"),
 					content: sap.ui.xmlfragment("com.un.zhrbenefrequests.fragment.form.educationGrant.AdvanceAdd", this),
 					beginButton: new sap.m.Button({
-						text: oView.getModel("i18n").getResourceBundle().getText("cancel"),
+						text: this.getText("cancel"),
 						press: function () {
 							that._removeAdvanceAddDialog();
 						}
 					}),
 					endButton: new sap.m.Button({
-						text: oView.getModel("i18n").getResourceBundle().getText("submit"),
+						text: this.getText("submit"),
 						press: function () {
 							that._onConfirmAddAdvance();
 						}
 					})
 				});
-				this.fragments._oAdvanceDialog.setModel(oView.getModel("i18n"), "i18n");
-				this.fragments._oAdvanceDialog.setModel(oDialogModel, "advanceModel");
+				this.fragments._oAddAdvanceDialog.setModel(oView.getModel("i18n"), "i18n");
 			}
-			// Set the context/model to the dialog
-			this.fragments._oAdvanceDialog.setModel(oDialogModel, "advanceModel");
-			oView.addDependent(this.fragments._oAdvanceDialog);
-			this.fragments._oAdvanceDialog.open();
+			
+			// Create a fresh model for each dialog opening
+			const oDialogModel = new sap.ui.model.json.JSONModel({
+				ExpenseType: "tuition",
+				ExpenseAmount: "",
+				Currency: "",
+				Comments: ""
+			});
+			oDialogModel.setDefaultBindingMode(sap.ui.model.BindingMode.TwoWay);
+			
+			this.fragments._oAddAdvanceDialog.setModel(oDialogModel, "advanceModel");
+			oView.addDependent(this.fragments._oAddAdvanceDialog);
+			this.fragments._oAddAdvanceDialog.open();
 		},
 
 
@@ -308,7 +311,7 @@ sap.ui.define([
 				oLocalModel.setProperty("/advances", aAdvances);
 				
 				// Show confirmation message
-				sap.m.MessageToast.show("Advance supprimé");
+				sap.m.MessageToast.show(this.getText("advanceDeleted"));
 			}
 		},
 
@@ -538,6 +541,9 @@ sap.ui.define([
 			// Only detach previous listeners when navigating to avoid conflicts
 			this._detachCompletionListeners();
 			
+			// Clear local models when navigating to a different request
+			this._clearLocalModels();
+			
 			// Extract GUID from arguments (different structure for each route)
 			const oArguments = oEvent.getParameter("arguments") || {};
 			const sBenefitRequestId = oArguments.benefitRequestId;
@@ -636,26 +642,10 @@ sap.ui.define([
 		 * @private
 		 */
 		_onConfirmAddClaim: function () {
-			// Récupération simple et directe des valeurs depuis les contrôles
-			const oExpenseTypeSelect = sap.ui.getCore().byId("expenseTypeAdd");
-			const oAmountInput = sap.ui.getCore().byId("amountAdd");
-			const oCurrencyInput = sap.ui.getCore().byId("currencyAdd");
-			
-			const sExpenseType = oExpenseTypeSelect ? oExpenseTypeSelect.getSelectedKey() : "";
-			const sAmount = oAmountInput ? oAmountInput.getValue() : "";
-			const sCurrency = oCurrencyInput ? oCurrencyInput.getValue() : "";
+			const oDialogModel = this.fragments._oAddClaimDialog.getModel("claimModel");
+			const oClaimData = oDialogModel.getData();
 
-			// Validation simple
-			if (!sExpenseType || !sAmount || !sCurrency) {
-				sap.m.MessageBox.error(this.getView().getModel("i18n").getResourceBundle().getText("fillRequiredFields"));
-				return;
-			}
-
-			const fAmount = parseFloat(sAmount);
-			if (isNaN(fAmount) || fAmount <= 0) {
-				sap.m.MessageBox.error("Veuillez entrer un montant valide supérieur à 0");
-				return;
-			}
+			console.log("Claim data from model:", oClaimData);
 
 			// Get the current context and model
 			const oContext = this.getView().getBindingContext();
@@ -663,11 +653,14 @@ sap.ui.define([
 
 			// Create a new claim entry
 			const oNewClaim = {
-				ExpenseType: sExpenseType,
-				Amount: fAmount,
-				Currency: sCurrency,
+				ExpenseType: oClaimData.ExpenseType,
+				ExpenseAmount: parseFloat(oClaimData.ExpenseAmount) || 0,
+				AdvanceAmount: parseFloat(oClaimData.AdvanceAmount) || 0,
+				Currency: oClaimData.Currency,
 				TempId: Date.now().toString()
 			};
+
+			console.log("New claim to add:", oNewClaim);
 
 			// Utiliser un modèle JSON local pour les claims
 			let oLocalModel = this.getView().getModel("localClaims");
@@ -687,7 +680,7 @@ sap.ui.define([
 			oLocalModel.setProperty("/claims", aClaims);
 
 			// Show success message
-			sap.m.MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("claimAdded"));
+			sap.m.MessageToast.show(this.getText("claimAdded"));
 
 			// Close dialog
 			this._removeClaimAddDialog();
@@ -700,23 +693,21 @@ sap.ui.define([
 		 * @private
 		 */
 		_onConfirmAddAdvance: function () {
-			const oDialogModel = this.fragments._oAdvanceDialog.getModel("advanceModel");
+			const oDialogModel = this.fragments._oAddAdvanceDialog.getModel("advanceModel");
 			const oAdvanceData = oDialogModel.getData();
 
-			// Validation
-			if (!oAdvanceData.ExpenseType || !oAdvanceData.Amount || !oAdvanceData.Currency) {
-				sap.m.MessageBox.error(this.getView().getModel("i18n").getResourceBundle().getText("fillRequiredFields"));
-				return;
-			}
+			console.log("Advance data from model:", oAdvanceData);
 
 			// Create a new advance entry
 			const oNewAdvance = {
 				ExpenseType: oAdvanceData.ExpenseType,
-				Amount: parseFloat(oAdvanceData.Amount),
+				ExpenseAmount: parseFloat(oAdvanceData.ExpenseAmount) || 0,
 				Currency: oAdvanceData.Currency,
 				Comments: oAdvanceData.Comments || "",
 				TempId: Date.now().toString()
 			};
+
+			console.log("New advance to add:", oNewAdvance);
 
 			// Utiliser un modèle JSON local pour les advances
 			let oLocalModel = this.getView().getModel("localAdvances");
@@ -736,7 +727,7 @@ sap.ui.define([
 			oLocalModel.setProperty("/advances", aAdvances);
 
 			// Show success message
-			sap.m.MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("advanceAdded"));
+			sap.m.MessageToast.show(this.getText("advanceAdded"));
 
 			// Close dialog
 			this._removeAdvanceAddDialog();
@@ -917,14 +908,13 @@ sap.ui.define([
 		 */
 		onApproveButtonPress: function() {
 			  const oModel = this.getView().getModel("approveModel");
-			  const oBundle = this.getView().getModel("i18n").getResourceBundle();
 			
 			  const sHash = sap.ui.core.routing.HashChanger.getInstance().getHash();
 			  const aHashParts = sHash.split("&");
 			  const sDetailPath = aHashParts.find(part => part.includes("DetailOnly"));
 			
 			  if (!sDetailPath) {
-			    sap.m.MessageBox.error(oBundle.getText("approvalInvalidUrl"));
+			    sap.m.MessageBox.error(this.getText("approvalInvalidUrl"));
 			    return;
 			  }
 			
@@ -943,23 +933,23 @@ sap.ui.define([
 			      success: (oData) => {
 			        const oResult = oData?.ApproveRequest;
 			        const sReturnCode = oResult?.ReturnCode?.trim();
-			        const sMessage = oResult?.Message || oBundle.getText("approvalNoMessage");
+			        const sMessage = oResult?.Message || this.getText("approvalNoMessage");
 			
 			        if (sReturnCode === "0") {
-			          sap.m.MessageToast.show(oBundle.getText("approvalSuccess"), {
+			          sap.m.MessageToast.show(this.getText("approvalSuccess"), {
 					    duration: 2000
 					  });
 			          window.history.back();
 			        } else {
 			          sap.m.MessageBox.error(sMessage, {
-			            title: oBundle.getText("approvalErrorTitle"),
-			            details: oBundle.getText("approvalErrorDetails", [sReturnCode])
+			            title: this.getText("approvalErrorTitle"),
+			            details: this.getText("approvalErrorDetails", [sReturnCode])
 			          });
 			        }
 			      },
 			      error: () => {
-			        sap.m.MessageBox.error(oBundle.getText("approvalErrorTechnical"), {
-			          title: oBundle.getText("approvalErrorTitle")
+			        sap.m.MessageBox.error(this.getText("approvalErrorTechnical"), {
+			          title: this.getText("approvalErrorTitle")
 			        });
 			      }
 			    });
@@ -998,7 +988,7 @@ sap.ui.define([
 					dataReceived: function (oEvent) {
 						oViewModel.setProperty("/busy", false);
 			
-						that._getUISettings();
+					//	that._getUISettings();
 						
 						// Restore or calculate form completion once data is received
 						that._restoreFormCompletion();
@@ -1035,7 +1025,7 @@ sap.ui.define([
 				oLocalModel.setProperty("/claims", aClaims);
 				
 				// Show confirmation message
-				sap.m.MessageToast.show("Claim supprimé");
+				sap.m.MessageToast.show(this.getText("claimDeleted"));
 			}
 		},
 
@@ -1111,7 +1101,7 @@ sap.ui.define([
 				error: (oError) => {
 					this.addODataErrorMessage(
 						oError,
-						"Erreur lors du chargement des détails de l'école",
+						this.getText("schoolDetailsLoadError"),
 						"/SchoolDetails"
 					);
 					
@@ -1214,8 +1204,8 @@ sap.ui.define([
 					// Success - clean messages and indicate save
 					that.clearMessages();
 					that.addSuccessMessage(
-						"Demande sauvegardée avec succès",
-						`Votre demande a été enregistrée avec le GUID: ${oData.Guid}`
+						that.getText("requestSavedSuccessfully"),
+						that.getText("requestSavedWithGuid", [oData.Guid])
 					);
 					that._resetValidationChecks && that._resetValidationChecks();
 					oView.byId("draftIndicator").showDraftSaved();
@@ -1233,7 +1223,7 @@ sap.ui.define([
 					
 					that.addODataErrorMessage(
 						oError,
-						"Erreur lors de la sauvegarde",
+						that.getText("saveErrorTitle"),
 						"/SaveOperation"
 					);
 					
@@ -1314,222 +1304,6 @@ sap.ui.define([
 				},
 				error: (oError) => {
 					// Handle error silently or with minimal logging
-				}
-			});
-		},
-
-		/**
-		 * Load school list data for EGSSL field
-		 * @private
-		 */
-		_loadSchoolListData: function() {
-			const oModel = this.getModel();
-			const aFilters = [new sap.ui.model.Filter("Method", sap.ui.model.FilterOperator.EQ, "GET_SCHOOL_LIST")];
-			
-			oModel.read("/GenericVHSet", {
-				filters: aFilters,
-				success: (oData) => {
-					this.getModel("schoolListModel").setData({
-						items: oData.results
-					});
-				},
-				error: (oError) => {
-					// Handle error silently
-				}
-			});
-		},
-
-		/**
-		 * Load school type data for EGSTY field
-		 * @private
-		 */
-		_loadSchoolTypeData: function() {
-			const oModel = this.getModel();
-			const aFilters = [new sap.ui.model.Filter("Method", sap.ui.model.FilterOperator.EQ, "GET_SCHOOL_TYPE_LIST")];
-			
-			oModel.read("/GenericVHSet", {
-				filters: aFilters,
-				success: (oData) => {
-					this.getModel("schoolTypeModel").setData({
-						items: oData.results
-					});
-				},
-				error: (oError) => {
-					// Handle error silently
-				}
-			});
-		},
-
-		/**
-		 * Load attendance type data for EGTYPATT field
-		 * @private
-		 */
-		_loadAttendanceTypeData: function() {
-			const oModel = this.getModel();
-			const aFilters = [new sap.ui.model.Filter("Method", sap.ui.model.FilterOperator.EQ, "GET_ATTENDANCE_TYPE_LIST")];
-			
-			oModel.read("/GenericVHSet", {
-				filters: aFilters,
-				success: (oData) => {
-					this.getModel("attendanceTypeModel").setData({
-						items: oData.results
-					});
-				},
-				error: (oError) => {
-					// Handle error silently
-				}
-			});
-		},
-
-		/**
-		 * Load special arrangement data for EGSAR field
-		 * @private
-		 */
-		_loadSpecialArrangementData: function() {
-			const oModel = this.getModel();
-			const aFilters = [new sap.ui.model.Filter("Method", sap.ui.model.FilterOperator.EQ, "GET_SPECIAL_ARRANGEMENT_LIST")];
-			
-			oModel.read("/GenericVHSet", {
-				filters: aFilters,
-				success: (oData) => {
-					this.getModel("specialArrangementModel").setData({
-						items: oData.results
-					});
-				},
-				error: (oError) => {
-					// Handle error silently
-				}
-			});
-		},
-
-		/**
-		 * Load change reason data for EGCRS field
-		 * @private
-		 */
-		_loadChangeReasonData: function() {
-			const oModel = this.getModel();
-			const aFilters = [new sap.ui.model.Filter("Method", sap.ui.model.FilterOperator.EQ, "GET_CHANGE_REASON_LIST")];
-			
-			oModel.read("/GenericVHSet", {
-				filters: aFilters,
-				success: (oData) => {
-					this.getModel("changeReasonModel").setData({
-						items: oData.results
-					});
-					console.log("Change reason data loaded:", oData.results);
-				},
-				error: (oError) => {
-					console.error("Error loading change reason data:", oError);
-				}
-			});
-		},
-
-		/**
-		 * Load reason boarding data for EGBRS field
-		 * @private
-		 */
-		_loadReasonBoardingData: function() {
-			const oModel = this.getModel();
-			const aFilters = [new sap.ui.model.Filter("Method", sap.ui.model.FilterOperator.EQ, "GET_REASON_BOARDING_LIST")];
-			
-			oModel.read("/GenericVHSet", {
-				filters: aFilters,
-				success: (oData) => {
-					this.getModel("reasonBoardingModel").setData({
-						items: oData.results
-					});
-					console.log("Reason boarding data loaded:", oData.results);
-				},
-				error: (oError) => {
-					console.error("Error loading reason boarding data:", oError);
-				}
-			});
-		},
-
-		/**
-		 * Load currency data for currency selection dialog
-		 * @private
-		 */
-		_loadCurrencyData: function() {
-			const oModel = this.getModel();
-			const aFilters = [new sap.ui.model.Filter("Method", sap.ui.model.FilterOperator.EQ, "GET_CURRENCY_LIST")];
-			
-			oModel.read("/GenericVHSet", {
-				filters: aFilters,
-				success: (oData) => {
-					this.getModel("currencyModel").setData({
-						items: oData.results
-					});
-					console.log("Currency data loaded:", oData.results);
-				},
-				error: (oError) => {
-					console.error("Error loading currency data:", oError);
-				}
-			});
-		},
-
-		/**
-		 * Load school country data for school country selection dialog
-		 * @private
-		 */
-		_loadSchoolCountryData: function() {
-			const oModel = this.getModel();
-			const aFilters = [new sap.ui.model.Filter("Method", sap.ui.model.FilterOperator.EQ, "GET_SCHOOL_COUNTRY_LIST")];
-			
-			oModel.read("/GenericVHSet", {
-				filters: aFilters,
-				success: (oData) => {
-					this.getModel("schoolCountryModel").setData({
-						items: oData.results
-					});
-					console.log("School country data loaded:", oData.results);
-				},
-				error: (oError) => {
-					console.error("Error loading school country data:", oError);
-				}
-			});
-		},
-
-		/**
-		 * Load grade data for EGGRD field
-		 * @private
-		 */
-		_loadGradeData: function() {
-			const oModel = this.getModel();
-			const aFilters = [new sap.ui.model.Filter("Method", sap.ui.model.FilterOperator.EQ, "GET_ATTEND_SCHOOL_GRADE_LIST")];
-			
-			oModel.read("/GenericVHSet", {
-				filters: aFilters,
-				success: (oData) => {
-					this.getModel("gradeModel").setData({
-						items: oData.results
-					});
-					console.log("Grade data loaded:", oData.results);
-				},
-				error: (oError) => {
-					console.error("Error loading grade data:", oError);
-				}
-			});
-		},
-
-		/**
-		 * Load school type additional data for EGTYP field
-		 * @private
-		 */
-		_loadSchoolTypeAdditData: function() {
-			const oModel = this.getModel();
-			const aFilters = [new sap.ui.model.Filter("Method", sap.ui.model.FilterOperator.EQ, "GET_SCHOOL_TYPE_ADDIT_LIST")];
-			
-			oModel.read("/GenericVHSet", {
-				filters: aFilters,
-				success: (oData) => {
-					this.getModel("schoolTypeAdditModel").setData({
-						items: oData.results
-					});
-					console.log("School type addit data loaded:", oData.results);
-				},
-				error: (oError) => {
-					console.error("Error loading school type addit data:", oError);
 				}
 			});
 		},
@@ -1773,6 +1547,34 @@ sap.ui.define([
 		},
 
 		/**
+		 * Clear all local models when navigating to a different request
+		 * @private
+		 */
+		_clearLocalModels: function () {
+			const oView = this.getView();
+			
+			// Clear advances model
+			const oAdvancesModel = oView.getModel("localAdvances");
+			if (oAdvancesModel) {
+				oAdvancesModel.setData({ advances: [] });
+			}
+			
+			// Clear claims model
+			const oClaimsModel = oView.getModel("localClaims");
+			if (oClaimsModel) {
+				oClaimsModel.setData({ claims: [] });
+			}
+			
+			// Clear any other local models if they exist
+			const oCommentsModel = oView.getModel("localComments");
+			if (oCommentsModel) {
+				oCommentsModel.setData({ comments: [] });
+			}
+			
+			console.log("🧹 Cleared all local models for new request");
+		},
+
+		/**
 		 * Attach event listeners to all form fields for real-time completion calculation
 		 * @private
 		 */
@@ -1842,27 +1644,27 @@ sap.ui.define([
 			// Common field mappings with their labels
 			const aFieldMappings = [
 				// Child Information fields
-				{ id: "EGCNA", label: "Nom de l'enfant" },
-				{ id: "EGCFN", label: "Prénom de l'enfant" },
-				{ id: "EGCBD", label: "Date de naissance" },
-				{ id: "EGCRL", label: "Relation avec l'enfant" },
+				{ id: "EGCNA", label: this.getText("lastName") },
+				{ id: "EGCFN", label: this.getText("fieldChildFirstName") },
+				{ id: "EGCBD", label: this.getText("dateOfBirth") },
+				{ id: "EGCRL", label: this.getText("childRelation") },
 				
 				// School Information fields
-				{ id: "EGSSL", label: "École" },
-				{ id: "EGSNA", label: "Nom de l'école" },
-				{ id: "EGSCT", label: "Pays de l'école" },
-				{ id: "EGSTY", label: "Type d'école" },
-				{ id: "EGGRD", label: "Classe/Niveau" },
-				{ id: "EGTYP", label: "Type d'école (additionnel)" },
-				{ id: "EGTYPATT", label: "Type de fréquentation" },
+				{ id: "EGSSL", label: this.getText("fieldSchool") },
+				{ id: "EGSNA", label: this.getText("fieldSchoolName") },
+				{ id: "EGSCT", label: this.getText("fieldSchoolCountry") },
+				{ id: "EGSTY", label: this.getText("fieldSchoolType") },
+				{ id: "EGGRD", label: this.getText("grade") },
+				{ id: "EGTYP", label: this.getText("fieldSchoolTypeAdditional") },
+				{ id: "EGTYPATT", label: this.getText("fieldAttendanceType") },
 				
 				// Eligibility fields
-				{ id: "EGPER", label: "Période" },
-				{ id: "EGBEG", label: "Date de début" },
-				{ id: "EGEND", label: "Date de fin" },
+				{ id: "EGPER", label: this.getText("fieldPeriod") },
+				{ id: "EGBEG", label: this.getText("fieldStartDate") },
+				{ id: "EGEND", label: this.getText("endDate") },
 				
 				// Other common fields
-				{ id: "EGSAR", label: "Arrangement spécial" },
+				{ id: "EGSAR", label: this.getText("fieldSpecialArrangement") },
 				{ id: "EGCRS", label: "Raison du changement" },
 				{ id: "EGBRS", label: "Raison de l'internat" }
 			];

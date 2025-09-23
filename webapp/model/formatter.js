@@ -22,7 +22,7 @@ sap.ui.define([
                     case constants.REQUEST_STATUS.DRAFT:
                         return "None";
                     case constants.REQUEST_STATUS.SUBMITTED:
-                        return "None";
+                        return "Warning";
                     case constants.REQUEST_STATUS.APPROVED_HRA:
                         return "Success";
                     case constants.REQUEST_STATUS.REJECTED_HRA:
@@ -142,6 +142,26 @@ sap.ui.define([
                 }
             }
             return iPercentage + "%";
+        },
+
+        /**
+         * Determines the visibility of approval buttons (APPROVE, REJECT, RETURN)
+         * These buttons should only be visible when the request status is "SUBMITTED" (01)
+         * @param {string} sRequestStatus - The request status code
+         * @returns {boolean} True if buttons should be visible, false otherwise
+         */
+        approvalButtonsVisibility: function (sRequestStatus) {
+            return sRequestStatus === constants.REQUEST_STATUS.SUBMITTED;
+        },
+
+        /**
+         * Determines the visibility of draft buttons (SUBMIT, DELETE)
+         * These buttons should only be visible when the request status is "DRAFT" (00)
+         * @param {string} sRequestStatus - The request status code
+         * @returns {boolean} True if buttons should be visible, false otherwise
+         */
+        draftButtonsVisibility: function (sRequestStatus) {
+            return sRequestStatus === constants.REQUEST_STATUS.DRAFT;
         }
 
     };
