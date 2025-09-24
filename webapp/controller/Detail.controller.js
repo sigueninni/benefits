@@ -45,7 +45,11 @@ sap.ui.define([
 				isVoluntary: false,
 				mimePath: this._sMIMESpath,
 				completionPercentage: 0,
-				completionState: "Error"
+				completionState: "Error",
+				// USER ROLE FOR CONDITIONAL BUTTON VISIBILITY - COMMENTED OUT
+				// Store current user role in detailView model so it can be accessed by formatters
+				// This enables role-based visibility control for action buttons in the view
+				// userRole: this._currentRole
 			});
 			this.setModel(oViewModel, "detailView");
 
@@ -547,9 +551,16 @@ sap.ui.define([
 			// Extract GUID from arguments (different structure for each route)
 			const oArguments = oEvent.getParameter("arguments") || {};
 			const sBenefitRequestId = oArguments.benefitRequestId;
-			// Override default role if provided in route arguments
+			// ROLE-BASED BUTTON VISIBILITY MANAGEMENT - COMMENTED OUT
+			// Override default role if provided in route arguments (e.g., from RouteDetailOnly)
 			if (oArguments.role) {
 				this._currentRole = oArguments.role;
+				// Update the detailView model with the new role so formatters can access it
+				// This triggers re-evaluation of all button visibility formatters in the view
+				// const oViewModel = this.getModel("detailView");
+				// if (oViewModel) {
+				//     oViewModel.setProperty("/userRole", this._currentRole);
+				// }
 			}
 
 			// Validate GUID
@@ -988,7 +999,7 @@ sap.ui.define([
 					dataReceived: function (oEvent) {
 						oViewModel.setProperty("/busy", false);
 			
-					//	that._getUISettings();
+						that._getUISettings();
 						
 						// Restore or calculate form completion once data is received
 						that._restoreFormCompletion();

@@ -144,25 +144,63 @@ sap.ui.define([
             return iPercentage + "%";
         },
 
-        /**
-         * Determines the visibility of approval buttons (APPROVE, REJECT, RETURN)
-         * These buttons should only be visible when the request status is "SUBMITTED" (01)
-         * @param {string} sRequestStatus - The request status code
-         * @returns {boolean} True if buttons should be visible, false otherwise
-         */
-        approvalButtonsVisibility: function (sRequestStatus) {
-            return sRequestStatus === constants.REQUEST_STATUS.SUBMITTED;
-        },
+        // /**
+        //  * CONDITIONAL BUTTON VISIBILITY FORMATTERS - COMMENTED OUT
+        //  * ========================================
+        //  * These formatters control the visibility of action buttons based on request status and user role
+        //  * 
+        //  * Business Rules:
+        //  * - EMPLOYEE role: Can only see SUBMIT/DELETE buttons when request is in DRAFT status
+        //  * - HRA role: Can see APPROVE/REJECT/RETURN buttons when request is SUBMITTED
+        //  * - Floatbar: Visible for EMPLOYEE (DRAFT status) or HRA (SUBMITTED status)
+        //  */
 
-        /**
-         * Determines the visibility of draft buttons (SUBMIT, DELETE)
-         * These buttons should only be visible when the request status is "DRAFT" (00)
-         * @param {string} sRequestStatus - The request status code
-         * @returns {boolean} True if buttons should be visible, false otherwise
-         */
-        draftButtonsVisibility: function (sRequestStatus) {
-            return sRequestStatus === constants.REQUEST_STATUS.DRAFT;
-        }
+        // /**
+        //  * Controls visibility of approval action buttons (APPROVE, REJECT, RETURN)
+        //  * 
+        //  * Visibility Rules:
+        //  * - Request status must be SUBMITTED (01) 
+        //  * - User role must NOT be EMPLOYEE (i.e., must be HRA or higher)
+        //  * 
+        //  * @param {string} sRequestStatus - Current request status code
+        //  * @param {string} sUserRole - Current user role from detailView model
+        //  * @returns {boolean} True if approval buttons should be visible
+        //  */
+        // approvalButtonsVisibility: function (sRequestStatus, sUserRole) {
+        //     return sRequestStatus === constants.REQUEST_STATUS.SUBMITTED && 
+        //            sUserRole !== constants.USER_ROLES.EMPLOYEE;
+        // },
+
+        // /**
+        //  * Controls visibility of the floating toolbar (floatbar)
+        //  * 
+        //  * Visibility Rules:
+        //  * - EMPLOYEE role: Visible when status is DRAFT (can edit/submit)
+        //  * - HRA role: Visible when status is SUBMITTED (can approve/reject)
+        //  * 
+        //  * @param {string} sRequestStatus - Current request status code  
+        //  * @param {string} sUserRole - Current user role from detailView model
+        //  * @returns {boolean} True if floatbar should be visible
+        //  */
+        // draftButtonsVisibility: function (sRequestStatus, sUserRole) {
+        //     return (sRequestStatus === constants.REQUEST_STATUS.DRAFT && sUserRole === constants.USER_ROLES.EMPLOYEE) ||
+        //            (sRequestStatus === constants.REQUEST_STATUS.SUBMITTED && sUserRole !== constants.USER_ROLES.EMPLOYEE);
+        // },
+
+        // /**
+        //  * Controls visibility of employee action buttons (SUBMIT, DELETE)
+        //  * 
+        //  * Visibility Rules:
+        //  * - Request status must be DRAFT (00)
+        //  * - User role must be EMPLOYEE
+        //  * 
+        //  * @param {string} sRequestStatus - Current request status code
+        //  * @param {string} sUserRole - Current user role from detailView model  
+        //  * @returns {boolean} True if submit/delete buttons should be visible
+        //  */
+        // submitDeleteButtonsVisibility: function (sRequestStatus, sUserRole) {
+        //     return sRequestStatus === constants.REQUEST_STATUS.DRAFT && sUserRole === constants.USER_ROLES.EMPLOYEE;
+        // }
 
     };
 

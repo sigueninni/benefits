@@ -2,27 +2,27 @@
     "Employees": [
         {
             "Name": "Saad Igueninni",
-            "JobTitle": "Requester",
+            "Role": "Requester",
             "Photo": "/images/Laurent_Dubois.png",
             "Icon": "sap-icon://activity-individual",
-            "JobResponsibilities": "Education Grant for child",
-            "HireDate": "Date(1371020400000)"
+            "Comment": "Education Grant for child",
+            "ActionDate": "Date(1371020400000)"
         },
         {
             "Name": "HRA1",
-            "JobTitle": "HRA",
+            "Role": "HRA",
             "Photo": "/images/Sabine_Mayer.png",
             "Icon": "sap-icon://settings",
-            "JobResponsibilities": "Change of some values and approval",
-            "HireDate": "Date(1376290800000)"
+            "Comment": "Change of some values and approval",
+            "ActionDate": "Date(1376290800000)"
         },
        {
             "Name": "HRO",
-            "JobTitle": "HRO",
+            "Role": "HRO",
             "Photo": "/images/Sabine_Mayer.png",
             "Icon": "sap-icon://settings",
-            "JobResponsibilities": "ok",
-            "HireDate": "Date(1376290800000)"
+            "Comment": "ok",
+            "ActionDate": "Date(1376290800000)"
         }
     ]
 }

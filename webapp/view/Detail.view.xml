@@ -44,40 +44,55 @@
                         visible="{RequestSettings/IsEditEnabled}"
                         press="onEditButtonPress"
                     /> -->
+                    
+                    <!-- ============================================================================ -->
+                    <!-- CONDITIONAL ACTION BUTTONS - COMMENTED OUT (ALWAYS VISIBLE NOW)             -->
+                    <!-- ============================================================================ -->
+                    <!-- 
+                        Button Visibility Logic - DISABLED:
+                        
+                        APPROVAL BUTTONS (APPROVE/REJECT/RETURN):
+                        - Was: Visible when RequestStatus = SUBMITTED AND UserRole ≠ EMPLOYEE
+                        - Now: Always visible
+                        
+                        EMPLOYEE BUTTONS (SUBMIT/DELETE): 
+                        - Was: Visible when RequestStatus = DRAFT AND UserRole = EMPLOYEE
+                        - Now: Always visible
+                        
+                        FLOATING TOOLBAR:
+                        - Was: Visible when (DRAFT + EMPLOYEE) OR (SUBMITTED + HRA)
+                        - Now: Always visible
+                    -->
+                    
                     <Button
                         id="BTNAPPROVE"
                         text="{i18n>approve}"
                         type="Accept"
                         press="onApproveButtonPress"
-                        visible="{ path: 'RequestStatus', formatter: '.formatter.approvalButtonsVisibility' }"
                     />
                     <Button
                         id="BTNREJECT"
                         text="{i18n>reject}"
                         type="Reject"
                         press="onRejectButtonPress"
-                        visible="{ path: 'RequestStatus', formatter: '.formatter.approvalButtonsVisibility' }"
                     />
                     <Button
                         id="BTNRETURN"
                         text="{i18n>return}"
                         type="Emphasized"   
                         press="onReturnButtonPress"
-                        visible="{ path: 'RequestStatus', formatter: '.formatter.approvalButtonsVisibility' }"
                     />
                     <Button
                         id="BTNSUBMIT"
                         text="{i18n>submit}"
                         type="Emphasized"
                         press="onSubmitButtonPress"
-                        visible="{ path: 'RequestStatus', formatter: '.formatter.draftButtonsVisibility' }"
                     />
                     <Button
                         id="BTNDELETE"
                         text="{i18n>delete}"
                         type="Default"
                         press="onDeleteButtonPress"
-                        visible="{ path: 'RequestStatus', formatter: '.formatter.draftButtonsVisibility' }"
                     />
                     <!--                     <Button
                         icon="sap-icon://expense-report"
@@ -377,11 +392,11 @@
                             <c:content>
                                 <c:TimelineItem
                                     id="idTemplateItem"
-                                    dateTime="{commentsModel>HireDate}"
-                                    title="{commentsModel>JobTitle}"
+                                    dateTime="{commentsModel>ActionDate}"
+                                    title="{commentsModel>Role}"
                                     userNameClickable="true"
                                     userPicture="{commentsModel>Photo}"
-                                    text="test"
+                                    text="{commentsModel>Comment}"
                                     userName="{commentsModel>Name}"
                                     filterValue="{commentsModel>JobTitle}"
                                     icon="{commentsModel>Icon}"
@@ -393,7 +408,16 @@
             </uxap:ObjectPageSection>
         </uxap:sections>
         <uxap:footer>
-            <OverflowToolbar id="BAR" visible="{ path: 'RequestStatus', formatter: '.formatter.draftButtonsVisibility' }">
+            <!-- ================================================================= -->
+            <!-- FLOATING TOOLBAR - ALWAYS VISIBLE (CONDITIONAL LOGIC COMMENTED)  -->
+            <!-- ================================================================= -->
+            <!-- 
+                Conditional visibility DISABLED - was based on user role and request status:
+                - Was: EMPLOYEE + DRAFT: Show toolbar for editing/submitting
+                - Was: HRA + SUBMITTED: Show toolbar for approval actions
+                - Now: Always visible
+            -->
+            <OverflowToolbar id="BAR">
                 <content>
                     <Button
                         id="BTNmessagePopover"
