@@ -18,10 +18,7 @@ sap.ui.define([
 	return BaseController.extend("com.un.zhrbenefrequests.controller.Detail", {
 
 		formatter: formatter,
-		
-		// Default role for all operations - can be overridden if received from route
-		_currentRole: constants.USER_ROLES.EMPLOYEE,
-		
+    
 		/* =========================================================== */
 		/* lifecycle methods                                           */
 		/* =========================================================== */
@@ -43,15 +40,15 @@ sap.ui.define([
 				delay: 0,
 				isMandatory: true,
 				isVoluntary: false,
-				mimePath: this._sMIMESpath,
 				completionPercentage: 0,
-				completionState: "Error",
-				// USER ROLE FOR CONDITIONAL BUTTON VISIBILITY - COMMENTED OUT
-				// Store current user role in detailView model so it can be accessed by formatters
-				// This enables role-based visibility control for action buttons in the view
-				// userRole: this._currentRole
+	            completionState: "Error",
+            // USER ROLE FOR CONDITIONAL BUTTON VISIBILITY
+            // Store current user role in detailView model so it can be accessed by formatters
+            role: constants.USER_ROLES.EMPLOYEE // Initialisation par défaut
 			});
 			this.setModel(oViewModel, "detailView");
+
+			 this.fragments = this.fragments || {};
 
 			// Initialize local models for claims and advances
 			const oLocalClaimsModel = new JSONModel({ claims: [] });
@@ -71,7 +68,7 @@ sap.ui.define([
 				this._onObjectMatched(oEvent, "RouteDetailOnly");
 			}.bind(this));
 
-			// attach validation events
+			// attach validation events //TO_CHECK
 			oCore.attachValidationError(function (oEvent) {
 				oEvent.getParameter("element").setValueState(sap.ui.core.ValueState.Error);
 			});
@@ -551,16 +548,11 @@ sap.ui.define([
 			// Extract GUID from arguments (different structure for each route)
 			const oArguments = oEvent.getParameter("arguments") || {};
 			const sBenefitRequestId = oArguments.benefitRequestId;
-			// ROLE-BASED BUTTON VISIBILITY MANAGEMENT - COMMENTED OUT
+			// ROLE-BASED BUTTON VISIBILITY MANAGEMENT
 			// Override default role if provided in route arguments (e.g., from RouteDetailOnly)
-			if (oArguments.role) {
-				this._currentRole = oArguments.role;
-				// Update the detailView model with the new role so formatters can access it
-				// This triggers re-evaluation of all button visibility formatters in the view
-				// const oViewModel = this.getModel("detailView");
-				// if (oViewModel) {
-				//     oViewModel.setProperty("/userRole", this._currentRole);
-				// }
+			const oViewModel = this.getModel("detailView");
+			if (oViewModel && oArguments.role) {
+				oViewModel.setProperty("/role", oArguments.role);
 			}
 
 			// Validate GUID
@@ -590,11 +582,24 @@ sap.ui.define([
 				
 				// Handle route-specific logic if needed
 				if (routeName === "RouteDetailOnly") {
-					// Role is already set in _currentRole above
-					// this._handleFooterButton(this._currentRole); // Uncomment if needed
+					// ...existing code...
+					// ...existing code...
 				}
 				
 				// Form completion will be calculated in dataReceived event of _bindView
+
+				// Diagnostic : log la valeur réelle de Special Arrangement (EGSAR) après binding
+				try {
+					const oContext = this.getView().getBindingContext();
+					if (oContext) {
+						const oModel = this.getView().getModel();
+						const sPath = oContext.getPath() + "/ToEduGrantDetail/EGSAR";
+						const specialArrangementValue = oModel.getProperty(sPath);
+						console.log("[DIAG] Special Arrangement (EGSAR) value after binding:", specialArrangementValue);
+					}
+				} catch (e) {
+					console.warn("[DIAG] Impossible de lire la valeur EGSAR:", e);
+				}
 			}.bind(this));
 		},
 
@@ -842,13 +847,14 @@ sap.ui.define([
 		 * @private
 		 */
 		_getUISettings: function () {
+			debugger;
 			const oCommonModel = this.getOwnerComponent().getModel("commonModel");
 			let aFilters = [];
 
 			const oCurrentObject = this.getBindingDetailObject();
 			aFilters.push(new Filter("RequestType", FilterOperator.EQ, oCurrentObject.RequestType));
 			aFilters.push(new Filter("Status", FilterOperator.EQ, oCurrentObject.RequestStatus));
-			aFilters.push(new Filter("Actor", FilterOperator.EQ, this._currentRole));
+			aFilters.push(new Filter("Actor", FilterOperator.EQ, this.getModel("detailView").getProperty("/role")));
 			//Read entitySet
 			oCommonModel.read("/UI5PropertySet", {
 				filters: aFilters,
@@ -998,13 +1004,25 @@ sap.ui.define([
 					},
 					dataReceived: function (oEvent) {
 						oViewModel.setProperty("/busy", false);
-			
+
+						// Diagnostic : log complet de l'objet ToEduGrantDetail après binding
+						try {
+							const oContext = this.getView().getBindingContext();
+							if (oContext) {
+								const oModel = this.getView().getModel();
+								const sPath = oContext.getPath() + "/ToEduGrantDetail";
+								const eduGrantDetail = oModel.getProperty(sPath);
+								console.log("[DIAG] ToEduGrantDetail object after binding:", eduGrantDetail);
+							}
+						} catch (e) {
+							console.warn("[DIAG] Impossible de lire l'objet ToEduGrantDetail:", e);
+						}
+
 						that._getUISettings();
-						
 						// Restore or calculate form completion once data is received
 						that._restoreFormCompletion();
 						that._attachCompletionListeners();
-					}
+					}.bind(this)
 				}
 			});
 		},
@@ -1202,6 +1220,9 @@ sap.ui.define([
 				}
 			};
 
+			// Diagnostic : log complet de l'objet ToEduGrantDetail avant le save
+			console.log("[DIAG] ToEduGrantDetail object before save:", oDeepInsertData.ToEduGrantDetail);
+
 			// Override status if provided as parameter
 			if (sStatus) {
 				oDeepInsertData.RequestStatus = sStatus;
@@ -1245,6 +1266,7 @@ sap.ui.define([
 
 		/**
 		 * Load value help data into separate JSON models to avoid key collisions
+		 * Loads configuration from valueHelpConfig.json file
 		 * @private
 		 */
 		_loadValueHelpData: function() {
@@ -1267,33 +1289,8 @@ sap.ui.define([
 					});
 				})
 				.catch(oError => {
-					// Fallback to hardcoded configuration if JSON loading fails
-					this._loadValueHelpDataFallback();
+					console.error("Error loading value help configuration:", oError);
 				});
-		},
-
-		/**
-		 * Fallback method with hardcoded configuration in case JSON loading fails
-		 * @private
-		 */
-		_loadValueHelpDataFallback: function() {
-			const aValueHelpConfig = [
-				{ modelName: "gradeModel", method: "GET_ATTEND_SCHOOL_GRADE_LIST" },
-				{ modelName: "schoolTypeAdditModel", method: "GET_SCHOOL_TYPE_ADDIT_LIST" },
-				{ modelName: "schoolListModel", method: "GET_SCHOOL_LIST" },
-				{ modelName: "schoolTypeModel", method: "GET_SCHOOL_TYPE_LIST" },
-				{ modelName: "attendanceTypeModel", method: "GET_ATTENDANCE_TYPE_LIST" },
-				{ modelName: "specialArrangementModel", method: "GET_SPECIAL_ARRANGEMENT_LIST" },
-				{ modelName: "changeReasonModel", method: "GET_CHANGE_REASON_LIST" },
-				{ modelName: "reasonBoardingModel", method: "GET_REASON_BOARDING_LIST" },
-				{ modelName: "currencyModel", method: "GET_CURRENCY_LIST" },
-				{ modelName: "schoolCountryModel", method: "GET_SCHOOL_COUNTRY_LIST" }
-			];
-
-			// Load all models dynamically
-			aValueHelpConfig.forEach(config => {
-				this._loadGenericData(config.modelName, config.method);
-			});
 		},
 
 		/**
