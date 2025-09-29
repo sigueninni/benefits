@@ -1,0 +1,37 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+    xmlns:c="sap.suite.ui.commons"
+    xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+>
+    <c:Timeline
+        id="idTimelineObject"
+        enableDoubleSided="true"
+        growingThreshold="0"
+        sortOldestFirst="true"
+        content="{/RequestHistoryAndComentsSet}"
+        enableScroll="false"
+        showHeaderBar="false"
+    >
+        <c:content>
+            <c:TimelineItem
+                dateTime="{Date}"
+                title="{ActorTxt}"
+                userNameClickable="true"
+                userPicture="{Photo}"
+                text="{Coment}"
+                userName="{
+                    parts: [
+                        'FirstName',
+                        'LastName'
+                    ],
+                    formatter: '.formatter.formatFullName'
+                }"
+                icon="{Icon}"
+                filterValue="{ActorTxt}"
+            />
+
+        </c:content>
+    </c:Timeline>
+
+</core:FragmentDefinition>

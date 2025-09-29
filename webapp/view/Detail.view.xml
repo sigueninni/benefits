@@ -44,7 +44,7 @@
                         visible="{RequestSettings/IsEditEnabled}"
                         press="onEditButtonPress"
                     /> -->
-                    
+
                     <!-- ============================================================================ -->
                     <!-- CONDITIONAL ACTION BUTTONS - COMMENTED OUT (ALWAYS VISIBLE NOW)             -->
                     <!-- ============================================================================ -->
@@ -63,7 +63,7 @@
                         - Was: Visible when (DRAFT + EMPLOYEE) OR (SUBMITTED + HRA)
                         - Now: Always visible
                     -->
-                    
+
                     <Button
                         id="BTNAPPROVE"
                         text="{i18n>approve}"
@@ -79,7 +79,7 @@
                     <Button
                         id="BTNRETURN"
                         text="{i18n>return}"
-                        type="Emphasized"   
+                        type="Emphasized"
                         press="onReturnButtonPress"
                     />
                     <Button
@@ -173,7 +173,7 @@
                 <uxap:subSections>
                     <!-- Rental Data -->
                     <uxap:ObjectPageSubSection
-                        id="rentalDataSubSection"
+                        id="RENTALDATASUBSECTION"
                         title="{i18n>RentalData}"
                     >
                         <uxap:blocks>
@@ -187,7 +187,7 @@
 
                     <!-- Others Data -->
                     <uxap:ObjectPageSubSection
-                        id="rentalOthersSubSection"
+                        id="RENTALOTHERSSUBSECTION"
                         title="{i18n>rentalOthersData}"
                     >
                         <uxap:blocks>
@@ -212,7 +212,7 @@
                 <uxap:subSections>
                     <!-- Child Information -->
                     <uxap:ObjectPageSubSection
-                        id="ChildInformationSubSection"
+                        id="CHILDINFORMATIONSUBSECTION"
                         title="{i18n>Child Information}"
                     >
                         <uxap:blocks>
@@ -224,23 +224,9 @@
                         </uxap:blocks>
                     </uxap:ObjectPageSubSection>
 
-                    <!-- Eligibility -->
-                    <uxap:ObjectPageSubSection
-                        id="eligibilitySubSection"
-                        title="{i18n>eligibilityData}"
-                    >
-                        <uxap:blocks>
-                            <core:Fragment
-                                fragmentName="com.un.zhrbenefrequests.fragment.form.educationGrant.Eligibility"
-                                type="XML"
-                                xmlns:core="sap.ui.core"
-                            />
-                        </uxap:blocks>
-                    </uxap:ObjectPageSubSection>
-
                     <!-- SchoolInformation -->
                     <uxap:ObjectPageSubSection
-                        id="SchoolInformationSubSection"
+                        id="SCHOOLINFORMATIONSUBSECTION"
                         title="{i18n>SchoolInformationData}"
                     >
                         <uxap:blocks>
@@ -252,9 +238,23 @@
                         </uxap:blocks>
                     </uxap:ObjectPageSubSection>
 
+                    <!-- Eligibility -->
+                    <uxap:ObjectPageSubSection
+                        id="ELIGIBILITYSUBSECTION"
+                        title="{i18n>eligibilityData}"
+                    >
+                        <uxap:blocks>
+                            <core:Fragment
+                                fragmentName="com.un.zhrbenefrequests.fragment.form.educationGrant.Eligibility"
+                                type="XML"
+                                xmlns:core="sap.ui.core"
+                            />
+                        </uxap:blocks>
+                    </uxap:ObjectPageSubSection>
+
                     <!-- Others -->
                     <uxap:ObjectPageSubSection
-                        id="othersSubSection"
+                        id="OTHERSSUBSECTION"
                         title="{i18n>othersData}"
                     >
                         <uxap:blocks>
@@ -275,7 +275,7 @@
                 visible="{= ${Isclaim} &amp;&amp; ${RequestType} === '01' }"
             >
                 <uxap:subSections>
-                    <uxap:ObjectPageSubSection id="claimsSubSection">
+                    <uxap:ObjectPageSubSection id="CLAIMSSUBSECTION">
                         <uxap:blocks>
                             <core:Fragment
                                 fragmentName="com.un.zhrbenefrequests.fragment.form.educationGrant.Claim"
@@ -294,7 +294,7 @@
                 visible="{= ${Isadvance} &amp;&amp; ${RequestType} === '01' }"
             >
                 <uxap:subSections>
-                    <uxap:ObjectPageSubSection id="advancesSubSection">
+                    <uxap:ObjectPageSubSection id="ADVANCESSUBSECTION">
                         <uxap:blocks>
                             <core:Fragment
                                 fragmentName="com.un.zhrbenefrequests.fragment.form.educationGrant.Advance"
@@ -307,7 +307,7 @@
             </uxap:ObjectPageSection>
 
             <!-- Comment Section -->
-        <!--     <uxap:ObjectPageSection
+            <!--     <uxap:ObjectPageSection
                 id="commentsSection"
                 title="Comments"
             >
@@ -345,7 +345,9 @@
                 visible="{= ${RequestType} === '01' }"
             >
                 <uxap:subSections>
-                    <uxap:ObjectPageSubSection id="educGrantAttachmentsSubSection">
+                    <uxap:ObjectPageSubSection
+                        id="EDUCGRANTATTACHMENTSSUBSECTION"
+                    >
                         <core:Fragment
                             fragmentName="com.un.zhrbenefrequests.fragment.form.educationGrant.Attachments"
                             type="XML"
@@ -362,7 +364,9 @@
                 visible="{= ${RequestType} === '02' }"
             >
                 <uxap:subSections>
-                    <uxap:ObjectPageSubSection id="rentalSubsidyAttachmentsSubSection">
+                    <uxap:ObjectPageSubSection
+                        id="RENTALSUBSIDYATTACHMENTSSUBSECTION"
+                    >
                         <core:Fragment
                             fragmentName="com.un.zhrbenefrequests.fragment.form.rentalSubsidy.Attachments"
                             type="XML"
@@ -373,14 +377,29 @@
             </uxap:ObjectPageSection>
 
             <!-- TimeLine Section -->
-            <uxap:ObjectPageSection
+           <uxap:ObjectPageSection
                 id="timeLineSection"
                 title="TimeLine"
             >
                 <uxap:subSections>
-                    <uxap:ObjectPageSubSection id="timeLineSubSection">
+                    <uxap:ObjectPageSubSection id="TIMELINESUBSECTION">
+                        <core:Fragment
+                            fragmentName="com.un.zhrbenefrequests.fragment.form.educationGrant.TimeLine"
+                            type="XML"
+                            xmlns:core="sap.ui.core"
+                        /> 
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection> 
+            <!-- TimeLine Section -->
+ <!-- <uxap:ObjectPageSection
+                id="timeLineSection2"
+                title="TimeLine"
+            >
+                <uxap:subSections>
+                    <uxap:ObjectPageSubSection id="TIMELINESUBSECTION2">
                         <c:Timeline
-                            id="idTimeline"
+                            id="idTimeline2"
                             enableDoubleSided="true"
                             groupBy="HireDate"
                             growingThreshold="0"
@@ -391,21 +410,21 @@
                         >
                             <c:content>
                                 <c:TimelineItem
-                                    id="idTemplateItem"
-                                    dateTime="{commentsModel>ActionDate}"
-                                    title="{commentsModel>Role}"
+                                    id="idTemplateItem2"
+                                    dateTime="{commentsModel>HireDate}"
+                                    title="{commentsModel>JobTitle}"
                                     userNameClickable="true"
                                     userPicture="{commentsModel>Photo}"
-                                    text="{commentsModel>Comment}"
+                                    text="{commentsModel>Coment}"
                                     userName="{commentsModel>Name}"
                                     filterValue="{commentsModel>JobTitle}"
                                     icon="{commentsModel>Icon}"
                                 />
                             </c:content>
                         </c:Timeline>
-                    </uxap:ObjectPageSubSection>
-                </uxap:subSections>
-            </uxap:ObjectPageSection>
+                    </uxap:ObjectPageSubSection> -->
+    <!-- </uxap:subSections>
+</uxap:ObjectPageSection> -->
         </uxap:sections>
         <uxap:footer>
             <!-- ================================================================= -->

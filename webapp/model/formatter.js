@@ -202,6 +202,75 @@ sap.ui.define([
         //     return sRequestStatus === constants.REQUEST_STATUS.DRAFT && sUserRole === constants.USER_ROLES.EMPLOYEE;
         // }
 
+        /**
+         * Formats full name by concatenating first name and last name with a space
+         * @param {string} sFirstName - The first name
+         * @param {string} sLastName - The last name
+         * @returns {string} Formatted full name "FirstName LastName"
+         */
+        formatFullName: function (sFirstName, sLastName) {
+            if (!sFirstName && !sLastName) {
+                return "";
+            }
+            return (sFirstName || "") + " " + (sLastName || "");
+        },
+
+        /**
+         * Formats actor role code to human readable text
+         * @param {string} sActorCode - The actor role code (00, 01, 02, 03)
+         * @returns {string} Formatted actor role text
+         */
+        formatActorRole: function (sActorCode) {
+            if (!sActorCode) {
+                return "";
+            }
+            
+            switch (sActorCode) {
+                case constants.USER_ROLES.NO_ACTOR:
+                    return "No Actor";
+                case constants.USER_ROLES.EMPLOYEE:
+                    return "Employee";
+                case constants.USER_ROLES.HRA:
+                    return "Human Resources Assistant";
+                case constants.USER_ROLES.HRO:
+                    return "Human Resources Officer";
+                default:
+                    return "Unknown Role (" + sActorCode + ")";
+            }
+        },
+
+        /**
+         * Formats request status code to human readable text
+         * @param {string} sStatusCode - The request status code (00-07)
+         * @returns {string} Formatted request status text
+         */
+        formatRequestStatusText: function (sStatusCode) {
+            if (!sStatusCode) {
+                return "";
+            }
+            
+            switch (sStatusCode) {
+                case constants.REQUEST_STATUS.DRAFT:
+                    return "Draft";
+                case constants.REQUEST_STATUS.SUBMITTED:
+                    return "Request submitted by employee";
+                case constants.REQUEST_STATUS.APPROVED_HRA:
+                    return "Request approved by HRA";
+                case constants.REQUEST_STATUS.REJECTED_HRA:
+                    return "Request rejected by HRA";
+                case constants.REQUEST_STATUS.RETURNED_TO_EMPLOYEE:
+                    return "Request sent back to employee";
+                case constants.REQUEST_STATUS.APPROVED_SENT_TO_H:
+                    return "Request approved by HRA and sent to HRO";
+                case constants.REQUEST_STATUS.APPROVED_HRO_END:
+                    return "Request approved by HRO, end of process";
+                case constants.REQUEST_STATUS.RETURNED_TO_HRA:
+                    return "Request sent back to HRA";
+                default:
+                    return "Unknown Status (" + sStatusCode + ")";
+            }
+        }
+
     };
 
 

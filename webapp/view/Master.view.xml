@@ -31,7 +31,7 @@
                 inset="false"
                 width="auto"
                 class="sapFDynamicPageAlignContent"
-                items="{ path: '/RequestHeaderSet', parameters: {operationMode: 'Client'}, sorter: { path: 'RequestKey', descending: false } }"
+                items="{ path: '/RequestHeaderSet', parameters: {operationMode: 'Client'} }"
                 busyIndicatorDelay="{masterView>/delay}"
                 noDataText="{masterView>/noDataText}"
                 mode="{= ${device>/system/phone} ? 'None' : 'SingleSelectMaster'}"

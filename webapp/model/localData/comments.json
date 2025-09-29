@@ -2,27 +2,51 @@
     "Employees": [
         {
             "Name": "Saad Igueninni",
-            "Role": "Requester",
+            "JobTitle": "Requester",
             "Photo": "/images/Laurent_Dubois.png",
             "Icon": "sap-icon://activity-individual",
-            "Comment": "Education Grant for child",
-            "ActionDate": "Date(1371020400000)"
+            "JobResponsibilities": "Création de la requeste suite à la réunion du....",
+            "HireDate": "Date(1371020400000)"
         },
         {
-            "Name": "HRA1",
-            "Role": "HRA",
+            "Name": "Guillaume Sonnet",
+            "JobTitle": "Request administrator",
             "Photo": "/images/Sabine_Mayer.png",
             "Icon": "sap-icon://settings",
-            "Comment": "Change of some values and approval",
-            "ActionDate": "Date(1376290800000)"
+            "JobResponsibilities": "Modification du type de contrat!",
+            "HireDate": "Date(1376290800000)"
         },
-       {
-            "Name": "HRO",
-            "Role": "HRO",
+        {
+            "Name": "Vincent Albertalli",
+            "JobTitle": "Hr Admin",
+            "Photo": "/images/Monique_Legrand.png",
+            "Icon": "sap-icon://account",
+            "Coment": "Tout est ok pour passer au posting!",
+            "HireDate": "Date(1422777600000)"
+        },
+        {
+            "Name": "Saad Igueninni",
+            "JobTitle": "Requester",
+            "Photo": "/images/Laurent_Dubois.png",
+            "Icon": "sap-icon://activity-individual",
+            "Coment": "Création de la requeste suite à la réunion du....",
+            "HireDate": "Date(1371020400000)"
+        },
+        {
+            "Name": "Guillaume Sonnet",
+            "JobTitle": "Request administrator",
             "Photo": "/images/Sabine_Mayer.png",
             "Icon": "sap-icon://settings",
-            "Comment": "ok",
-            "ActionDate": "Date(1376290800000)"
+            "Coment": "Modification du type de contrat!",
+            "HireDate": "Date(1376290800000)"
+        },
+        {
+            "Name": "Vincent Albertalli",
+            "JobTitle": "Hr Admin",
+            "Photo": "/images/Monique_Legrand.png",
+            "Icon": "sap-icon://account",
+            "Coment": "Tout est ok pour passer au posting!",
+            "HireDate": "Date(1422777600000)"
         }
     ]
 }

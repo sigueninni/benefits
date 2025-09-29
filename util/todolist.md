@@ -9,24 +9,30 @@
 - ~~Save~~
 - ~~Ajout zones spécifiques EG uniquement storage coté Fiori~~
 - ~~Ajouter les champs du form EG 'to be stored only on Fiori'~~
+- ~~dynamic display of child boarderer~~
+- ~~Submit~~
+- ~~Mettre à jour la table history en parallèle de la table header -> Nicolas a aussi une méthode...~~
+- ~~Écran Claim/Advance~~
+- ~~Timeline sans features~~
 
 ## 📋 Ongoing Tasks
 
-- dynamic display of child boarderer
+- refeactorer la visibilityUI
+- Visibilité des bouttons, floatBar
 - probleme ovveride ne se save pas
 - problem proration factor si eq vide -> erreur
 - Compléter le save sur les zones côté ABAP   
-- Submit
-- Mettre à jour la table history en parallèle de la table header -> Nicolas a aussi une méthode...
+
 
 ## ⏳ Pending Tasks
 
+- Nouvellle gestion Claim
+- Completer les fonction de tri/search de la Timeline
+- revoir la 'completeness'  
 - Factoriser dans des méthodes du 'Save'
-- Écran Claim/Advance
 - logic of pending last year
 - Gestion de l'éligibilité
 - Eligibility for Boarding	EGC01	ToDo	Logic to be extracted from the infotype
-- Timeline à ajouter
 - Filtres des Fragments Choice : currency et country
 - Ajouter les descriptions des zones avec clé( comme natio fasex etc...)
 - Vérifications : begda < endda et type de requête obligatoire
@@ -35,7 +41,6 @@
 - Barre de progression de completion
 - Ajouter les valeurs suggérées sur les Select avec beaucoup de données
 - Gestion des pièces jointes
-- Gestion de la floating bar draft etc...
 - Attention : le facteur de proration se recalcule si on change egyto... regarder le PAI pour d'autres champs et ajuster au Save (plus simple sinon au changement de date)
 - Nettoyer l'écran quand pas de requête
 - Améliorer le filtre master pour le case sensitive

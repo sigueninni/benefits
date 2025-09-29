@@ -42,9 +42,7 @@ sap.ui.define([
 				isVoluntary: false,
 				completionPercentage: 0,
 	            completionState: "Error",
-            // USER ROLE FOR CONDITIONAL BUTTON VISIBILITY
-            // Store current user role in detailView model so it can be accessed by formatters
-            role: constants.USER_ROLES.EMPLOYEE // Initialisation par défaut
+                role: constants.USER_ROLES.EMPLOYEE // Default initialization
 			});
 			this.setModel(oViewModel, "detailView");
 
@@ -85,11 +83,11 @@ sap.ui.define([
 			this.getOwnerComponent().getModel().metadataLoaded().then(this._onMetadataLoaded.bind(this));
 
 			/*******************************************************************************/
-			//TO_REPLACE wth real TimeLine data
+			//TO_REPLACE wth real TimeLine data - COMMENTED OUT FOR ODATA VERSION
 			/*******************************************************************************/
 			/*this below code for get the JSON Model form Manifest.json file*/
-			const commentsDataModel = this.getOwnerComponent().getModel("commentData");
-			this.getView().setModel(commentsDataModel, "commentsModel");
+			// const commentsDataModel = this.getOwnerComponent().getModel("commentData");
+			// this.getView().setModel(commentsDataModel, "commentsModel");
 		},
 
 		/* =========================================================== */
@@ -580,6 +578,9 @@ sap.ui.define([
 				// Load value help data for dropdown lists
 				this._loadValueHelpData();
 				
+				// Bind Timeline with new request Guid filter
+				this._bindTimelineData(sBenefitRequestId);
+				
 				// Handle route-specific logic if needed
 				if (routeName === "RouteDetailOnly") {
 					// ...existing code...
@@ -588,17 +589,15 @@ sap.ui.define([
 				
 				// Form completion will be calculated in dataReceived event of _bindView
 
-				// Diagnostic : log la valeur réelle de Special Arrangement (EGSAR) après binding
+				// Diagnostic: log the actual value of Special Arrangement (EGSAR) after binding
 				try {
 					const oContext = this.getView().getBindingContext();
 					if (oContext) {
 						const oModel = this.getView().getModel();
 						const sPath = oContext.getPath() + "/ToEduGrantDetail/EGSAR";
 						const specialArrangementValue = oModel.getProperty(sPath);
-						console.log("[DIAG] Special Arrangement (EGSAR) value after binding:", specialArrangementValue);
 					}
 				} catch (e) {
-					console.warn("[DIAG] Impossible de lire la valeur EGSAR:", e);
 				}
 			}.bind(this));
 		},
@@ -661,8 +660,6 @@ sap.ui.define([
 			const oDialogModel = this.fragments._oAddClaimDialog.getModel("claimModel");
 			const oClaimData = oDialogModel.getData();
 
-			console.log("Claim data from model:", oClaimData);
-
 			// Get the current context and model
 			const oContext = this.getView().getBindingContext();
 			const oModel = this.getView().getModel();
@@ -676,23 +673,21 @@ sap.ui.define([
 				TempId: Date.now().toString()
 			};
 
-			console.log("New claim to add:", oNewClaim);
-
-			// Utiliser un modèle JSON local pour les claims
+			// Use a local JSON model for claims
 			let oLocalModel = this.getView().getModel("localClaims");
 			if (!oLocalModel) {
-				// Créer le modèle local s'il n'existe pas
+				// Create the local model if it doesn't exist
 				oLocalModel = new sap.ui.model.json.JSONModel({ claims: [] });
 				this.getView().setModel(oLocalModel, "localClaims");
 			}
 
-			// Récupérer les claims existants
+			// Get existing claims
 			const aClaims = oLocalModel.getProperty("/claims") || [];
 			
-			// Ajouter le nouveau claim
+			// Add the new claim
 			aClaims.push(oNewClaim);
 			
-			// Mettre à jour le modèle local
+			// Update the local model
 			oLocalModel.setProperty("/claims", aClaims);
 
 			// Show success message
@@ -712,8 +707,6 @@ sap.ui.define([
 			const oDialogModel = this.fragments._oAddAdvanceDialog.getModel("advanceModel");
 			const oAdvanceData = oDialogModel.getData();
 
-			console.log("Advance data from model:", oAdvanceData);
-
 			// Create a new advance entry
 			const oNewAdvance = {
 				ExpenseType: oAdvanceData.ExpenseType,
@@ -723,23 +716,21 @@ sap.ui.define([
 				TempId: Date.now().toString()
 			};
 
-			console.log("New advance to add:", oNewAdvance);
-
-			// Utiliser un modèle JSON local pour les advances
+			// Use a local JSON model for advances
 			let oLocalModel = this.getView().getModel("localAdvances");
 			if (!oLocalModel) {
-				// Créer le modèle local s'il n'existe pas
+				// Create the local model if it doesn't exist
 				oLocalModel = new sap.ui.model.json.JSONModel({ advances: [] });
 				this.getView().setModel(oLocalModel, "localAdvances");
 			}
 
-			// Récupérer les advances existants
+			// Get existing advances
 			const aAdvances = oLocalModel.getProperty("/advances") || [];
 			
-			// Ajouter le nouveau advance
+			// Add the new advance
 			aAdvances.push(oNewAdvance);
 			
-			// Mettre à jour le modèle local
+			// Update the local model
 			oLocalModel.setProperty("/advances", aAdvances);
 
 			// Show success message
@@ -847,7 +838,7 @@ sap.ui.define([
 		 * @private
 		 */
 		_getUISettings: function () {
-			debugger;
+		//	debugger;
 			const oCommonModel = this.getOwnerComponent().getModel("commonModel");
 			let aFilters = [];
 
@@ -874,25 +865,39 @@ sap.ui.define([
 			const aUIProperties = oData?.results || [];
 			const oView = this.getView();
 
+
 			for (const oUIProperty of aUIProperties) {
-				let editable = false,
+
+				  // Defaut is field from the list by Backend is not visible and not editable
+				  this._resetVisibility(oUIProperty.Field);
+                
+                  
+				  let editable = false,
 					enabled = false,
-					hidden = false,
+					hidden = true,
 					required = false;
+				
+				
+	            //Special cases
+				if (oUIProperty.Field === "EGSAR") { continue; } // Handled separately in _loadSchoolDetails
+
+
 
 				switch (oUIProperty.Property) {
 					case "01":
-						hidden = true;
+						hidden = true; //redundant but ok as Hidden by default
 						break; // Hidden
 					case "02":
 						hidden = false;
 						break; // Visible
 					case "03":
+						hidden = false;
 						editable = enabled = true;
 						break; // Editable
 					case "04":
-						editable = enabled = true;
-						required = true;
+						hidden = false;
+						required = editable = enabled = true;
+						//required = true;
 						break; // Mandatory
 				}
 
@@ -914,6 +919,119 @@ sap.ui.define([
 					}
 				}
 			}
+			
+			// Call the diagnostic function here
+			this._logImpactedUIFields(aUIProperties);
+		},
+
+		/**
+		 * Logs all impacted UI fields and their changed properties in a table.
+		 * @param {Array} aUIProperties - Array of UI properties from the service
+		 * @private
+		 */
+		_logImpactedUIFields: function(aUIProperties) {
+			const oView = this.getView();
+			const aImpactedFields = [];
+			
+			// Log the filter values used for UI settings
+			const oCurrentObject = this.getBindingDetailObject();
+			const sCurrentRole = this.getModel("detailView").getProperty("/role");
+			
+			console.log("UI Settings Filter Values:");
+			console.log("RequestType:", oCurrentObject.RequestType);
+			console.log("Status:", oCurrentObject.RequestStatus + " - " + this.formatter.formatRequestStatusText(oCurrentObject.RequestStatus));
+			console.log("Actor:", sCurrentRole + " - " + this.formatter.formatActorRole(sCurrentRole));
+
+			for (const oUIProperty of aUIProperties) {
+				let bException = false;
+				let sExceptionReason = "";
+				
+				// Check for exceptions (special cases that are handled separately)
+				if (oUIProperty.Field === "EGSAR") {
+					bException = true;
+					sExceptionReason = "Handled separately in _loadSchoolDetails";
+				}
+				// Add more exceptions here in the future
+				
+				const oCtrl = oView.byId(oUIProperty.Field);
+				if (oCtrl || bException) {
+					let editable = false, enabled = false, hidden = true, required = false;
+					
+					if (!bException) {
+						switch (oUIProperty.Property) {
+							case "01": hidden = true; break;
+							case "02": hidden = false; break;
+							case "03": editable = enabled = true; break;
+							case "04": editable = enabled = true; required = true; break;
+						}
+					}
+					
+					aImpactedFields.push({
+						Field: oUIProperty.Field,
+						Property: oUIProperty.Property,
+						Visible: bException ? "N/A" : !hidden,
+						Editable: bException ? "N/A" : editable,
+						Enabled: bException ? "N/A" : enabled,
+						Required: bException ? "N/A" : required,
+						ControlType: oCtrl ? oCtrl.getMetadata().getName() : "Not Found",
+						Exception: bException ? "EXCEPTION: " + sExceptionReason : "Applied"
+					});
+				}
+			}
+			
+			if (aImpactedFields.length > 0) {
+				console.log("UI Settings Applied:");
+				// Specify columns explicitly for console.table
+				console.table(aImpactedFields, ["Field", "FieldLabel", "Property", "Visible", "Editable", "Enabled", "Required", "ControlType", "Exception"]);
+			}
+		},
+
+		/**
+		 * Gets the field label for a given field ID by searching for associated Label controls
+		 * @param {string} sFieldId - The field ID
+		 * @param {sap.ui.core.Control} oControl - The control (optional)
+		 * @returns {string} The field label or empty string if not found
+		 * @private
+		 */
+		_getFieldLabel: function(sFieldId, oControl) {
+			const oView = this.getView();
+			
+			// Try to find a Label that references this field via labelFor property
+			const aLabels = oView.findAggregatedObjects(true, function(oObj) {
+				return oObj.isA && oObj.isA("sap.m.Label") && 
+					   oObj.getLabelFor && oObj.getLabelFor() === sFieldId;
+			});
+			
+			if (aLabels.length > 0) {
+				return aLabels[0].getText() || "";
+			}
+			
+			// Try alternative approach: look for labels in the same FormContainer/FormElement
+			if (oControl) {
+				const oParent = oControl.getParent();
+				if (oParent && oParent.getLabel && oParent.getLabel()) {
+					return oParent.getLabel();
+				}
+			}
+			
+			// Fallback: try to find label by proximity (same parent container)
+			if (oControl) {
+				const oContainer = oControl.getParent();
+				if (oContainer) {
+					const aSiblings = oContainer.getAggregation("content") || oContainer.getContent && oContainer.getContent() || [];
+					for (let i = 0; i < aSiblings.length; i++) {
+						const oSibling = aSiblings[i];
+						if (oSibling.isA && oSibling.isA("sap.m.Label")) {
+							const sLabelText = oSibling.getText();
+							if (sLabelText) {
+								return sLabelText;
+							}
+						}
+					}
+				}
+			}
+			
+			return ""; // No label found
 		},
 
 		/**
@@ -923,55 +1041,155 @@ sap.ui.define([
 		 * @param {string} sObjectPath path to the object to be bound to the view.
 		 * @private
 		 */
-		onApproveButtonPress: function() {
-			  const oModel = this.getView().getModel("approveModel");
-			
-			  const sHash = sap.ui.core.routing.HashChanger.getInstance().getHash();
-			  const aHashParts = sHash.split("&");
-			  const sDetailPath = aHashParts.find(part => part.includes("DetailOnly"));
-			
-			  if (!sDetailPath) {
-			    sap.m.MessageBox.error(this.getText("approvalInvalidUrl"));
-			    return;
-			  }
-			
-			  const aSegments = sDetailPath.split("/").filter(Boolean);
-			  const sGuid = aSegments[1];
-			  const sActorRole = aSegments[2];
-			
-			  this.showCommentDialog((sComment) => {
-			    oModel.callFunction("/ApproveRequest", {
-			      method: "POST",
-			      urlParameters: {
-			        Guid: sGuid,
-			        ActorRole: sActorRole,
-			        ApprovalComent: sComment
-			      },
-			      success: (oData) => {
-			        const oResult = oData?.ApproveRequest;
-			        const sReturnCode = oResult?.ReturnCode?.trim();
-			        const sMessage = oResult?.Message || this.getText("approvalNoMessage");
-			
-			        if (sReturnCode === "0") {
-			          sap.m.MessageToast.show(this.getText("approvalSuccess"), {
-					    duration: 2000
-					  });
-			          window.history.back();
-			        } else {
-			          sap.m.MessageBox.error(sMessage, {
-			            title: this.getText("approvalErrorTitle"),
-			            details: this.getText("approvalErrorDetails", [sReturnCode])
-			          });
-			        }
-			      },
-			      error: () => {
-			        sap.m.MessageBox.error(this.getText("approvalErrorTechnical"), {
-			          title: this.getText("approvalErrorTitle")
-			        });
-			      }
-			    });
-			  });
-		},
+				onApproveButtonPress: function() {
+							const oModel = this.getView().getModel("approveModel");
+            
+							const sHash = sap.ui.core.routing.HashChanger.getInstance().getHash();
+							const aHashParts = sHash.split("&");
+							const sDetailPath = aHashParts.find(part => part.includes("DetailOnly"));
+            
+							if (!sDetailPath) {
+								sap.m.MessageBox.error(this.getText("approvalInvalidUrl"));
+								return;
+							}
+            
+							const aSegments = sDetailPath.split("/").filter(Boolean);
+							const sGuid = aSegments[1];
+							const sActorRole = aSegments[2];
+            
+							this.showCommentDialog((sComment) => {
+								oModel.callFunction("/ApproveRequest", {
+									method: "POST",
+									urlParameters: {
+										Guid: sGuid,
+										ActorRole: sActorRole,
+										ApprovalComent: sComment
+									},
+									success: (oData) => {
+										const oResult = oData?.ApproveRequest;
+										const sReturnCode = oResult?.ReturnCode?.trim();
+										const sMessage = oResult?.Message || this.getText("approvalNoMessage");
+            
+										if (sReturnCode === "0") {
+											sap.m.MessageToast.show(this.getText("approvalSuccess"), {
+												duration: 2000
+											});
+											window.history.back();
+										} else {
+											sap.m.MessageBox.error(sMessage, {
+												title: this.getText("approvalErrorTitle"),
+												details: this.getText("approvalErrorDetails", [sReturnCode])
+											});
+										}
+									},
+									error: () => {
+										sap.m.MessageBox.error(this.getText("approvalErrorTechnical"), {
+											title: this.getText("approvalErrorTitle")
+										});
+									}
+								});
+							});
+				},
+
+				onRejectButtonPress: function() {
+					const oModel = this.getView().getModel("approveModel");
+
+					const sHash = sap.ui.core.routing.HashChanger.getInstance().getHash();
+					const aHashParts = sHash.split("&");
+					const sDetailPath = aHashParts.find(part => part.includes("DetailOnly"));
+
+					if (!sDetailPath) {
+						sap.m.MessageBox.error(this.getText("approvalInvalidUrl"));
+						return;
+					}
+
+					const aSegments = sDetailPath.split("/").filter(Boolean);
+					const sGuid = aSegments[1];
+					const sActorRole = aSegments[2];
+
+					this.showCommentDialog((sComment) => {
+						oModel.callFunction("/RejectRequest", {
+							method: "POST",
+							urlParameters: {
+								Guid: sGuid,
+								ActorRole: sActorRole,
+								RejectionComent: sComment
+							},
+							success: (oData) => {
+								const oResult = oData?.RejectRequest;
+								const sReturnCode = oResult?.ReturnCode?.trim();
+								const sMessage = oResult?.Message || this.getText("approvalNoMessage");
+
+								if (sReturnCode === "0") {
+									sap.m.MessageToast.show(this.getText("rejectionSuccess"), {
+										duration: 2000
+									});
+									window.history.back();
+								} else {
+									sap.m.MessageBox.error(sMessage, {
+										title: this.getText("rejectionErrorTitle"),
+										details: this.getText("rejectionErrorDetails", [sReturnCode])
+									});
+								}
+							},
+							error: () => {
+								sap.m.MessageBox.error(this.getText("rejectionErrorTechnical"), {
+									title: this.getText("rejectionErrorTitle")
+								});
+							}
+						});
+					});
+				},
+
+				onReturnButtonPress: function() {
+					const oModel = this.getView().getModel("approveModel");
+
+					const sHash = sap.ui.core.routing.HashChanger.getInstance().getHash();
+					const aHashParts = sHash.split("&");
+					const sDetailPath = aHashParts.find(part => part.includes("DetailOnly"));
+
+					if (!sDetailPath) {
+						sap.m.MessageBox.error(this.getText("approvalInvalidUrl"));
+						return;
+					}
+
+					const aSegments = sDetailPath.split("/").filter(Boolean);
+					const sGuid = aSegments[1];
+					const sActorRole = aSegments[2];
+
+					this.showCommentDialog((sComment) => {
+						oModel.callFunction("/ReturnRequest", {
+							method: "POST",
+							urlParameters: {
+								Guid: sGuid,
+								ActorRole: sActorRole,
+								ReturnComent: sComment
+							},
+							success: (oData) => {
+								const oResult = oData?.ReturnRequest;
+								const sReturnCode = oResult?.ReturnCode?.trim();
+								const sMessage = oResult?.Message || this.getText("approvalNoMessage");
+
+								if (sReturnCode === "0") {
+									sap.m.MessageToast.show(this.getText("returnSuccess"), {
+										duration: 2000
+									});
+									window.history.back();
+								} else {
+									sap.m.MessageBox.error(sMessage, {
+										title: this.getText("approvalErrorTitle"),
+										details: this.getText("approvalErrorDetails", [sReturnCode])
+									});
+								}
+							},
+							error: () => {
+								sap.m.MessageBox.error(this.getText("returnErrorTechnical"), {
+									title: this.getText("approvalErrorTitle")
+								});
+							}
+						});
+					});
+				},
 
 		_bindView: function (sObjectPath) {
 			let that = this;
@@ -1005,7 +1223,7 @@ sap.ui.define([
 					dataReceived: function (oEvent) {
 						oViewModel.setProperty("/busy", false);
 
-						// Diagnostic : log complet de l'objet ToEduGrantDetail après binding
+						// Diagnostic: log complete ToEduGrantDetail object after binding
 						try {
 							const oContext = this.getView().getBindingContext();
 							if (oContext) {
@@ -1013,15 +1231,19 @@ sap.ui.define([
 								const sPath = oContext.getPath() + "/ToEduGrantDetail";
 								const eduGrantDetail = oModel.getProperty(sPath);
 								console.log("[DIAG] ToEduGrantDetail object after binding:", eduGrantDetail);
+								
+								// Log EGDIS Switch UI state to check binding synchronization
+								const oEgdisSwitch = this.getView().byId("EGDIS");
+								if (oEgdisSwitch) {
+								}
 							}
 						} catch (e) {
-							console.warn("[DIAG] Impossible de lire l'objet ToEduGrantDetail:", e);
 						}
 
 						that._getUISettings();
 						// Restore or calculate form completion once data is received
-						that._restoreFormCompletion();
-						that._attachCompletionListeners();
+						//that._restoreFormCompletion();
+						//that._attachCompletionListeners();
 					}.bind(this)
 				}
 			});
@@ -1221,7 +1443,6 @@ sap.ui.define([
 			};
 
 			// Diagnostic : log complet de l'objet ToEduGrantDetail avant le save
-			console.log("[DIAG] ToEduGrantDetail object before save:", oDeepInsertData.ToEduGrantDetail);
 
 			// Override status if provided as parameter
 			if (sStatus) {
@@ -1289,7 +1510,6 @@ sap.ui.define([
 					});
 				})
 				.catch(oError => {
-					console.error("Error loading value help configuration:", oError);
 				});
 		},
 
@@ -1317,15 +1537,15 @@ sap.ui.define([
 		},
 
 		/**
-		 * Handler pour le changement d'état du switch multiple attendance
-		 * Convertit l'état du switch en valeur pour le modèle
-		 * @param {sap.ui.base.Event} oEvent - L'événement de changement du switch
+		 * Handler for multiple attendance switch state change
+		 * Converts switch state to model value
+		 * @param {sap.ui.base.Event} oEvent - The switch change event
 		 */
 		onMultipleAttendanceChange: function(oEvent) {
 			var bState = oEvent.getParameter("state");
 			var sValue = bState ? 'N' : '';
 			
-			// Mettre à jour le modèle avec la valeur convertie
+			// Update the model with the converted value
 			var oContext = this.getView().getBindingContext();
 			if (oContext) {
 				this.getModel().setProperty(
@@ -1334,9 +1554,35 @@ sap.ui.define([
 				);
 			}
 			
-			// Recalculer la complétude après changement
+			// Recalculate completion after change
 			this._calculateFormCompletion();
 		},
+
+		/**
+		 * Binds timeline data with Guid filter
+		 * Applies filter to RequestHistoryAndComentsSet using current request Guid
+		 * @private
+		 */
+		_bindTimelineData: function(_guid) {
+			const oView = this.getView();
+	
+			// Find Timeline control - it could be in fragment or direct view
+			let oTimeline = oView.byId("idTimelineObject");
+	
+			if (oTimeline) {
+				// Create filter for Guid
+				const oFilter = new sap.ui.model.Filter("Guid", sap.ui.model.FilterOperator.EQ, _guid);
+
+				// Bind with filter
+				oTimeline.bindAggregation("content", {
+					path: "/RequestHistoryAndComentsSet",
+					filters: [oFilter],
+					template: oTimeline.getBindingInfo("content").template
+				});
+			}
+		},
+
+
 
 		/**
 		 * Get all visible form fields (Input, Select, CheckBox, etc.)
@@ -1383,8 +1629,6 @@ sap.ui.define([
 						oControl.getVisible();
 			});
 			
-			console.log(`🎯 Request Type: ${sRequestType}, Form Section: ${oFormSection.getId()}, Fields found: ${aInputs.length}`);
-			
 			return aInputs;
 		},
 
@@ -1425,20 +1669,20 @@ sap.ui.define([
 				const oModel = this.getView().getModel();
 				const sPath = oContext.getPath();
 				
-				// Récupérer la valeur stockée dans le champ Completion du modèle header
+				// Get the stored value from the Completion field in the header model
 				const sCompletion = oModel.getProperty(sPath + "/Completion");
 				
 				if (sCompletion !== undefined && sCompletion !== null && sCompletion !== "") {
-					// Vérifier si c'est une valeur valide (pas juste des espaces)
+					// Check if it's a valid value (not just spaces)
 					const sTrimmed = String(sCompletion).trim();
 					
 					if (sTrimmed !== "" && !isNaN(parseFloat(sTrimmed))) {
 						const sState = formatter.getCompletionState(sCompletion);
-						return; // On a une valeur valide, pas besoin de recalculer
+						return; // We have a valid value, no need to recalculate
 					}
 				}
 				
-				// Pas de valeur stockée (création), lancer le calcul initial
+				// No stored value (creation), launch initial calculation
 				this._calculateFormCompletion();
 			}
 		},
@@ -1497,13 +1741,13 @@ sap.ui.define([
 				
 				const sState = formatter.getCompletionState(iPercentage);
 				
-				// Stocker la valeur de completion dans le modèle header
+				// Store completion value in the header model
 				const oContext = this.getView().getBindingContext();
 				if (oContext) {
 					const oModel = this.getView().getModel();
 					const sPath = oContext.getPath();
 					
-					// Stocker le pourcentage comme string pour correspondre au format backend string
+					// Store percentage as string to match backend string format
 					const sCompletionValue = iPercentage.toString();
 					oModel.setProperty(sPath + "/Completion", sCompletionValue);
 				}
@@ -1520,8 +1764,6 @@ sap.ui.define([
 		_resetFormCompletion: function() {
 			// Detach previous listeners to avoid conflicts
 			this._detachCompletionListeners();
-			
-			console.log("🔄 Form completion listeners reset for new request navigation");
 		},
 
 		/**
@@ -1550,8 +1792,6 @@ sap.ui.define([
 					oControl.detachChange(this._calculateFormCompletion, this);
 				}
 			});
-			
-			console.log(`🧹 Detached completion listeners from ${aAllControls.length} controls`);
 		},
 
 		/**
@@ -1578,8 +1818,6 @@ sap.ui.define([
 			if (oCommentsModel) {
 				oCommentsModel.setData({ comments: [] });
 			}
-			
-			console.log("🧹 Cleared all local models for new request");
 		},
 
 		/**
@@ -1717,6 +1955,30 @@ sap.ui.define([
 					break;
 				}
 			}
+		},
+
+
+		_resetVisibility: function(oField) {
+			const oView = this.getView();
+			// Find the control by its id (which must match Field)
+			const oCtrl = oView.byId(oField);
+			if (oCtrl) {
+				// apply dynamically
+				if (oCtrl.setEditable) {
+					oCtrl.setEditable(false);
+				}
+					if (oCtrl.setEnabled) {
+						oCtrl.setEnabled(false);
+					}
+					if (oCtrl.setVisible) {
+						oCtrl.setVisible(false);
+					}
+					if (oCtrl.setRequired) {
+						oCtrl.setRequired(false);
+					}
+				}
+	
+		
 		}
 
 	});
