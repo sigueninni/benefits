@@ -397,16 +397,29 @@ sap.ui.define([
 			if (sSelectedKey) {
 				this._loadSchoolDetails(sSelectedKey);
 			} else {
-				// Clear school-related fields when no school is selected
-				const oContext = this.getView().getBindingContext();
-				if (oContext) {
-					const oModel = this.getView().getModel();
-					oModel.setProperty("EGSNA", "", oContext);
-					oModel.setProperty("ORT01", "", oContext);
-					oModel.setProperty("EGSCT", "", oContext);
-					oModel.setProperty("EGSTY", "", oContext);
-				}
+				// Clear all school-related fields when no school is selected
+				this._clearSchoolFields();
 			}
+		},
+
+		/**
+		 * Event handler for the Cancel button in the floating footer bar
+		 * Discards all unsaved changes and refreshes data from backend
+		 * @public
+		 */
+		onCancelButtonPress: function() {
+			const oModel = this.getView().getModel();
+			
+			// Reset any pending changes to discard unsaved modifications
+			if (oModel.hasPendingChanges()) {
+				oModel.resetChanges();
+				sap.m.MessageToast.show(this.getText("changesDiscarded"));
+			} else {
+				sap.m.MessageToast.show(this.getText("noChangesToDiscard"));
+			}
+			
+			// Clear any local models that might have unsaved data
+			this._clearLocalModels();
 		},
 
 		/**
@@ -1317,16 +1330,39 @@ sap.ui.define([
 			if (oContext) {
 				const sEduGrantDetailPath = oContext.getPath() + "/ToEduGrantDetail";
 
-				// Clear all school-related fields first to avoid old values
-				oModel.setProperty(sEduGrantDetailPath + "/Egsna", "");
-				oModel.setProperty(sEduGrantDetailPath + "/Ort01", "");
-				oModel.setProperty(sEduGrantDetailPath + "/Egsct", "");
-				oModel.setProperty(sEduGrantDetailPath + "/Egsty", "");
+				// Clear ALL school-related fields first to avoid old values
+				// Basic school information
+				oModel.setProperty(sEduGrantDetailPath + "/Egsna", "");        // School Name
+				oModel.setProperty(sEduGrantDetailPath + "/Egsty", "");        // School Type (from backend)
+				oModel.setProperty(sEduGrantDetailPath + "/Ort01", "");        // School City
+				oModel.setProperty(sEduGrantDetailPath + "/Egsct", "");        // School Country
+				
+				// Additional school type and academic information
+				oModel.setProperty(sEduGrantDetailPath + "/Egtyp", "");        // School Type (additional)
+				oModel.setProperty(sEduGrantDetailPath + "/Egfpda", false);    // First Post Secondary Degree
+				oModel.setProperty(sEduGrantDetailPath + "/YyPsYear", "");     // Year of Entry Post Secondary
+				oModel.setProperty(sEduGrantDetailPath + "/Eggrd", "");        // Grade
+				oModel.setProperty(sEduGrantDetailPath + "/Egtypatt", "");     // Type of Attendance
+				
+				// Location and logistics
+				oModel.setProperty(sEduGrantDetailPath + "/Egcdf", false);     // Commuting Distance
+				oModel.setProperty(sEduGrantDetailPath + "/TuitionWaers", ""); // Tuition Currency
+				oModel.setProperty(sEduGrantDetailPath + "/Egchbrd", false);   // Child Boarder
+				
+				// Academic period dates
+				oModel.setProperty(sEduGrantDetailPath + "/Egyfr", null);      // Starting From
+				oModel.setProperty(sEduGrantDetailPath + "/Egyto", null);      // Up To
 
 				// Also clear the School Country Input field description
 				const oSchoolCountryInput = oView.byId("EGSCT");
 				if (oSchoolCountryInput && oSchoolCountryInput.setDescription) {
 					oSchoolCountryInput.setDescription("");
+				}
+				
+				// Clear the Tuition Currency Input field description
+				const oTuitionCurrencyInput = oView.byId("TUITION_WAERS");
+				if (oTuitionCurrencyInput && oTuitionCurrencyInput.setDescription) {
+					oTuitionCurrencyInput.setDescription("");
 				}
 			}
 
@@ -1359,6 +1395,55 @@ sap.ui.define([
 					this.fError();
 				}
 			});
+		},
+
+		/**
+		 * Clear all school-related fields when no school is selected
+		 * @private
+		 */
+		_clearSchoolFields: function() {
+			const oModel = this.getView().getModel();
+			const oView = this.getView();
+			const oContext = this.getView().getBindingContext();
+
+			if (oContext) {
+				const sEduGrantDetailPath = oContext.getPath() + "/ToEduGrantDetail";
+
+				// Clear ALL school-related fields
+				// Basic school information
+				oModel.setProperty(sEduGrantDetailPath + "/Egsna", "");        // School Name
+				oModel.setProperty(sEduGrantDetailPath + "/Egsty", "");        // School Type (from backend)
+				oModel.setProperty(sEduGrantDetailPath + "/Ort01", "");        // School City
+				oModel.setProperty(sEduGrantDetailPath + "/Egsct", "");        // School Country
+				
+				// Additional school type and academic information
+				oModel.setProperty(sEduGrantDetailPath + "/Egtyp", "");        // School Type (additional)
+				oModel.setProperty(sEduGrantDetailPath + "/Egfpda", false);    // First Post Secondary Degree
+				oModel.setProperty(sEduGrantDetailPath + "/YyPsYear", "");     // Year of Entry Post Secondary
+				oModel.setProperty(sEduGrantDetailPath + "/Eggrd", "");        // Grade
+				oModel.setProperty(sEduGrantDetailPath + "/Egtypatt", "");     // Type of Attendance
+				
+				// Location and logistics
+				oModel.setProperty(sEduGrantDetailPath + "/Egcdf", false);     // Commuting Distance
+				oModel.setProperty(sEduGrantDetailPath + "/TuitionWaers", ""); // Tuition Currency
+				oModel.setProperty(sEduGrantDetailPath + "/Egchbrd", false);   // Child Boarder
+				
+				// Academic period dates
+				oModel.setProperty(sEduGrantDetailPath + "/Egyfr", null);      // Starting From
+				oModel.setProperty(sEduGrantDetailPath + "/Egyto", null);      // Up To
+
+				// Also clear the School Country Input field description
+				const oSchoolCountryInput = oView.byId("EGSCT");
+				if (oSchoolCountryInput && oSchoolCountryInput.setDescription) {
+					oSchoolCountryInput.setDescription("");
+				}
+				
+				// Clear the Tuition Currency Input field description
+				const oTuitionCurrencyInput = oView.byId("TUITION_WAERS");
+				if (oTuitionCurrencyInput && oTuitionCurrencyInput.setDescription) {
+					oTuitionCurrencyInput.setDescription("");
+				}
+			}
 		},
 
 		/**
