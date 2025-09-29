@@ -109,7 +109,6 @@ sap.ui.define([
              * @public
              */
             onReqTypChange: function (oEvent) {
-                debugger;
                 const oSelectedItem = oEvent.getParameter("selectedItem");
                 const sSelectedKey = oSelectedItem.getKey();
 
@@ -158,12 +157,13 @@ sap.ui.define([
             onSearch: function (oEvent) {
 
                 // add filter for search
-                debugger;
                 let aFilters = [];
                 const sQuery = oEvent.getSource().getValue();
                 if (sQuery && sQuery.length > 0) {
                     const aOrFilters = [
+                        // Note: Date fields (Begda, Endda) don't support Contains operator
                         // new Filter("Begda", FilterOperator.Contains, sQuery),
+                        // new Filter("Endda", FilterOperator.Contains, sQuery),
                         new Filter("RequestKey", FilterOperator.Contains, sQuery),
                         new Filter("RequestStatusTxt", FilterOperator.Contains, sQuery),
                         new Filter("Info2", FilterOperator.Contains, sQuery),
@@ -241,7 +241,6 @@ sap.ui.define([
              * Sets the child for EG request
              */
             onConfirmChild: function (oEvent) {
-                debugger;
                 const oModel = this.getView().getModel();
 
                 //    const path = bindingContext.getPath();
@@ -321,7 +320,6 @@ sap.ui.define([
              * @private
              */
             _onMasterMatched: function () {
-                // debugger;
                 this.getOwnerComponent().oListSelector.oWhenListLoadingIsDone.then(
 
                     function (mParams) {
@@ -360,8 +358,8 @@ sap.ui.define([
                 // Create and set the type model for visibility binding with default value
                 const oTypeModel = new JSONModel({
                     RequestType: "01", // Set default value to "01"
-                    Isclaim: true,     // Default to claim
-                    Isadvance: false,  // Default to not advance
+                    Isclaim: false,     // Default to claim
+                    Isadvance: true,  // Default to not advance
                     Begda: null,       // Start date
                     Endda: null,       // End date
                     Comments: "",      // Comments field
@@ -384,7 +382,6 @@ sap.ui.define([
                 const aFieldsToValidate = ['begda', 'endda', 'requestType'];
                 const errorValidation = this.isAFieldEmpty(aFieldsToValidate);
 
-                debugger;
                 // If validation failed, stop execution
                 if (errorValidation) {
                     return;

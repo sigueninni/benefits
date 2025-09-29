@@ -269,6 +269,28 @@ sap.ui.define([
                 default:
                     return "Unknown Status (" + sStatusCode + ")";
             }
+        },
+
+        /**
+         * Formats Info1 field state based on claim/advance status
+         * @param {string} sInfo1 - The Info1 field value
+         * @returns {string} State value for ObjectStatus (Success for Advance, Error for Claim)
+         */
+        info1StateText: function (sInfo1) {
+            if (!sInfo1) {
+                return "None";
+            }
+            
+            // Convert to lowercase for case-insensitive comparison
+            const sLowerInfo1 = sInfo1.toLowerCase();
+            
+            if (sLowerInfo1.includes("claim")) {
+                return "Success";   // Rouge pour Claim
+            } else if (sLowerInfo1.includes("advance")) {
+                return "Error"; // Vert pour Advance
+            } else {
+                return "None";    // État par défaut
+            }
         }
 
     };

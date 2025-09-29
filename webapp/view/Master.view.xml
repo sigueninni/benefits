@@ -7,7 +7,6 @@
     xmlns="sap.m"
     xmlns:semantic="sap.f.semantic"
 >
-
     <semantic:SemanticPage
         id="mySemanticPage"
         headerPinnable="false"
@@ -15,23 +14,22 @@
         preserveHeaderStateOnScroll="false"
         showFooter="true"
     >
-
-
-  
         <!-- Title Heading-->
         <semantic:titleHeading>
             <Title text="{masterView>/title}" />
-            
         </semantic:titleHeading>
-
         <semantic:content>
-        
             <List
                 id="list"
                 inset="false"
                 width="auto"
                 class="sapFDynamicPageAlignContent"
-                items="{ path: '/RequestHeaderSet', parameters: {operationMode: 'Client'} }"
+                items="{
+                    path: '/RequestHeaderSet',
+                    parameters: {
+                        operationMode: 'Client'
+                    }
+                }"
                 busyIndicatorDelay="{masterView>/delay}"
                 noDataText="{masterView>/noDataText}"
                 mode="{= ${device>/system/phone} ? 'None' : 'SingleSelectMaster'}"
@@ -48,7 +46,6 @@
                             showRefreshButton="{= !${device>/support/touch} }"
                             tooltip="{i18n>masterSearchTooltip}"
                             width="100%"
-                            
                             liveChange=".onSearch"
                         />
                         <Button
@@ -73,43 +70,56 @@
                     </Toolbar>
                 </infoToolbar>
                 <items>
-                
                     <ObjectListItem
                         id="listItem"
                         type="{= ${device>/system/phone} ? 'Active' : 'Inactive'}"
                         press="onSelectionChange"
-                        title="{RequestDesc}"
+                        title="{RequestKey}"
+                        condensed="true"
+                        
                     >
+                        <!-- icon="sap-icon://warning" -->
                         <firstStatus>
-
-                        <ObjectStatus
-                            text="{RequestStatusTxt}"
-                             state="{ path: 'RequestStatus', formatter: '.formatter.requestStatusStateText' }"
-                           />
-             
-                        </firstStatus>
-                        <attributes>
-                        <ObjectAttribute text="{RequestKey}" />
-                            <ObjectAttribute
-                                text="{path: 'Begda', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy' }}"
+                            <ObjectStatus
+                                text="{RequestStatusTxt}"
+                                state="{
+                                    path: 'RequestStatus',
+                                    formatter: '.formatter.requestStatusStateText'
+                                }"
                             />
+                        </firstStatus>
+                        <secondStatus>
+                            <ObjectStatus
+                                text="{Info1}"
+                                state="{
+                                    path: 'Info1',
+                                    formatter: '.formatter.info1StateText'
+                                }"
+                            />
+                        </secondStatus>
+                        <attributes>
+                            <!-- <ObjectAttribute text="" /> -->
+                            <ObjectAttribute text="{
+                                path: 'Begda',
+                                type: 'sap.ui.model.type.Date',
+                                formatOptions: {
+                                    style: 'medium',
+                                    strictParsing: true,
+                                    relative: false,
+                                    pattern: 'dd/MM/yyyy'
+                                }
+                            }" />
                             <ObjectAttribute text="{Info2}" />
                             <ObjectAttribute text="{Info3}" />
-                            
-                            
-                            <!--                <ObjectAttribute
-                                text="{path: 'ForeseenStartDate', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy' }} - {path: 'EndDate', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy' }}"
-                            />
-                            <ObjectAttribute
-                                text="{path: 'EndDate', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy' }}"
-                            />  -->
                         </attributes>
+                        <markers >
+                            <ObjectMarker visible="{Isadvance}" type="Flagged" />
+                        </markers>
                     </ObjectListItem>
                 </items>
             </List>
         </semantic:content>
         <semantic:footerCustomActions>
-        
             <Button
                 icon="sap-icon://sort"
                 press="onSort"
@@ -119,7 +129,5 @@
                 press="onGroup"
             />
         </semantic:footerCustomActions>
-        
     </semantic:SemanticPage>
 </mvc:View>
-

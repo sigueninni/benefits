@@ -2,7 +2,7 @@
     xmlns:core="sap.ui.core"
     xmlns="sap.m"
     xmlns:c="sap.suite.ui.commons"
-    xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+    
 >
     <c:Timeline
         id="idTimelineObject"
@@ -12,6 +12,8 @@
         content="{/RequestHistoryAndComentsSet}"
         enableScroll="false"
         showHeaderBar="false"
+        	lazyLoading="true"
+			textHeight="automatic"
     >
         <c:content>
             <c:TimelineItem
@@ -29,6 +31,7 @@
                 }"
                 icon="{Icon}"
                 filterValue="{ActorTxt}"
+                maxCharacters="100"
             />
 
         </c:content>

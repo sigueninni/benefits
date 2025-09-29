@@ -22,9 +22,9 @@
         <form:content>
             <core:Title text="{i18n>othersData}" />
           
-            <Label text="{i18n>currencyOfPayment}" labelFor="currencyOfPayment"/>
+            <Label text="{i18n>currencyOfPayment}" labelFor="TEXT1"/>
             <Input 
-                id="currencyOfPayment" 
+                id="TEXT1" 
                 type="Text"
                 value="{ToEduGrantDetail/Text1}"
                 showValueHelp="true"

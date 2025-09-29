@@ -208,10 +208,10 @@ Grade-->
 
             <Label
                 text="{i18n>tuitionCurrency}"
-                labelFor="WAERS"
+                labelFor="TUITION_WAERS"
             />
             <Input
-                id="WAERS"
+                id="TUITION_WAERS"
                 type="Text"
                 value="{ToEduGrantDetail/TuitionWaers}"
                 showValueHelp="true"

@@ -12,7 +12,11 @@
             <VBox class="sapUiMediumMargin">
                 <HBox class="sapUiSmallMarginBottom">
                     <VBox class="sapUiMediumMarginEnd">
-                        <Label text="{i18n>startDate}" class="sapUiSmallMarginBottom" required="true" />
+                        <Label
+                            text="{i18n>startDate}"
+                            class="sapUiSmallMarginBottom"
+                            required="true"
+                        />
                         <DatePicker
                             id="begda"
                             placeholder="{i18n>selectStartDate}"
@@ -26,7 +30,11 @@
                         />
                     </VBox>
                     <VBox>
-                        <Label text="{i18n>endDate}" class="sapUiSmallMarginBottom" required="true" />
+                        <Label
+                            text="{i18n>endDate}"
+                            class="sapUiSmallMarginBottom"
+                            required="true"
+                        />
                         <DatePicker
                             id="endda"
                             placeholder="{i18n>selectEndDate}"
@@ -40,8 +48,11 @@
                         />
                     </VBox>
                 </HBox>
-                
-                <Label text="{i18n>requestType}" class="sapUiSmallMarginBottom" />
+
+                <Label
+                    text="{i18n>requestType}"
+                    class="sapUiSmallMarginBottom"
+                />
                 <Select
                     id="requestType"
                     enabled="{RequestSettings/IsFormEditable}"
@@ -54,7 +65,7 @@
                         key="{Id}"
                     />
                 </Select>
-                
+
                 <RadioButtonGroup
                     id="claimAdvanceGroup"
                     visible="{= ${typeModel>/RequestType} === '01'}"
@@ -62,7 +73,7 @@
                     columns="2"
                     select="onClaimAdvanceChange"
                 >
-                                    <RadioButton
+                    <RadioButton
                         id="isAdvance"
                         text="{i18n>isAdvance}"
                         selected="{typeModel>/Isadvance}"
@@ -72,10 +83,12 @@
                         text="{i18n>isClaim}"
                         selected="{typeModel>/Isclaim}"
                     />
-
                 </RadioButtonGroup>
-                
-                <Label text="{i18n>comments}" class="sapUiMediumMarginTop sapUiSmallMarginBottom" />
+
+                <Label
+                    text="{i18n>comments}"
+                    class="sapUiMediumMarginTop sapUiSmallMarginBottom"
+                />
                 <TextArea
                     id="requestComments"
                     value="{typeModel>/Comments}"
