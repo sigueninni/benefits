@@ -436,7 +436,7 @@
                 - Was: HRA + SUBMITTED: Show toolbar for approval actions
                 - Now: Always visible
             -->
-            <OverflowToolbar id="BAR">
+            <OverflowToolbar id="FLOATBAR" design="Transparent">
                 <content>
                     <Button
                         id="BTNmessagePopover"

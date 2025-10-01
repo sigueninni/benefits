@@ -641,6 +641,9 @@ sap.ui.define([
 				oViewModel = this.getModel("detailView");
 
 			this.getOwnerComponent().oListSelector.selectAListItem(sPath);
+			
+			// Get UI settings now that binding context is available
+			this._getUISettings();
 		},
 
 		/**
@@ -1211,15 +1214,7 @@ sap.ui.define([
 
 			oViewModel.setProperty("/busy", false);
 
-			// (+) By Vincent : Check if we already have a binding and refresh if necessary
-			const oElementBinding = oView.getElementBinding();
-			if (oElementBinding && oElementBinding.getPath() === sObjectPath) {
-				// (+) By Vincent : Same path = return to an already visited request
-				// (+) By Vincent : Force refresh to reload ToEduGrantDetail
-				oElementBinding.refresh(true); // (+) By Vincent : true = force refresh
-				return;
-			}
-
+			// Always use bindElement() to ensure events are properly configured
 			this.getView().bindElement({
 				path: sObjectPath,
 				// Reactivated for deep insert - ToEduGrantDetail must be loaded for save
@@ -1253,7 +1248,7 @@ sap.ui.define([
 						} catch (e) {
 						}
 
-						that._getUISettings();
+						// Note: _getUISettings is now called in _onBindingChange
 						// Restore or calculate form completion once data is received
 						//that._restoreFormCompletion();
 						//that._attachCompletionListeners();
@@ -1346,12 +1341,12 @@ sap.ui.define([
 				
 				// Location and logistics
 				oModel.setProperty(sEduGrantDetailPath + "/Egcdf", false);     // Commuting Distance
-				oModel.setProperty(sEduGrantDetailPath + "/TuitionWaers", ""); // Tuition Currency
+				// oModel.setProperty(sEduGrantDetailPath + "/TuitionWaers", ""); // Tuition Currency - Don't clear
 				oModel.setProperty(sEduGrantDetailPath + "/Egchbrd", false);   // Child Boarder
 				
 				// Academic period dates
-				oModel.setProperty(sEduGrantDetailPath + "/Egyfr", null);      // Starting From
-				oModel.setProperty(sEduGrantDetailPath + "/Egyto", null);      // Up To
+				// oModel.setProperty(sEduGrantDetailPath + "/Egyfr", null);      // Starting From - Don't clear
+				// oModel.setProperty(sEduGrantDetailPath + "/Egyto", null);      // Up To - Don't clear
 
 				// Also clear the School Country Input field description
 				const oSchoolCountryInput = oView.byId("EGSCT");
@@ -1551,6 +1546,19 @@ sap.ui.define([
 					// Reset pending changes because the new object has been created
 					oModel.resetChanges();
 					
+					// Refresh OData to get updated data from backend
+					const oElementBinding = oView.getElementBinding();
+					if (oElementBinding) {
+						oElementBinding.refresh(true); // Force refresh from backend
+					}
+					
+					// Refresh Timeline to show new submit entry
+					that._refreshTimeline();
+					
+					// Update UI settings after status change (e.g., from Draft to Submitted)
+					// Note: This will be called again in _onBindingChange after the refresh
+					that._getUISettings();
+					
 					// Navigate to the newly created object
 					that.getRouter().navTo("RouteDetail", {
 						benefitRequestId: oData.Guid
@@ -1664,6 +1672,22 @@ sap.ui.define([
 					filters: [oFilter],
 					template: oTimeline.getBindingInfo("content").template
 				});
+			}
+		},
+
+		/**
+		 * Refreshes the Timeline data to show latest entries (e.g., after submit)
+		 * @private
+		 */
+		_refreshTimeline: function() {
+			const oView = this.getView();
+			const oTimeline = oView.byId("idTimelineObject");
+			
+			if (oTimeline) {
+				const oBinding = oTimeline.getBinding("content");
+				if (oBinding) {
+					oBinding.refresh(true); // Force refresh from backend
+				}
 			}
 		},
 

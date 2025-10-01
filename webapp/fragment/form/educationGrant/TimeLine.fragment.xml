@@ -6,7 +6,7 @@
 >
     <c:Timeline
         id="idTimelineObject"
-        enableDoubleSided="true"
+        enableDoubleSided="false"
         growingThreshold="0"
         sortOldestFirst="true"
         content="{/RequestHistoryAndComentsSet}"
