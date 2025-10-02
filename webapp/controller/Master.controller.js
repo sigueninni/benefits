@@ -535,18 +535,19 @@ sap.ui.define([
                         sortItems: [
                             new ViewSettingsItem({
                                 text: "{i18n>requestKey}",
-                                key: "RequestKey",
-                                selected: true
+                                key: "RequestKey"
                             }),
                             new ViewSettingsItem({
                                 text: "{i18n>createdOn}",
-                                key: "Begda"
+                                key: "Begda",
+                                selected: true
                             }),
                             new ViewSettingsItem({
                                 text: "{i18n>status}",
                                 key: "RequestStatusTxt"
                             })
                         ],
+                        sortDescending: true,
                         groupItems: [
                             new ViewSettingsItem({
                                 text: "{i18n>status}",
@@ -592,6 +593,11 @@ sap.ui.define([
                     const sGroupPath = oParams.groupItem.getKey();
                     const bDescending = oParams.groupDescending;
                     aGroupers.push(new Sorter(sGroupPath, bDescending, true));
+                    
+                    // Si pas de tri explicite, ajouter un tri par défaut dans les groupes
+                    if (!oParams.sortItem) {
+                        aSorters.push(new Sorter("CreationDate", true)); // Tri par CreationDate descendant
+                    }
                 }
 
                 // Apply sorters and groupers to binding

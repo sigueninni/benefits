@@ -39,6 +39,10 @@
     {
       "modelName": "schoolCountryModel",
       "method": "GET_SCHOOL_COUNTRY_LIST"
+    },
+    {
+      "modelName": "currencyPaymentModel",
+      "method": "GET_CURRENCY_PAYMENT_LIST"
     }
   ]
 }

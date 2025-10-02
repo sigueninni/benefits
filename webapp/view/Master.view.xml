@@ -50,8 +50,11 @@
                         />
                         <Button
                             id="createAction"
+                            text="{i18n>newRequest}" 
+                            type="Emphasized"
                             icon="sap-icon://add"
-                            tooltip="{i18n>add}"
+                            iconFirst="false"
+                            tooltip="{i18n>newRequest}"
                             press="onCreateButtonPress"
                         />
                     </Toolbar>

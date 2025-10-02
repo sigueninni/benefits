@@ -447,6 +447,25 @@ sap.ui.define([
 		/********************************  End of School management ******************************************/
 		/*************************************************************************************************/
 
+		/**
+		 * Event handler for proration factor checkbox select
+		 * Controls editability of EGFAC field based on EGPRO checkbox state
+		 * @param {sap.ui.base.Event} oEvent - The checkbox select event
+		 * @public
+		 */
+		onSelectProrationFactor: function(oEvent) {
+			debugger;
+			const bSelected = oEvent.getSource().getSelected();
+			const oView = this.getView();
+			const oEgfacField = oView.byId("EGFAC");
+			
+			if (oEgfacField) {
+				// Set editability based on checkbox state
+				oEgfacField.setEditable(bSelected);
+				
+			}
+		},
+
 		/*************************************************************************************************/
 		/********************************  Begin of Currency Management ***********************************/
 		/*************************************************************************************************/
@@ -795,6 +814,7 @@ sap.ui.define([
 			const oReasonBoardingModel = new JSONModel();
 			const oCurrencyModel = new JSONModel();
 			const oSchoolCountryModel = new JSONModel();
+			const oCurrencyPaymentModel = new JSONModel();
 			
 			this.setModel(oGradeModel, "gradeModel");
 			this.setModel(oSchoolTypeAdditModel, "schoolTypeAdditModel");
@@ -806,6 +826,7 @@ sap.ui.define([
 			this.setModel(oReasonBoardingModel, "reasonBoardingModel");
 			this.setModel(oCurrencyModel, "currencyModel");
 			this.setModel(oSchoolCountryModel, "schoolCountryModel");
+			this.setModel(oCurrencyPaymentModel, "currencyPaymentModel");
 		},
 
 		/**
@@ -955,8 +976,8 @@ sap.ui.define([
 			
 			console.log("UI Settings Filter Values:");
 			console.log("RequestType:", oCurrentObject.RequestType);
-			console.log("Status:", oCurrentObject.RequestStatus + " - " + this.formatter.formatRequestStatusText(oCurrentObject.RequestStatus));
 			console.log("Actor:", sCurrentRole + " - " + this.formatter.formatActorRole(sCurrentRole));
+			console.log("Status:", oCurrentObject.RequestStatus + " - " + this.formatter.formatRequestStatusText(oCurrentObject.RequestStatus));
 
 			for (const oUIProperty of aUIProperties) {
 				let bException = false;
@@ -1491,27 +1512,26 @@ sap.ui.define([
 			const oView = this.getView();
 			const oModel = oView.getModel();
 			const oContext = oView.getBindingContext();
-			
 			// set status to saved draft
 			oView.byId("draftIndicator").showDraftSaving();
-
+ 
 			if (!oContext) {
 				return;
 			}
-
+ 
 			// Store comment in Note field if provided (common logic for creation and submit)
 			if (sComment) {
 				oModel.setProperty("Note", sComment, oContext);
 			}
-
+ 
 			// set busy indicator during save
 			const oViewModel = this.getModel("detailView");
 			oViewModel.setProperty("/busy", true);
-
+ 
 			// For deep insert, retrieve form data and create a new object
 			const oRequestData = oModel.getObject(oContext.getPath());
 			const oEduGrantDetail = oModel.getObject(oContext.getPath() + "/ToEduGrantDetail");
-
+ 
 			// Build the object for deep insert with new GUID
 			const oDeepInsertData = {
 				// Header properties - new GUID
@@ -1521,19 +1541,18 @@ sap.ui.define([
 					...oEduGrantDetail,
 				}
 			};
-
+ 
 			// Diagnostic : log complet de l'objet ToEduGrantDetail avant le save
-
+ 
 			// Override status if provided as parameter
 			if (sStatus) {
 				oDeepInsertData.RequestStatus = sStatus;
 			}
-
+ 
 			// Use create() for deep insert of a new record
 			oModel.create("/RequestHeaderSet", oDeepInsertData, {
 				success: function (oData, oResponse) {
 					oViewModel.setProperty("/busy", false);
-					
 					// Success - clean messages and indicate save
 					that.clearMessages();
 					that.addSuccessMessage(
@@ -1542,37 +1561,43 @@ sap.ui.define([
 					);
 					that._resetValidationChecks && that._resetValidationChecks();
 					oView.byId("draftIndicator").showDraftSaved();
-					
 					// Reset pending changes because the new object has been created
 					oModel.resetChanges();
-					
 					// Refresh OData to get updated data from backend
 					const oElementBinding = oView.getElementBinding();
 					if (oElementBinding) {
 						oElementBinding.refresh(true); // Force refresh from backend
 					}
-					
 					// Refresh Timeline to show new submit entry
 					that._refreshTimeline();
-					
 					// Update UI settings after status change (e.g., from Draft to Submitted)
 					// Note: This will be called again in _onBindingChange after the refresh
 					that._getUISettings();
-					
 					// Navigate to the newly created object
-					that.getRouter().navTo("RouteDetail", {
-						benefitRequestId: oData.Guid
-					});
+					const currentUrl = window.location.href;
+					if (currentUrl.includes("DetailOnly")) {
+					    that.getRouter().navTo("RouteDetailOnly", {
+						    benefitRequestId: oData.Guid,
+						    role: oData.Objps,
+						    nextActorCode: oData.NextActor,
+						    requestStatus: oData.RequestStatus,
+						    requestType: oData.RequestType
+					    });
+					} else {
+					    // Navigate to standard master-detail route
+					    that.getRouter().navTo("RouteDetail", {
+					        benefitRequestId: oData.Guid
+					    });
+					}
+ 
 				},
 				error: function (oError) {
 					oViewModel.setProperty("/busy", false);
-					
 					that.addODataErrorMessage(
 						oError,
 						that.getText("saveErrorTitle"),
 						"/SaveOperation"
 					);
-					
 					oView.byId("draftIndicator").clearDraftState();
 				}
 			});
@@ -1622,6 +1647,12 @@ sap.ui.define([
 					this.getModel(sModelName).setData({
 						items: oData.results
 					});
+					
+					// Log content specifically for currencyPaymentModel
+					if (sModelName === "currencyPaymentModel") {
+						console.log("[CURRENCY PAYMENT MODEL] Loaded data:", oData.results);
+						console.table(oData.results);
+					}
 				},
 				error: (oError) => {
 					// Handle error silently or with minimal logging

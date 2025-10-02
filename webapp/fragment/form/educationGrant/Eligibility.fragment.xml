@@ -4,6 +4,7 @@
     xmlns:form="sap.ui.layout.form"
 >
     <form:SimpleForm
+    
         layout="ResponsiveGridLayout"
         labelSpanXL="4"
         labelSpanL="4"
@@ -17,6 +18,7 @@
         columnsXL="3"
         columnsL="3"
         columnsM="3"
+       
     >
         <form:content>
             <!-- Eligibility core Fields -->
@@ -175,6 +177,7 @@
             <CheckBox
                 id="EGPRO"
                 selected="{ToEduGrantDetail/Egpro}"
+                select="onSelectProrationFactor"
             />
             <Label text="{i18n>overrideProrationFactor}" />
             <CheckBox
