@@ -69,28 +69,10 @@
             <Label text="{i18n>egCustomerStatus}" />
             <Select
                 id="EGCST"
-                forceSelection="false"
                 selectedKey="{ToEduGrantDetail/Egcst}"
+                items="{egCustomerStatusModel>/items}"
             >
-                <core:Item
-                    text="{i18n>notEligible}"
-                    key=""
-                />
-
-                <core:Item
-                    text="{i18n>Eligible}"
-                    key="X"
-                />
-                <!--       items="{
-                        path : '/GenericVHSet',
-                        filters : [
-                            { path : 'Method', operator : 'EQ', value1 :'GET_EG_CUSTOMER_STATUS_LIST' }
-                        ]
-                        }"
-                <core:Item
-                    text="{Txt}"
-                    key="{Id}"
-                /> -->
+                <core:Item key="{egCustomerStatusModel>Id}" text="{egCustomerStatusModel>Txt}" />
             </Select>
             <Label text="{i18n>specialEducationGrant}" />
             <Switch
@@ -106,6 +88,7 @@
                 items="{specialArrangementModel>/items}"
                 selectedKey="{ToEduGrantDetail/Egsar}"
                 visible="{ToEduGrantDetail/Egdis}"
+                enabled="true"
             >
                 <core:Item
                     text="{specialArrangementModel>Txt}"
@@ -242,7 +225,8 @@
             <Label text="{i18n>applyTwoThirdRule}" />
             <CheckBox
                 id="EGRUL"
-                selected="{ToEduGrantDetail/Egrul}"
+                selected="{path: 'ToEduGrantDetail/Egrul', formatter: '.formatter.formatEgrulState'}"
+                select="onEgrulChange"
             />
         </form:content>
     </form:SimpleForm>

@@ -18,11 +18,11 @@ sap.ui.define([
 	return BaseController.extend("com.un.zhrbenefrequests.controller.Detail", {
 
 		formatter: formatter,
-    
+
 		/* =========================================================== */
 		/* lifecycle methods                                           */
 		/* =========================================================== */
-		
+
 		/**
 		 * Called when a controller is instantiated and its View controls (if available) are already created.
 		 * Initializes the detail view with models, route patterns, and validation events.
@@ -41,12 +41,12 @@ sap.ui.define([
 				isMandatory: true,
 				isVoluntary: false,
 				completionPercentage: 0,
-	            completionState: "Error",
-                role: constants.USER_ROLES.EMPLOYEE // Default initialization
+				completionState: "Error",
+				role: constants.USER_ROLES.EMPLOYEE // Default initialization
 			});
 			this.setModel(oViewModel, "detailView");
 
-			 this.fragments = this.fragments || {};
+			this.fragments = this.fragments || {};
 
 			// Initialize local models for claims and advances
 			const oLocalClaimsModel = new JSONModel({ claims: [] });
@@ -153,33 +153,33 @@ sap.ui.define([
 		 */
 		onSubmitButtonPress: function () {
 			const that = this;
-			
+
 			// Validate required fields before proceeding
 			const aValidationErrors = this._validateRequiredFields();
-			
+
 			if (aValidationErrors.length > 0) {
 				// Show validation error message with details about missing fields
 				const sErrorMessage = this.getText("requiredFieldsValidation");
 				const sFieldsList = aValidationErrors.join(", ");
 				const sMissingFieldsPrefix = this.getText("missingFieldsPrefix");
 				const sDetailedMessage = sErrorMessage + "\n\n" + sMissingFieldsPrefix + " " + sFieldsList;
-				
+
 				sap.m.MessageBox.error(sDetailedMessage, {
 					title: this.getText("validationErrorTitle")
 				});
-				
+
 				// Set focus on the first invalid field
 				this._focusFirstInvalidField(aValidationErrors);
 				return;
 			}
-			
+
 			// Show comment dialog and submit directly after comment
 			this.showCommentDialog((sComment) => {
 				// Submit directly with the comment - no second confirmation needed
 				that._submitBenefitRequest(sComment);
 			});
 		},
-		
+
 		/**
 		 * Internal method to submit the benefit request with comment
 		 * @param {string} sComment - The submission comment
@@ -199,7 +199,7 @@ sap.ui.define([
 		onAddClaimButtonPress: function () {
 			const that = this;
 			const oView = this.getView();
-			
+
 			// Create dialog only once
 			if (!this.fragments._oAddClaimDialog) {
 				this.fragments._oAddClaimDialog = new sap.m.Dialog({
@@ -220,7 +220,7 @@ sap.ui.define([
 				});
 				this.fragments._oAddClaimDialog.setModel(oView.getModel("i18n"), "i18n");
 			}
-			
+
 			// Create a fresh model for each dialog opening
 			const oDialogModel = new sap.ui.model.json.JSONModel({
 				ExpenseType: "tuition",
@@ -229,7 +229,7 @@ sap.ui.define([
 				Currency: ""
 			});
 			oDialogModel.setDefaultBindingMode(sap.ui.model.BindingMode.TwoWay);
-			
+
 			this.fragments._oAddClaimDialog.setModel(oDialogModel, "claimModel");
 			oView.addDependent(this.fragments._oAddClaimDialog);
 			this.fragments._oAddClaimDialog.open();
@@ -245,7 +245,7 @@ sap.ui.define([
 		onAddAdvanceButtonPress: function () {
 			const that = this;
 			const oView = this.getView();
-			
+
 			// Create dialog only once
 			if (!this.fragments._oAddAdvanceDialog) {
 				this.fragments._oAddAdvanceDialog = new sap.m.Dialog({
@@ -266,7 +266,7 @@ sap.ui.define([
 				});
 				this.fragments._oAddAdvanceDialog.setModel(oView.getModel("i18n"), "i18n");
 			}
-			
+
 			// Create a fresh model for each dialog opening
 			const oDialogModel = new sap.ui.model.json.JSONModel({
 				ExpenseType: "tuition",
@@ -275,7 +275,7 @@ sap.ui.define([
 				Comments: ""
 			});
 			oDialogModel.setDefaultBindingMode(sap.ui.model.BindingMode.TwoWay);
-			
+
 			this.fragments._oAddAdvanceDialog.setModel(oDialogModel, "advanceModel");
 			oView.addDependent(this.fragments._oAddAdvanceDialog);
 			this.fragments._oAddAdvanceDialog.open();
@@ -293,22 +293,22 @@ sap.ui.define([
 			// Get the list item that was deleted
 			const oListItem = oEvent.getParameter("listItem");
 			const oBindingContext = oListItem.getBindingContext("localAdvances");
-			
+
 			if (oBindingContext) {
 				// Get the index of the item to delete
 				const sPath = oBindingContext.getPath();
 				const iIndex = parseInt(sPath.split("/").pop());
-				
+
 				// Get the local advances model
 				const oLocalModel = this.getView().getModel("localAdvances");
 				const aAdvances = oLocalModel.getProperty("/advances") || [];
-				
+
 				// Remove the advance at the specified index
 				aAdvances.splice(iIndex, 1);
-				
+
 				// Update the model
 				oLocalModel.setProperty("/advances", aAdvances);
-				
+
 				// Show confirmation message
 				sap.m.MessageToast.show(this.getText("advanceDeleted"));
 			}
@@ -407,9 +407,9 @@ sap.ui.define([
 		 * Discards all unsaved changes and refreshes data from backend
 		 * @public
 		 */
-		onCancelButtonPress: function() {
+		onCancelButtonPress: function () {
 			const oModel = this.getView().getModel();
-			
+
 			// Reset any pending changes to discard unsaved modifications
 			if (oModel.hasPendingChanges()) {
 				oModel.resetChanges();
@@ -417,7 +417,7 @@ sap.ui.define([
 			} else {
 				sap.m.MessageToast.show(this.getText("noChangesToDiscard"));
 			}
-			
+
 			// Clear any local models that might have unsaved data
 			this._clearLocalModels();
 		},
@@ -432,10 +432,10 @@ sap.ui.define([
 			const oSelect = oEvent.getSource();
 			const sSelectedKey = oSelect.getSelectedKey();
 			const oContext = this.getView().getBindingContext();
-			
+
 			if (oContext) {
 				const oModel = this.getView().getModel();
-				
+
 				// If school type is not primary (0002) or secondary (0003), reset child boarder to false
 				if (sSelectedKey !== "0002" && sSelectedKey !== "0003") {
 					oModel.setProperty("ToEduGrantDetail/Egchbrd", false, oContext);
@@ -453,16 +453,17 @@ sap.ui.define([
 		 * @param {sap.ui.base.Event} oEvent - The checkbox select event
 		 * @public
 		 */
-		onSelectProrationFactor: function(oEvent) {
+		onSelectProrationFactor: function (oEvent) {
 			debugger;
 			const bSelected = oEvent.getSource().getSelected();
 			const oView = this.getView();
 			const oEgfacField = oView.byId("EGFAC");
-			
+
 			if (oEgfacField) {
 				// Set editability based on checkbox state
 				oEgfacField.setEditable(bSelected);
-				
+				oEgfacField.setEnabled(bSelected);
+
 			}
 		},
 
@@ -514,7 +515,7 @@ sap.ui.define([
 		onConfirmCurrencySelectDialogPress: function (oEvent) {
 			const oView = this.getView();
 			const aContexts = oEvent.getParameter("selectedContexts");
-			
+
 			// get back the selected entry data
 			if (aContexts && aContexts.length) {
 				let sCurrencyName = aContexts.map(function (oContext) {
@@ -523,15 +524,15 @@ sap.ui.define([
 				let sCurrencyId = aContexts.map(function (oContext) {
 					return oContext.getObject().Id;
 				}).join(", ");
-				
+
 				// Try to find the target field using getCore (works for fragments too)
 				let oTargetField = sap.ui.getCore().byId(this._sCurrencySourceField);
-				
+
 				// If not found directly, try with view prefix
 				if (!oTargetField) {
 					oTargetField = oView.byId(this._sCurrencySourceField);
 				}
-				
+
 				if (oTargetField) {
 					if (oTargetField.setDescription) {
 						oTargetField.setDescription(sCurrencyName);
@@ -544,7 +545,7 @@ sap.ui.define([
 					}
 				}
 			}
-			
+
 			// clear filters
 			oEvent.getSource().getBinding("items").filter([]);
 			// destroy the dialog
@@ -571,10 +572,10 @@ sap.ui.define([
 		_onObjectMatched: function (oEvent, routeName) {
 			// Only detach previous listeners when navigating to avoid conflicts
 			this._detachCompletionListeners();
-			
+
 			// Clear local models when navigating to a different request
 			this._clearLocalModels();
-			
+
 			// Extract GUID from arguments (different structure for each route)
 			const oArguments = oEvent.getParameter("arguments") || {};
 			const sBenefitRequestId = oArguments.benefitRequestId;
@@ -586,7 +587,7 @@ sap.ui.define([
 			}
 
 			// Validate GUID
-			if (!sBenefitRequestId || sBenefitRequestId === "00000000-0000-0000-0000-000000000000" || 
+			if (!sBenefitRequestId || sBenefitRequestId === "00000000-0000-0000-0000-000000000000" ||
 				sBenefitRequestId === "undefined" || sBenefitRequestId === "null") {
 				return;
 			}
@@ -594,7 +595,7 @@ sap.ui.define([
 			// Wait for metadata and then bind using unified approach
 			this.getModel().metadataLoaded().then(function () {
 				const oModel = this.getView().getModel();
-				
+
 				if (oModel.hasPendingChanges()) {
 					oModel.resetChanges();
 				}
@@ -603,22 +604,22 @@ sap.ui.define([
 				const sObjectPath = this.getModel().createKey("RequestHeaderSet", {
 					Guid: sBenefitRequestId
 				});
-				
+
 				// Use unified _bindView method for both routes
 				this._bindView("/" + sObjectPath);
-				
+
 				// Load value help data for dropdown lists
 				this._loadValueHelpData();
-				
+
 				// Bind Timeline with new request Guid filter
 				this._bindTimelineData(sBenefitRequestId);
-				
+
 				// Handle route-specific logic if needed
 				if (routeName === "RouteDetailOnly") {
 					// ...existing code...
 					// ...existing code...
 				}
-				
+
 				// Form completion will be calculated in dataReceived event of _bindView
 
 				// Diagnostic: log the actual value of Special Arrangement (EGSAR) after binding
@@ -660,7 +661,7 @@ sap.ui.define([
 				oViewModel = this.getModel("detailView");
 
 			this.getOwnerComponent().oListSelector.selectAListItem(sPath);
-			
+
 			// Get UI settings now that binding context is available
 			this._getUISettings();
 		},
@@ -718,10 +719,10 @@ sap.ui.define([
 
 			// Get existing claims
 			const aClaims = oLocalModel.getProperty("/claims") || [];
-			
+
 			// Add the new claim
 			aClaims.push(oNewClaim);
-			
+
 			// Update the local model
 			oLocalModel.setProperty("/claims", aClaims);
 
@@ -761,10 +762,10 @@ sap.ui.define([
 
 			// Get existing advances
 			const aAdvances = oLocalModel.getProperty("/advances") || [];
-			
+
 			// Add the new advance
 			aAdvances.push(oNewAdvance);
-			
+
 			// Update the local model
 			oLocalModel.setProperty("/advances", aAdvances);
 
@@ -782,10 +783,10 @@ sap.ui.define([
 		 */
 		_openCurrencyDialog: function (sSourceFieldId) {
 			const oView = this.getView();
-			
+
 			// Store the source field ID for later use
 			this._sCurrencySourceField = sSourceFieldId;
-			
+
 			if (!this.fragments._oCurrencyDialog) {
 				this.fragments._oCurrencyDialog = sap.ui.xmlfragment(
 					"com.un.zhrbenefrequests.fragment.form.educationGrant.CurrencyChoice", this);
@@ -815,7 +816,8 @@ sap.ui.define([
 			const oCurrencyModel = new JSONModel();
 			const oSchoolCountryModel = new JSONModel();
 			const oCurrencyPaymentModel = new JSONModel();
-			
+			const oEgCustomerStatusModel = new JSONModel();
+
 			this.setModel(oGradeModel, "gradeModel");
 			this.setModel(oSchoolTypeAdditModel, "schoolTypeAdditModel");
 			this.setModel(oSchoolListModel, "schoolListModel");
@@ -824,12 +826,11 @@ sap.ui.define([
 			this.setModel(oSpecialArrangementModel, "specialArrangementModel");
 			this.setModel(oChangeReasonModel, "changeReasonModel");
 			this.setModel(oReasonBoardingModel, "reasonBoardingModel");
-			this.setModel(oCurrencyModel, "currencyModel");
-			this.setModel(oSchoolCountryModel, "schoolCountryModel");
-			this.setModel(oCurrencyPaymentModel, "currencyPaymentModel");
-		},
-
-		/**
+		this.setModel(oCurrencyModel, "currencyModel");
+		this.setModel(oSchoolCountryModel, "schoolCountryModel");
+		this.setModel(oCurrencyPaymentModel, "currencyPaymentModel");
+		this.setModel(oEgCustomerStatusModel, "egCustomerStatusModel");
+	},		/**
 		 * Saves position request object with pending changes.
 		 * Uses submitChanges for batch processing and handles success/error responses.
 		 * @private
@@ -875,7 +876,7 @@ sap.ui.define([
 		 * @private
 		 */
 		_getUISettings: function () {
-		//	debugger;
+			//	debugger;
 			const oCommonModel = this.getOwnerComponent().getModel("commonModel");
 			let aFilters = [];
 
@@ -905,18 +906,20 @@ sap.ui.define([
 
 			for (const oUIProperty of aUIProperties) {
 
-				  // Defaut is field from the list by Backend is not visible and not editable
-				  this._resetVisibility(oUIProperty.Field);
-                
-                  
-				  let editable = false,
+				// Defaut is field from the list by Backend is not visible and not editable
+				this._resetVisibility(oUIProperty.Field);
+
+
+				let editable = false,
 					enabled = false,
 					hidden = true,
 					required = false;
-				
-				
-	            //Special cases
-				if (oUIProperty.Field === "EGSAR") { continue; } // Handled separately in _loadSchoolDetails
+
+
+				//Special cases - Skip fields with custom visibility management
+				if (this._isUISettingsException(oUIProperty.Field)) {
+					continue;
+				}
 
 
 
@@ -956,71 +959,9 @@ sap.ui.define([
 					}
 				}
 			}
-			
+
 			// Call the diagnostic function here
 			this._logImpactedUIFields(aUIProperties);
-		},
-
-		/**
-		 * Logs all impacted UI fields and their changed properties in a table.
-		 * @param {Array} aUIProperties - Array of UI properties from the service
-		 * @private
-		 */
-		_logImpactedUIFields: function(aUIProperties) {
-			const oView = this.getView();
-			const aImpactedFields = [];
-			
-			// Log the filter values used for UI settings
-			const oCurrentObject = this.getBindingDetailObject();
-			const sCurrentRole = this.getModel("detailView").getProperty("/role");
-			
-			console.log("UI Settings Filter Values:");
-			console.log("RequestType:", oCurrentObject.RequestType);
-			console.log("Actor:", sCurrentRole + " - " + this.formatter.formatActorRole(sCurrentRole));
-			console.log("Status:", oCurrentObject.RequestStatus + " - " + this.formatter.formatRequestStatusText(oCurrentObject.RequestStatus));
-
-			for (const oUIProperty of aUIProperties) {
-				let bException = false;
-				let sExceptionReason = "";
-				
-				// Check for exceptions (special cases that are handled separately)
-				if (oUIProperty.Field === "EGSAR") {
-					bException = true;
-					sExceptionReason = "Handled separately in _loadSchoolDetails";
-				}
-				// Add more exceptions here in the future
-				
-				const oCtrl = oView.byId(oUIProperty.Field);
-				if (oCtrl || bException) {
-					let editable = false, enabled = false, hidden = true, required = false;
-					
-					if (!bException) {
-						switch (oUIProperty.Property) {
-							case "01": hidden = true; break;
-							case "02": hidden = false; break;
-							case "03": editable = enabled = true; break;
-							case "04": editable = enabled = true; required = true; break;
-						}
-					}
-					
-					aImpactedFields.push({
-						Field: oUIProperty.Field,
-						Property: oUIProperty.Property,
-						Visible: bException ? "N/A" : !hidden,
-						Editable: bException ? "N/A" : editable,
-						Enabled: bException ? "N/A" : enabled,
-						Required: bException ? "N/A" : required,
-						ControlType: oCtrl ? oCtrl.getMetadata().getName() : "Not Found",
-						Exception: bException ? "EXCEPTION: " + sExceptionReason : "Applied"
-					});
-				}
-			}
-			
-			if (aImpactedFields.length > 0) {
-				console.log("UI Settings Applied:");
-				// Specify columns explicitly for console.table
-				console.table(aImpactedFields, ["Field", "FieldLabel", "Property", "Visible", "Editable", "Enabled", "Required", "ControlType", "Exception"]);
-			}
 		},
 
 		/**
@@ -1030,19 +971,19 @@ sap.ui.define([
 		 * @returns {string} The field label or empty string if not found
 		 * @private
 		 */
-		_getFieldLabel: function(sFieldId, oControl) {
+		_getFieldLabel: function (sFieldId, oControl) {
 			const oView = this.getView();
-			
+
 			// Try to find a Label that references this field via labelFor property
-			const aLabels = oView.findAggregatedObjects(true, function(oObj) {
-				return oObj.isA && oObj.isA("sap.m.Label") && 
-					   oObj.getLabelFor && oObj.getLabelFor() === sFieldId;
+			const aLabels = oView.findAggregatedObjects(true, function (oObj) {
+				return oObj.isA && oObj.isA("sap.m.Label") &&
+					oObj.getLabelFor && oObj.getLabelFor() === sFieldId;
 			});
-			
+
 			if (aLabels.length > 0) {
 				return aLabels[0].getText() || "";
 			}
-			
+
 			// Try alternative approach: look for labels in the same FormContainer/FormElement
 			if (oControl) {
 				const oParent = oControl.getParent();
@@ -1050,7 +991,7 @@ sap.ui.define([
 					return oParent.getLabel();
 				}
 			}
-			
+
 			// Fallback: try to find label by proximity (same parent container)
 			if (oControl) {
 				const oContainer = oControl.getParent();
@@ -1067,7 +1008,7 @@ sap.ui.define([
 					}
 				}
 			}
-			
+
 			return ""; // No label found
 		},
 
@@ -1078,155 +1019,155 @@ sap.ui.define([
 		 * @param {string} sObjectPath path to the object to be bound to the view.
 		 * @private
 		 */
-				onApproveButtonPress: function() {
-							const oModel = this.getView().getModel("approveModel");
-            
-							const sHash = sap.ui.core.routing.HashChanger.getInstance().getHash();
-							const aHashParts = sHash.split("&");
-							const sDetailPath = aHashParts.find(part => part.includes("DetailOnly"));
-            
-							if (!sDetailPath) {
-								sap.m.MessageBox.error(this.getText("approvalInvalidUrl"));
-								return;
-							}
-            
-							const aSegments = sDetailPath.split("/").filter(Boolean);
-							const sGuid = aSegments[1];
-							const sActorRole = aSegments[2];
-            
-							this.showCommentDialog((sComment) => {
-								oModel.callFunction("/ApproveRequest", {
-									method: "POST",
-									urlParameters: {
-										Guid: sGuid,
-										ActorRole: sActorRole,
-										ApprovalComent: sComment
-									},
-									success: (oData) => {
-										const oResult = oData?.ApproveRequest;
-										const sReturnCode = oResult?.ReturnCode?.trim();
-										const sMessage = oResult?.Message || this.getText("approvalNoMessage");
-            
-										if (sReturnCode === "0") {
-											sap.m.MessageToast.show(this.getText("approvalSuccess"), {
-												duration: 2000
-											});
-											window.history.back();
-										} else {
-											sap.m.MessageBox.error(sMessage, {
-												title: this.getText("approvalErrorTitle"),
-												details: this.getText("approvalErrorDetails", [sReturnCode])
-											});
-										}
-									},
-									error: () => {
-										sap.m.MessageBox.error(this.getText("approvalErrorTechnical"), {
-											title: this.getText("approvalErrorTitle")
-										});
-									}
-								});
+		onApproveButtonPress: function () {
+			const oModel = this.getView().getModel("approveModel");
+
+			const sHash = sap.ui.core.routing.HashChanger.getInstance().getHash();
+			const aHashParts = sHash.split("&");
+			const sDetailPath = aHashParts.find(part => part.includes("DetailOnly"));
+
+			if (!sDetailPath) {
+				sap.m.MessageBox.error(this.getText("approvalInvalidUrl"));
+				return;
+			}
+
+			const aSegments = sDetailPath.split("/").filter(Boolean);
+			const sGuid = aSegments[1];
+			const sActorRole = aSegments[2];
+
+			this.showCommentDialog((sComment) => {
+				oModel.callFunction("/ApproveRequest", {
+					method: "POST",
+					urlParameters: {
+						Guid: sGuid,
+						ActorRole: sActorRole,
+						ApprovalComent: sComment
+					},
+					success: (oData) => {
+						const oResult = oData?.ApproveRequest;
+						const sReturnCode = oResult?.ReturnCode?.trim();
+						const sMessage = oResult?.Message || this.getText("approvalNoMessage");
+
+						if (sReturnCode === "0") {
+							sap.m.MessageToast.show(this.getText("approvalSuccess"), {
+								duration: 2000
 							});
-				},
-
-				onRejectButtonPress: function() {
-					const oModel = this.getView().getModel("approveModel");
-
-					const sHash = sap.ui.core.routing.HashChanger.getInstance().getHash();
-					const aHashParts = sHash.split("&");
-					const sDetailPath = aHashParts.find(part => part.includes("DetailOnly"));
-
-					if (!sDetailPath) {
-						sap.m.MessageBox.error(this.getText("approvalInvalidUrl"));
-						return;
-					}
-
-					const aSegments = sDetailPath.split("/").filter(Boolean);
-					const sGuid = aSegments[1];
-					const sActorRole = aSegments[2];
-
-					this.showCommentDialog((sComment) => {
-						oModel.callFunction("/RejectRequest", {
-							method: "POST",
-							urlParameters: {
-								Guid: sGuid,
-								ActorRole: sActorRole,
-								RejectionComent: sComment
-							},
-							success: (oData) => {
-								const oResult = oData?.RejectRequest;
-								const sReturnCode = oResult?.ReturnCode?.trim();
-								const sMessage = oResult?.Message || this.getText("approvalNoMessage");
-
-								if (sReturnCode === "0") {
-									sap.m.MessageToast.show(this.getText("rejectionSuccess"), {
-										duration: 2000
-									});
-									window.history.back();
-								} else {
-									sap.m.MessageBox.error(sMessage, {
-										title: this.getText("rejectionErrorTitle"),
-										details: this.getText("rejectionErrorDetails", [sReturnCode])
-									});
-								}
-							},
-							error: () => {
-								sap.m.MessageBox.error(this.getText("rejectionErrorTechnical"), {
-									title: this.getText("rejectionErrorTitle")
-								});
-							}
+							window.history.back();
+						} else {
+							sap.m.MessageBox.error(sMessage, {
+								title: this.getText("approvalErrorTitle"),
+								details: this.getText("approvalErrorDetails", [sReturnCode])
+							});
+						}
+					},
+					error: () => {
+						sap.m.MessageBox.error(this.getText("approvalErrorTechnical"), {
+							title: this.getText("approvalErrorTitle")
 						});
-					});
-				},
-
-				onReturnButtonPress: function() {
-					const oModel = this.getView().getModel("approveModel");
-
-					const sHash = sap.ui.core.routing.HashChanger.getInstance().getHash();
-					const aHashParts = sHash.split("&");
-					const sDetailPath = aHashParts.find(part => part.includes("DetailOnly"));
-
-					if (!sDetailPath) {
-						sap.m.MessageBox.error(this.getText("approvalInvalidUrl"));
-						return;
 					}
+				});
+			});
+		},
 
-					const aSegments = sDetailPath.split("/").filter(Boolean);
-					const sGuid = aSegments[1];
-					const sActorRole = aSegments[2];
+		onRejectButtonPress: function () {
+			const oModel = this.getView().getModel("approveModel");
 
-					this.showCommentDialog((sComment) => {
-						oModel.callFunction("/ReturnRequest", {
-							method: "POST",
-							urlParameters: {
-								Guid: sGuid,
-								ActorRole: sActorRole,
-								ReturnComent: sComment
-							},
-							success: (oData) => {
-								const oResult = oData?.ReturnRequest;
-								const sReturnCode = oResult?.ReturnCode?.trim();
-								const sMessage = oResult?.Message || this.getText("approvalNoMessage");
+			const sHash = sap.ui.core.routing.HashChanger.getInstance().getHash();
+			const aHashParts = sHash.split("&");
+			const sDetailPath = aHashParts.find(part => part.includes("DetailOnly"));
 
-								if (sReturnCode === "0") {
-									sap.m.MessageToast.show(this.getText("returnSuccess"), {
-										duration: 2000
-									});
-									window.history.back();
-								} else {
-									sap.m.MessageBox.error(sMessage, {
-										title: this.getText("approvalErrorTitle"),
-										details: this.getText("approvalErrorDetails", [sReturnCode])
-									});
-								}
-							},
-							error: () => {
-								sap.m.MessageBox.error(this.getText("returnErrorTechnical"), {
-									title: this.getText("approvalErrorTitle")
-								});
-							}
+			if (!sDetailPath) {
+				sap.m.MessageBox.error(this.getText("approvalInvalidUrl"));
+				return;
+			}
+
+			const aSegments = sDetailPath.split("/").filter(Boolean);
+			const sGuid = aSegments[1];
+			const sActorRole = aSegments[2];
+
+			this.showCommentDialog((sComment) => {
+				oModel.callFunction("/RejectRequest", {
+					method: "POST",
+					urlParameters: {
+						Guid: sGuid,
+						ActorRole: sActorRole,
+						RejectionComent: sComment
+					},
+					success: (oData) => {
+						const oResult = oData?.RejectRequest;
+						const sReturnCode = oResult?.ReturnCode?.trim();
+						const sMessage = oResult?.Message || this.getText("approvalNoMessage");
+
+						if (sReturnCode === "0") {
+							sap.m.MessageToast.show(this.getText("rejectionSuccess"), {
+								duration: 2000
+							});
+							window.history.back();
+						} else {
+							sap.m.MessageBox.error(sMessage, {
+								title: this.getText("rejectionErrorTitle"),
+								details: this.getText("rejectionErrorDetails", [sReturnCode])
+							});
+						}
+					},
+					error: () => {
+						sap.m.MessageBox.error(this.getText("rejectionErrorTechnical"), {
+							title: this.getText("rejectionErrorTitle")
 						});
-					});
-				},
+					}
+				});
+			});
+		},
+
+		onReturnButtonPress: function () {
+			const oModel = this.getView().getModel("approveModel");
+
+			const sHash = sap.ui.core.routing.HashChanger.getInstance().getHash();
+			const aHashParts = sHash.split("&");
+			const sDetailPath = aHashParts.find(part => part.includes("DetailOnly"));
+
+			if (!sDetailPath) {
+				sap.m.MessageBox.error(this.getText("approvalInvalidUrl"));
+				return;
+			}
+
+			const aSegments = sDetailPath.split("/").filter(Boolean);
+			const sGuid = aSegments[1];
+			const sActorRole = aSegments[2];
+
+			this.showCommentDialog((sComment) => {
+				oModel.callFunction("/ReturnRequest", {
+					method: "POST",
+					urlParameters: {
+						Guid: sGuid,
+						ActorRole: sActorRole,
+						ReturnComent: sComment
+					},
+					success: (oData) => {
+						const oResult = oData?.ReturnRequest;
+						const sReturnCode = oResult?.ReturnCode?.trim();
+						const sMessage = oResult?.Message || this.getText("approvalNoMessage");
+
+						if (sReturnCode === "0") {
+							sap.m.MessageToast.show(this.getText("returnSuccess"), {
+								duration: 2000
+							});
+							window.history.back();
+						} else {
+							sap.m.MessageBox.error(sMessage, {
+								title: this.getText("approvalErrorTitle"),
+								details: this.getText("approvalErrorDetails", [sReturnCode])
+							});
+						}
+					},
+					error: () => {
+						sap.m.MessageBox.error(this.getText("returnErrorTechnical"), {
+							title: this.getText("approvalErrorTitle")
+						});
+					}
+				});
+			});
+		},
 
 		_bindView: function (sObjectPath) {
 			let that = this;
@@ -1260,7 +1201,7 @@ sap.ui.define([
 								const sPath = oContext.getPath() + "/ToEduGrantDetail";
 								const eduGrantDetail = oModel.getProperty(sPath);
 								console.log("[DIAG] ToEduGrantDetail object after binding:", eduGrantDetail);
-								
+
 								// Log EGDIS Switch UI state to check binding synchronization
 								const oEgdisSwitch = this.getView().byId("EGDIS");
 								if (oEgdisSwitch) {
@@ -1288,22 +1229,22 @@ sap.ui.define([
 			// Get the list item that was deleted
 			const oListItem = oEvent.getParameter("listItem");
 			const oBindingContext = oListItem.getBindingContext("localClaims");
-			
+
 			if (oBindingContext) {
 				// Get the index of the item to delete
 				const sPath = oBindingContext.getPath();
 				const iIndex = parseInt(sPath.split("/").pop());
-				
+
 				// Get the local claims model
 				const oLocalModel = this.getView().getModel("localClaims");
 				const aClaims = oLocalModel.getProperty("/claims") || [];
-				
+
 				// Remove the claim at the specified index
 				aClaims.splice(iIndex, 1);
-				
+
 				// Update the model
 				oLocalModel.setProperty("/claims", aClaims);
-				
+
 				// Show confirmation message
 				sap.m.MessageToast.show(this.getText("claimDeleted"));
 			}
@@ -1352,19 +1293,19 @@ sap.ui.define([
 				oModel.setProperty(sEduGrantDetailPath + "/Egsty", "");        // School Type (from backend)
 				oModel.setProperty(sEduGrantDetailPath + "/Ort01", "");        // School City
 				oModel.setProperty(sEduGrantDetailPath + "/Egsct", "");        // School Country
-				
+
 				// Additional school type and academic information
 				oModel.setProperty(sEduGrantDetailPath + "/Egtyp", "");        // School Type (additional)
 				oModel.setProperty(sEduGrantDetailPath + "/Egfpda", false);    // First Post Secondary Degree
 				oModel.setProperty(sEduGrantDetailPath + "/YyPsYear", "");     // Year of Entry Post Secondary
 				oModel.setProperty(sEduGrantDetailPath + "/Eggrd", "");        // Grade
 				oModel.setProperty(sEduGrantDetailPath + "/Egtypatt", "");     // Type of Attendance
-				
+
 				// Location and logistics
 				oModel.setProperty(sEduGrantDetailPath + "/Egcdf", false);     // Commuting Distance
 				// oModel.setProperty(sEduGrantDetailPath + "/TuitionWaers", ""); // Tuition Currency - Don't clear
 				oModel.setProperty(sEduGrantDetailPath + "/Egchbrd", false);   // Child Boarder
-				
+
 				// Academic period dates
 				// oModel.setProperty(sEduGrantDetailPath + "/Egyfr", null);      // Starting From - Don't clear
 				// oModel.setProperty(sEduGrantDetailPath + "/Egyto", null);      // Up To - Don't clear
@@ -1374,7 +1315,7 @@ sap.ui.define([
 				if (oSchoolCountryInput && oSchoolCountryInput.setDescription) {
 					oSchoolCountryInput.setDescription("");
 				}
-				
+
 				// Clear the Tuition Currency Input field description
 				const oTuitionCurrencyInput = oView.byId("TUITION_WAERS");
 				if (oTuitionCurrencyInput && oTuitionCurrencyInput.setDescription) {
@@ -1407,7 +1348,7 @@ sap.ui.define([
 						this.getText("schoolDetailsLoadError"),
 						"/SchoolDetails"
 					);
-					
+
 					this.fError();
 				}
 			});
@@ -1417,7 +1358,7 @@ sap.ui.define([
 		 * Clear all school-related fields when no school is selected
 		 * @private
 		 */
-		_clearSchoolFields: function() {
+		_clearSchoolFields: function () {
 			const oModel = this.getView().getModel();
 			const oView = this.getView();
 			const oContext = this.getView().getBindingContext();
@@ -1431,19 +1372,19 @@ sap.ui.define([
 				oModel.setProperty(sEduGrantDetailPath + "/Egsty", "");        // School Type (from backend)
 				oModel.setProperty(sEduGrantDetailPath + "/Ort01", "");        // School City
 				oModel.setProperty(sEduGrantDetailPath + "/Egsct", "");        // School Country
-				
+
 				// Additional school type and academic information
 				oModel.setProperty(sEduGrantDetailPath + "/Egtyp", "");        // School Type (additional)
 				oModel.setProperty(sEduGrantDetailPath + "/Egfpda", false);    // First Post Secondary Degree
 				oModel.setProperty(sEduGrantDetailPath + "/YyPsYear", "");     // Year of Entry Post Secondary
 				oModel.setProperty(sEduGrantDetailPath + "/Eggrd", "");        // Grade
 				oModel.setProperty(sEduGrantDetailPath + "/Egtypatt", "");     // Type of Attendance
-				
+
 				// Location and logistics
 				oModel.setProperty(sEduGrantDetailPath + "/Egcdf", false);     // Commuting Distance
 				oModel.setProperty(sEduGrantDetailPath + "/TuitionWaers", ""); // Tuition Currency
 				oModel.setProperty(sEduGrantDetailPath + "/Egchbrd", false);   // Child Boarder
-				
+
 				// Academic period dates
 				oModel.setProperty(sEduGrantDetailPath + "/Egyfr", null);      // Starting From
 				oModel.setProperty(sEduGrantDetailPath + "/Egyto", null);      // Up To
@@ -1453,7 +1394,7 @@ sap.ui.define([
 				if (oSchoolCountryInput && oSchoolCountryInput.setDescription) {
 					oSchoolCountryInput.setDescription("");
 				}
-				
+
 				// Clear the Tuition Currency Input field description
 				const oTuitionCurrencyInput = oView.byId("TUITION_WAERS");
 				if (oTuitionCurrencyInput && oTuitionCurrencyInput.setDescription) {
@@ -1514,24 +1455,24 @@ sap.ui.define([
 			const oContext = oView.getBindingContext();
 			// set status to saved draft
 			oView.byId("draftIndicator").showDraftSaving();
- 
+
 			if (!oContext) {
 				return;
 			}
- 
+
 			// Store comment in Note field if provided (common logic for creation and submit)
 			if (sComment) {
 				oModel.setProperty("Note", sComment, oContext);
 			}
- 
+
 			// set busy indicator during save
 			const oViewModel = this.getModel("detailView");
 			oViewModel.setProperty("/busy", true);
- 
+
 			// For deep insert, retrieve form data and create a new object
 			const oRequestData = oModel.getObject(oContext.getPath());
 			const oEduGrantDetail = oModel.getObject(oContext.getPath() + "/ToEduGrantDetail");
- 
+
 			// Build the object for deep insert with new GUID
 			const oDeepInsertData = {
 				// Header properties - new GUID
@@ -1541,14 +1482,14 @@ sap.ui.define([
 					...oEduGrantDetail,
 				}
 			};
- 
+
 			// Diagnostic : log complet de l'objet ToEduGrantDetail avant le save
- 
+
 			// Override status if provided as parameter
 			if (sStatus) {
 				oDeepInsertData.RequestStatus = sStatus;
 			}
- 
+
 			// Use create() for deep insert of a new record
 			oModel.create("/RequestHeaderSet", oDeepInsertData, {
 				success: function (oData, oResponse) {
@@ -1576,20 +1517,20 @@ sap.ui.define([
 					// Navigate to the newly created object
 					const currentUrl = window.location.href;
 					if (currentUrl.includes("DetailOnly")) {
-					    that.getRouter().navTo("RouteDetailOnly", {
-						    benefitRequestId: oData.Guid,
-						    role: oData.Objps,
-						    nextActorCode: oData.NextActor,
-						    requestStatus: oData.RequestStatus,
-						    requestType: oData.RequestType
-					    });
+						that.getRouter().navTo("RouteDetailOnly", {
+							benefitRequestId: oData.Guid,
+							role: oData.Objps,
+							nextActorCode: oData.NextActor,
+							requestStatus: oData.RequestStatus,
+							requestType: oData.RequestType
+						});
 					} else {
-					    // Navigate to standard master-detail route
-					    that.getRouter().navTo("RouteDetail", {
-					        benefitRequestId: oData.Guid
-					    });
+						// Navigate to standard master-detail route
+						that.getRouter().navTo("RouteDetail", {
+							benefitRequestId: oData.Guid
+						});
 					}
- 
+
 				},
 				error: function (oError) {
 					oViewModel.setProperty("/busy", false);
@@ -1608,10 +1549,10 @@ sap.ui.define([
 		 * Loads configuration from valueHelpConfig.json file
 		 * @private
 		 */
-		_loadValueHelpData: function() {
+		_loadValueHelpData: function () {
 			// Load configuration from JSON file
 			const sConfigPath = sap.ui.require.toUrl("com/un/zhrbenefrequests/model/valueHelpConfig.json");
-			
+
 			fetch(sConfigPath)
 				.then(response => {
 					if (!response.ok) {
@@ -1621,7 +1562,7 @@ sap.ui.define([
 				})
 				.then(oConfigData => {
 					const aValueHelpConfig = oConfigData.valueHelpConfig;
-					
+
 					// Load all models dynamically
 					aValueHelpConfig.forEach(config => {
 						this._loadGenericData(config.modelName, config.method);
@@ -1637,17 +1578,17 @@ sap.ui.define([
 		 * @param {string} sMethod - Method name for the GenericVHSet filter
 		 * @private
 		 */
-		_loadGenericData: function(sModelName, sMethod) {
+		_loadGenericData: function (sModelName, sMethod) {
 			const oModel = this.getModel();
 			const aFilters = [new sap.ui.model.Filter("Method", sap.ui.model.FilterOperator.EQ, sMethod)];
-			
+
 			oModel.read("/GenericVHSet", {
 				filters: aFilters,
 				success: (oData) => {
 					this.getModel(sModelName).setData({
 						items: oData.results
 					});
-					
+
 					// Log content specifically for currencyPaymentModel
 					if (sModelName === "currencyPaymentModel") {
 						console.log("[CURRENCY PAYMENT MODEL] Loaded data:", oData.results);
@@ -1665,19 +1606,42 @@ sap.ui.define([
 		 * Converts switch state to model value
 		 * @param {sap.ui.base.Event} oEvent - The switch change event
 		 */
-		onMultipleAttendanceChange: function(oEvent) {
+		onMultipleAttendanceChange: function (oEvent) {
 			var bState = oEvent.getParameter("state");
 			var sValue = bState ? 'N' : '';
-			
+
 			// Update the model with the converted value
 			var oContext = this.getView().getBindingContext();
 			if (oContext) {
 				this.getModel().setProperty(
-					oContext.getPath() + "/ToEduGrantDetail/Egmul", 
+					oContext.getPath() + "/ToEduGrantDetail/Egmul",
 					sValue
 				);
 			}
-			
+
+			// Recalculate completion after change
+			this._calculateFormCompletion();
+		},
+
+		/**
+		 * Handler for EGRUL (Apply Two Third Rule) checkbox change
+		 * Converts checkbox state to model value
+		 * '' (empty) = Checked (true), 'N' = Unchecked (false)
+		 * @param {sap.ui.base.Event} oEvent - The checkbox select event
+		 */
+		onEgrulChange: function (oEvent) {
+			var bSelected = oEvent.getParameter("selected");
+			var sValue = bSelected ? '' : 'N';  // Checked = '' (empty), Unchecked = 'N'
+
+			// Update the model with the converted value
+			var oContext = this.getView().getBindingContext();
+			if (oContext) {
+				this.getModel().setProperty(
+					oContext.getPath() + "/ToEduGrantDetail/Egrul",
+					sValue
+				);
+			}
+
 			// Recalculate completion after change
 			this._calculateFormCompletion();
 		},
@@ -1687,12 +1651,12 @@ sap.ui.define([
 		 * Applies filter to RequestHistoryAndComentsSet using current request Guid
 		 * @private
 		 */
-		_bindTimelineData: function(_guid) {
+		_bindTimelineData: function (_guid) {
 			const oView = this.getView();
-	
+
 			// Find Timeline control - it could be in fragment or direct view
 			let oTimeline = oView.byId("idTimelineObject");
-	
+
 			if (oTimeline) {
 				// Create filter for Guid
 				const oFilter = new sap.ui.model.Filter("Guid", sap.ui.model.FilterOperator.EQ, _guid);
@@ -1710,10 +1674,10 @@ sap.ui.define([
 		 * Refreshes the Timeline data to show latest entries (e.g., after submit)
 		 * @private
 		 */
-		_refreshTimeline: function() {
+		_refreshTimeline: function () {
 			const oView = this.getView();
 			const oTimeline = oView.byId("idTimelineObject");
-			
+
 			if (oTimeline) {
 				const oBinding = oTimeline.getBinding("content");
 				if (oBinding) {
@@ -1730,45 +1694,45 @@ sap.ui.define([
 		 * @returns {Array} Array of visible form controls for the active request type
 		 * @private
 		 */
-		_getVisibleFormFields: function() {
+		_getVisibleFormFields: function () {
 			const oView = this.getView();
 			const oContext = oView.getBindingContext();
-			
+
 			if (!oContext) {
 				return [];
 			}
-			
+
 			// Get current request type
 			const sRequestType = oContext.getProperty("RequestType");
-			
+
 			// Get the appropriate form section based on request type (maintenant les IDs correspondent au contenu)
 			let oFormSection;
 			if (sRequestType === '01') {
 				// Education Grant 
-				oFormSection = oView.byId("educationGrantFormSection"); 
+				oFormSection = oView.byId("educationGrantFormSection");
 			} else if (sRequestType === '02') {
 				// Rental Subsidy 
-				oFormSection = oView.byId("rentalSubsidyFormSection"); 
+				oFormSection = oView.byId("rentalSubsidyFormSection");
 			}
-			
+
 			if (!oFormSection) {
 				return [];
 			}
-			
+
 			if (!oFormSection.getVisible()) {
 				return [];
 			}
-			
+
 			// Find all form controls within the active section only
-			const aInputs = oFormSection.findAggregatedObjects(true, function(oControl) {
-				return (oControl.isA("sap.m.Input") || 
-						oControl.isA("sap.m.Select") || 
-						oControl.isA("sap.m.CheckBox") || 
-						oControl.isA("sap.m.Switch") ||
-						oControl.isA("sap.m.DatePicker")) && 
-						oControl.getVisible();
+			const aInputs = oFormSection.findAggregatedObjects(true, function (oControl) {
+				return (oControl.isA("sap.m.Input") ||
+					oControl.isA("sap.m.Select") ||
+					oControl.isA("sap.m.CheckBox") ||
+					oControl.isA("sap.m.Switch") ||
+					oControl.isA("sap.m.DatePicker")) &&
+					oControl.getVisible();
 			});
-			
+
 			return aInputs;
 		},
 
@@ -1778,11 +1742,11 @@ sap.ui.define([
 		 * @returns {boolean} True if field has value
 		 * @private
 		 */
-		_isFieldFilled: function(oControl) {
+		_isFieldFilled: function (oControl) {
 			if (!oControl || !oControl.getVisible()) {
 				return false;
 			}
-			
+
 			if (oControl.isA("sap.m.Input")) {
 				return !!oControl.getValue();
 			} else if (oControl.isA("sap.m.Select")) {
@@ -1794,7 +1758,7 @@ sap.ui.define([
 			} else if (oControl.isA("sap.m.DatePicker")) {
 				return !!oControl.getValue();
 			}
-			
+
 			return false;
 		},
 
@@ -1802,26 +1766,26 @@ sap.ui.define([
 		 * Restore completion values from the current request context
 		 * @private
 		 */
-		_restoreFormCompletion: function() {
+		_restoreFormCompletion: function () {
 			const oContext = this.getView().getBindingContext();
-			
+
 			if (oContext) {
 				const oModel = this.getView().getModel();
 				const sPath = oContext.getPath();
-				
+
 				// Get the stored value from the Completion field in the header model
 				const sCompletion = oModel.getProperty(sPath + "/Completion");
-				
+
 				if (sCompletion !== undefined && sCompletion !== null && sCompletion !== "") {
 					// Check if it's a valid value (not just spaces)
 					const sTrimmed = String(sCompletion).trim();
-					
+
 					if (sTrimmed !== "" && !isNaN(parseFloat(sTrimmed))) {
 						const sState = formatter.getCompletionState(sCompletion);
 						return; // We have a valid value, no need to recalculate
 					}
 				}
-				
+
 				// No stored value (creation), launch initial calculation
 				this._calculateFormCompletion();
 			}
@@ -1831,7 +1795,7 @@ sap.ui.define([
 		 * Calculate form completion percentage based on visible fields
 		 * @private
 		 */
-		_calculateFormCompletion: function() {
+		_calculateFormCompletion: function () {
 			try {
 				// Reset completion to default state at start of calculation
 				let oViewModel = this.getModel("detailView");
@@ -1839,23 +1803,23 @@ sap.ui.define([
 					oViewModel.setProperty("/completionPercentage", 0);
 					oViewModel.setProperty("/completionState", "Error");
 				}
-				
+
 				const aVisibleFields = this._getVisibleFormFields();
-				
+
 				// Early return if no fields found
 				if (!aVisibleFields || aVisibleFields.length === 0) {
 					return;
 				}
-				
+
 				let iFilledCount = 0;
 				const aFieldDetails = [];
-				
+
 				aVisibleFields.forEach(oControl => {
 					const bIsFilled = this._isFieldFilled(oControl);
 					const sControlId = oControl.getId() ? oControl.getId().split("--").pop() : "unknown";
 					const sControlType = oControl.getMetadata().getName();
 					let sValue = "";
-					
+
 					// Get current value for debugging
 					try {
 						if (oControl.isA("sap.m.Input") || oControl.isA("sap.m.DatePicker")) {
@@ -1870,28 +1834,28 @@ sap.ui.define([
 					} catch (oError) {
 						sValue = "error";
 					}
-					
+
 					if (bIsFilled) {
 						iFilledCount++;
 					}
 				});
-				
-				const iPercentage = aVisibleFields.length > 0 ? 
+
+				const iPercentage = aVisibleFields.length > 0 ?
 					Math.round((iFilledCount / aVisibleFields.length) * 100) : 0;
-				
+
 				const sState = formatter.getCompletionState(iPercentage);
-				
+
 				// Store completion value in the header model
 				const oContext = this.getView().getBindingContext();
 				if (oContext) {
 					const oModel = this.getView().getModel();
 					const sPath = oContext.getPath();
-					
+
 					// Store percentage as string to match backend string format
 					const sCompletionValue = iPercentage.toString();
 					oModel.setProperty(sPath + "/Completion", sCompletionValue);
 				}
-				
+
 			} catch (oError) {
 				// Silently handle errors
 			}
@@ -1901,7 +1865,7 @@ sap.ui.define([
 		 * Reset form completion values and detach listeners when navigating between requests
 		 * @private
 		 */
-		_resetFormCompletion: function() {
+		_resetFormCompletion: function () {
 			// Detach previous listeners to avoid conflicts
 			this._detachCompletionListeners();
 		},
@@ -1910,17 +1874,17 @@ sap.ui.define([
 		 * Detach previous completion listeners to avoid collisions when navigating between requests
 		 * @private
 		 */
-		_detachCompletionListeners: function() {
+		_detachCompletionListeners: function () {
 			// Detach from all form fields in the view to avoid conflicts
 			const oView = this.getView();
-			const aAllControls = oView.findAggregatedObjects(true, function(oControl) {
-				return (oControl.isA("sap.m.Input") || 
-						oControl.isA("sap.m.Select") || 
-						oControl.isA("sap.m.CheckBox") || 
-						oControl.isA("sap.m.Switch") ||
-						oControl.isA("sap.m.DatePicker"));
+			const aAllControls = oView.findAggregatedObjects(true, function (oControl) {
+				return (oControl.isA("sap.m.Input") ||
+					oControl.isA("sap.m.Select") ||
+					oControl.isA("sap.m.CheckBox") ||
+					oControl.isA("sap.m.Switch") ||
+					oControl.isA("sap.m.DatePicker"));
 			});
-			
+
 			aAllControls.forEach(oControl => {
 				if (oControl.isA("sap.m.Input") || oControl.isA("sap.m.DatePicker")) {
 					oControl.detachChange(this._calculateFormCompletion, this);
@@ -1940,19 +1904,19 @@ sap.ui.define([
 		 */
 		_clearLocalModels: function () {
 			const oView = this.getView();
-			
+
 			// Clear advances model
 			const oAdvancesModel = oView.getModel("localAdvances");
 			if (oAdvancesModel) {
 				oAdvancesModel.setData({ advances: [] });
 			}
-			
+
 			// Clear claims model
 			const oClaimsModel = oView.getModel("localClaims");
 			if (oClaimsModel) {
 				oClaimsModel.setData({ claims: [] });
 			}
-			
+
 			// Clear any other local models if they exist
 			const oCommentsModel = oView.getModel("localComments");
 			if (oCommentsModel) {
@@ -1964,12 +1928,12 @@ sap.ui.define([
 		 * Attach event listeners to all form fields for real-time completion calculation
 		 * @private
 		 */
-		_attachCompletionListeners: function() {
+		_attachCompletionListeners: function () {
 			// First detach any existing listeners to avoid duplicates
 			this._detachCompletionListeners();
-			
+
 			const aVisibleFields = this._getVisibleFormFields();
-			
+
 			aVisibleFields.forEach(oControl => {
 				if (oControl.isA("sap.m.Input") || oControl.isA("sap.m.DatePicker")) {
 					oControl.attachChange(this._calculateFormCompletion, this);
@@ -1988,18 +1952,18 @@ sap.ui.define([
 		 * @returns {Array} Array of field labels that are required but empty
 		 * @private
 		 */
-		_validateRequiredFields: function() {
+		_validateRequiredFields: function () {
 			const oView = this.getView();
 			const aValidationErrors = [];
 			const oResourceBundle = this.getResourceBundle();
-			
+
 			// Get all form controls that are visible and required
 			const aRequiredControls = this._getRequiredFormControls();
-			
-			aRequiredControls.forEach(function(oControlInfo) {
+
+			aRequiredControls.forEach(function (oControlInfo) {
 				const oControl = oControlInfo.control;
 				const sFieldLabel = oControlInfo.label;
-				
+
 				if (!this._isFieldFilled(oControl)) {
 					// Set value state to error for visual feedback
 					if (oControl.setValueState) {
@@ -2014,7 +1978,7 @@ sap.ui.define([
 					}
 				}
 			}.bind(this));
-			
+
 			return aValidationErrors;
 		},
 
@@ -2023,10 +1987,10 @@ sap.ui.define([
 		 * @returns {Array} Array of objects with control and label information
 		 * @private
 		 */
-		_getRequiredFormControls: function() {
+		_getRequiredFormControls: function () {
 			const oView = this.getView();
 			const aRequiredControls = [];
-			
+
 			// Common field mappings with their labels
 			const aFieldMappings = [
 				// Child Information fields
@@ -2034,7 +1998,7 @@ sap.ui.define([
 				{ id: "EGCFN", label: this.getText("fieldChildFirstName") },
 				{ id: "EGCBD", label: this.getText("dateOfBirth") },
 				{ id: "EGCRL", label: this.getText("childRelation") },
-				
+
 				// School Information fields
 				{ id: "EGSSL", label: this.getText("fieldSchool") },
 				{ id: "EGSNA", label: this.getText("fieldSchoolName") },
@@ -2043,21 +2007,21 @@ sap.ui.define([
 				{ id: "EGGRD", label: this.getText("grade") },
 				{ id: "EGTYP", label: this.getText("fieldSchoolTypeAdditional") },
 				{ id: "EGTYPATT", label: this.getText("fieldAttendanceType") },
-				
+
 				// Eligibility fields
 				{ id: "EGPER", label: this.getText("fieldPeriod") },
 				{ id: "EGBEG", label: this.getText("fieldStartDate") },
 				{ id: "EGEND", label: this.getText("endDate") },
-				
+
 				// Other common fields
 				{ id: "EGSAR", label: this.getText("fieldSpecialArrangement") },
 				{ id: "EGCRS", label: "Raison du changement" },
 				{ id: "EGBRS", label: "Raison de l'internat" }
 			];
-			
-			aFieldMappings.forEach(function(oFieldMapping) {
+
+			aFieldMappings.forEach(function (oFieldMapping) {
 				const oControl = oView.byId(oFieldMapping.id);
-				if (oControl && oControl.getVisible && oControl.getVisible() && 
+				if (oControl && oControl.getVisible && oControl.getVisible() &&
 					oControl.getRequired && oControl.getRequired()) {
 					aRequiredControls.push({
 						control: oControl,
@@ -2066,7 +2030,7 @@ sap.ui.define([
 					});
 				}
 			});
-			
+
 			return aRequiredControls;
 		},
 
@@ -2075,20 +2039,20 @@ sap.ui.define([
 		 * @param {Array} aValidationErrors - Array of field labels with errors
 		 * @private
 		 */
-		_focusFirstInvalidField: function(aValidationErrors) {
+		_focusFirstInvalidField: function (aValidationErrors) {
 			if (aValidationErrors.length === 0) {
 				return;
 			}
-			
+
 			const oView = this.getView();
 			const aRequiredControls = this._getRequiredFormControls();
-			
+
 			// Find the first control with an error and set focus
 			for (let i = 0; i < aRequiredControls.length; i++) {
 				const oControlInfo = aRequiredControls[i];
 				if (aValidationErrors.includes(oControlInfo.label)) {
 					if (oControlInfo.control.focus) {
-						setTimeout(function() {
+						setTimeout(function () {
 							oControlInfo.control.focus();
 						}, 100);
 					}
@@ -2098,27 +2062,110 @@ sap.ui.define([
 		},
 
 
-		_resetVisibility: function(oField) {
-			const oView = this.getView();
-			// Find the control by its id (which must match Field)
-			const oCtrl = oView.byId(oField);
-			if (oCtrl) {
-				// apply dynamically
-				if (oCtrl.setEditable) {
-					oCtrl.setEditable(false);
-				}
-					if (oCtrl.setEnabled) {
-						oCtrl.setEnabled(false);
-					}
-					if (oCtrl.setVisible) {
-						oCtrl.setVisible(false);
-					}
-					if (oCtrl.setRequired) {
-						oCtrl.setRequired(false);
-					}
-				}
-	
+	/**
+	 * Check if a field is an exception that should not be managed by UI settings
+	 * @param {string} sFieldId - The field ID to check
+	 * @returns {boolean} True if the field is an exception
+	 * @private
+	 */
+	_isUISettingsException: function (sFieldId) {
+		// List of fields that have custom visibility/editability management
+		const aExceptions = [
+			"EGSAR"  // Handled separately in _loadSchoolDetails, controlled by EGDIS switch
+			// Add more exceptions here in the future
+		];
+		return aExceptions.includes(sFieldId);
+	},
+
+	_resetVisibility: function (oField) {
+		const oView = this.getView();
 		
+		// Skip fields that have custom visibility management
+		if (this._isUISettingsException(oField)) {
+			return;
+		}
+		
+		// Find the control by its id (which must match Field)
+		const oCtrl = oView.byId(oField);
+		if (oCtrl) {
+			// apply dynamically
+			if (oCtrl.setEditable) {
+				oCtrl.setEditable(false);
+			}
+			if (oCtrl.setEnabled) {
+				oCtrl.setEnabled(false);
+			}
+			if (oCtrl.setVisible) {
+				oCtrl.setVisible(false);
+			}
+			if (oCtrl.setRequired) {
+				oCtrl.setRequired(false);
+			}
+		}
+	},
+
+		/**
+ * Logs all impacted UI fields and their changed properties in a table.
+ * @param {Array} aUIProperties - Array of UI properties from the service
+ * @private
+ */
+		_logImpactedUIFields: function (aUIProperties) {
+			const oView = this.getView();
+			const aImpactedFields = [];
+
+			// Log the filter values used for UI settings
+			const oCurrentObject = this.getBindingDetailObject();
+			const sCurrentRole = this.getModel("detailView").getProperty("/role");
+
+			console.log("UI Settings Filter Values:");
+			console.log("RequestType:", oCurrentObject.RequestType);
+			console.log("Actor:", sCurrentRole + " - " + this.formatter.formatActorRole(sCurrentRole));
+			console.log("Status:", oCurrentObject.RequestStatus + " - " + this.formatter.formatRequestStatusText(oCurrentObject.RequestStatus));
+
+			for (const oUIProperty of aUIProperties) {
+				let bException = false;
+				let sExceptionReason = "";
+
+				// Check for exceptions (special cases that are handled separately)
+				if (this._isUISettingsException(oUIProperty.Field)) {
+					bException = true;
+					sExceptionReason = "Custom visibility management (not controlled by backend UI settings)";
+				}
+
+				const oCtrl = oView.byId(oUIProperty.Field);
+				if (oCtrl || bException) {
+					let editable = false, enabled = false, hidden = true, required = false;
+
+					if (!bException) {
+						switch (oUIProperty.Property) {
+							case "01": hidden = true; break;
+							case "02": hidden = false; break;
+							case "03": editable = enabled = true; break;
+							case "04": editable = enabled = true; required = true; break;
+						}
+					}
+
+					aImpactedFields.push({
+						Field: oUIProperty.Field,
+						Property: oUIProperty.Property,
+						Visible: bException ? "N/A" : !hidden,
+						Editable: bException ? "N/A" : editable,
+						Enabled: bException ? "N/A" : enabled,
+						Required: bException ? "N/A" : required,
+						ControlType: oCtrl ? oCtrl.getMetadata().getName() : "Not Found",
+						Exception: bException ? "EXCEPTION: " + sExceptionReason : "Applied"
+					});
+				}
+			}
+
+			if (aImpactedFields.length > 0) {
+				console.log("UI Settings Applied:");
+				// Specify columns explicitly for console.table
+				console.table(aImpactedFields, ["Field", "FieldLabel", "Property", "Visible", "Editable", "Enabled", "Required", "ControlType", "Exception"]);
+			}
+			else{
+				console.log("No UI settings found on SAP.check table ZTHRFIORI_UI5PRO!");
+			}
 		}
 
 	});

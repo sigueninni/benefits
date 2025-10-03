@@ -69,6 +69,17 @@ sap.ui.define([
         },
 
         /**
+         * Formatter pour convertir la valeur EGRUL (Apply Two Third Rule) en état de CheckBox
+         * true (checked) correspond à '' (vide) dans le modèle
+         * false (unchecked) correspond à 'N' dans le modèle
+         * @param {string} sValue - La valeur du modèle ('' ou 'N')
+         * @returns {boolean} - L'état de la CheckBox
+         */
+        formatEgrulState: function(sValue) {
+            return sValue !== 'N';  // Coché si vide, décoché si 'N'
+        },
+
+        /**
          * Formatter pour déterminer l'état de la barre de progression basé sur le pourcentage de completion
          * @param {string|number} vPercentage - Pourcentage de completion (peut être string "75" ou number 75)
          * @returns {string} État UI5 (Success, Information, Warning, None, Error)

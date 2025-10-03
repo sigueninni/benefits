@@ -18,17 +18,17 @@
 - ~~Timeline sans features~~
 - ~~refactorer la visibilityUI~~
 - ~~Visibilité des bouttons, floatBar~~
+- ~~Changer les valeurs de Text2 et créer le domaine coté SAP~~
 
 ## 📋 Ongoing Tasks
 
+- Regarder les problémes du save sur les zones côté ABAP  
 - Eligibility for Boarding	EGC01	ToDo	Logic to be extracted from the infotype
-- Regarder les problémes du save sur les zones côté ABAP   
-- Changer les valeurs de Text2 et créer le domaine coté SAP
+-  Claim/Advance Odata sap
 
 ## ⏳ Pending Tasks
 
 - Gestion de l'éligibilité
-- Nouvellle gestion Claim
 - Completer les fonction de tri/search de la Timeline
 - revoir la 'completeness'  
 - Factoriser dans des méthodes du 'Save'

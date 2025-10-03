@@ -482,14 +482,6 @@ sap.ui.define([
                         const oNewEntry = change.data;
                         oRouter.navTo("RouteDetail", { benefitRequestId: oNewEntry.Guid }, true);
 
-                        // Auto-open child dialog for Education Grant
-                        if (ReqType === "01") {
-                            setTimeout(() => {
-                                const oDetailView = sap.ui.getCore().byId("__component0---detail");
-                                oDetailView?.getController()?.selectChildPress?.();
-                            }, 1000);
-                        }
-
                         // Cleanup type dialog
                         this.fragments._oTypeReqDialog?.close();
                         this.fragments._oTypeReqDialog?.destroy();

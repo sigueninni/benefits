@@ -43,6 +43,10 @@
     {
       "modelName": "currencyPaymentModel",
       "method": "GET_CURRENCY_PAYMENT_LIST"
+    },
+    {
+      "modelName": "egCustomerStatusModel",
+      "method": "GET_EG_CUSTOMER_STATUS_LIST"
     }
   ]
 }
