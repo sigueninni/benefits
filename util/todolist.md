@@ -19,21 +19,20 @@
 - ~~refactorer la visibilityUI~~
 - ~~Visibilité des bouttons, floatBar~~
 - ~~Changer les valeurs de Text2 et créer le domaine coté SAP~~
+- ~~Regarder les problémes du save sur les zones côté ABAP~~
+- ~~Vérifications : begda < endda et type de requête obligatoire~~
+- ~~Enlever setTimeout~~  
 
 ## 📋 Ongoing Tasks
+- Claim/Advance Odata sap
+- Eligibility for Boarding	EGC01	ToDo	Logic to be extracted from the infotype --> not even used and depend on country of school on code but not executed?
 
-- Regarder les problémes du save sur les zones côté ABAP  
-- Eligibility for Boarding	EGC01	ToDo	Logic to be extracted from the infotype
--  Claim/Advance Odata sap
 
 ## ⏳ Pending Tasks
-
 - Gestion de l'éligibilité
 - Completer les fonction de tri/search de la Timeline
 - revoir la 'completeness'  
 - Factoriser dans des méthodes du 'Save'
-- Vérifications : begda < endda et type de requête obligatoire
-- Enlever setTimeout
 - Vérifier les switchs côté front et mettre booleans côté OData & problème des switchs qui se mettent à true après UI SETTINGS
 - Ajouter les valeurs suggérées sur les Select avec beaucoup de données
 - Gestion des pièces jointes

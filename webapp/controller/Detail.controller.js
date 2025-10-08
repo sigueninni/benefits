@@ -46,18 +46,27 @@ sap.ui.define([
 			});
 			this.setModel(oViewModel, "detailView");
 
-			this.fragments = this.fragments || {};
+		this.fragments = this.fragments || {};
 
-			// Initialize local models for claims and advances
-			const oLocalClaimsModel = new JSONModel({ claims: [] });
-			const oLocalAdvancesModel = new JSONModel({ advances: [] });
-			this.getView().setModel(oLocalClaimsModel, "localClaims");
-			this.getView().setModel(oLocalAdvancesModel, "localAdvances");
+		// Configure OData model for deferred batch mode
+		const oModel = this.getOwnerComponent().getModel();
+		oModel.setUseBatch(true);
+		oModel.setDeferredGroups(["allSave"]);
+		oModel.setChangeGroups({
+			"RequestHeaderSet": { groupId: "allSave", changeSetId: "all", single: false },
+			"ReqEGDetailSet": { groupId: "allSave", changeSetId: "all", single: false }
+			// Note: ReqEGAdvanceSet removed - advances are managed via local JSON model "adv"
+		});
 
-			// Initialize value help models
-			this._initializeValueHelpModels();
+		// Initialize local models for claims and advances
+		const oLocalClaimsModel = new JSONModel({ claims: [] });
+		this.getView().setModel(oLocalClaimsModel, "localClaims");
+		
+		const oLocalAdvancesModel = new JSONModel({ items: [] });
+		this.getView().setModel(oLocalAdvancesModel, "adv");
 
-			// attach navigation route pattern event
+		// Initialize value help models
+		this._initializeValueHelpModels();			// attach navigation route pattern event
 			// this.getRouter().getRoute("RouteDetail").attachPatternMatched(this._onObjectMatched, this);
 			this.getRouter().getRoute("RouteDetail").attachPatternMatched(function (oEvent) {
 				this._onObjectMatched(oEvent, "RouteDetail");
@@ -264,57 +273,52 @@ sap.ui.define([
 						}
 					})
 				});
-				this.fragments._oAddAdvanceDialog.setModel(oView.getModel("i18n"), "i18n");
-			}
+		this.fragments._oAddAdvanceDialog.setModel(oView.getModel("i18n"), "i18n");
+	}
 
-			// Create a fresh model for each dialog opening
-			const oDialogModel = new sap.ui.model.json.JSONModel({
-				ExpenseType: "tuition",
-				ExpenseAmount: "",
-				Currency: "",
-				Comments: ""
-			});
-			oDialogModel.setDefaultBindingMode(sap.ui.model.BindingMode.TwoWay);
+	// Create a fresh model with OData property names
+	const oDialogModel = new sap.ui.model.json.JSONModel({
+		Excos: "",      // Expense Type
+		Examt: "",      // Expense Amount
+		Waers: "",      // Currency
+		Exdat: new Date() // Date
+	});
+	oDialogModel.setDefaultBindingMode(sap.ui.model.BindingMode.TwoWay);
 
-			this.fragments._oAddAdvanceDialog.setModel(oDialogModel, "advanceModel");
-			oView.addDependent(this.fragments._oAddAdvanceDialog);
-			this.fragments._oAddAdvanceDialog.open();
-		},
+	this.fragments._oAddAdvanceDialog.setModel(oDialogModel, "advanceModel");
+	oView.addDependent(this.fragments._oAddAdvanceDialog);
+	this.fragments._oAddAdvanceDialog.open();
+},
 
+	/**
+	 * Event handler for deleting an advance from the table
+	 * Removes the selected advance from the local model "adv"
+	 * @param {sap.ui.base.Event} oEvent - The delete event
+	 * @public
+	 */
+	onDeleteAdvanceButtonPress: function (oEvent) {
+		const oListItem = oEvent.getParameter("listItem");
+		const oBindingContext = oListItem.getBindingContext("adv");
 
+		if (oBindingContext) {
+			// Get the index of the item to delete
+			const sPath = oBindingContext.getPath();
+			const iIndex = parseInt(sPath.split("/").pop());
 
-		/**
-		 * Event handler for deleting an advance from the table
-		 * Removes the selected advance from the local advances model
-		 * @param {sap.ui.base.Event} oEvent - The delete event
-		 * @public
-		 */
-		onDeleteAdvanceButtonPress: function (oEvent) {
-			// Get the list item that was deleted
-			const oListItem = oEvent.getParameter("listItem");
-			const oBindingContext = oListItem.getBindingContext("localAdvances");
+			// Get the local advances model
+			const oAdvModel = this.getView().getModel("adv");
+			const aItems = oAdvModel.getProperty("/items") || [];
 
-			if (oBindingContext) {
-				// Get the index of the item to delete
-				const sPath = oBindingContext.getPath();
-				const iIndex = parseInt(sPath.split("/").pop());
+			// Remove the advance at the specified index
+			aItems.splice(iIndex, 1);
 
-				// Get the local advances model
-				const oLocalModel = this.getView().getModel("localAdvances");
-				const aAdvances = oLocalModel.getProperty("/advances") || [];
+			// Update the model
+			oAdvModel.setProperty("/items", aItems);
 
-				// Remove the advance at the specified index
-				aAdvances.splice(iIndex, 1);
-
-				// Update the model
-				oLocalModel.setProperty("/advances", aAdvances);
-
-				// Show confirmation message
-				sap.m.MessageToast.show(this.getText("advanceDeleted"));
-			}
-		},
-
-		/*************************************************************************************************/
+			// Show confirmation message
+			sap.m.MessageToast.show(this.getText("advanceDeleted"));
+		}
+	},		/*************************************************************************************************/
 		/********************************  Begin of School Management ***************************************/
 		/*************************************************************************************************/
 
@@ -663,7 +667,7 @@ sap.ui.define([
 			this.getOwnerComponent().oListSelector.selectAListItem(sPath);
 
 			// Get UI settings now that binding context is available
-			this._getUISettings();
+			//this._getUISettings();
 		},
 
 		/**
@@ -686,97 +690,83 @@ sap.ui.define([
 			oViewModel.setProperty("/delay", iOriginalViewBusyDelay);
 		},
 
-		/**
-		 * Confirms the addition of a new claim
-		 * Validates the data and adds it to the ClaimItems local model
-		 * Note: ClaimItems est stocké localement - pas encore d'association ABAP ToClaimItems
-		 * @private
-		 */
-		_onConfirmAddClaim: function () {
-			const oDialogModel = this.fragments._oAddClaimDialog.getModel("claimModel");
-			const oClaimData = oDialogModel.getData();
+	/**
+	 * Confirms the addition of a new claim
+	 * Validates the data and adds it to the ClaimItems local model
+	 * @private
+	 */
+	_onConfirmAddClaim: function () {
+		debugger;
+		const oDialogModel = this.fragments._oAddClaimDialog.getModel("claimModel");
+		const oClaimData = oDialogModel.getData();
 
-			// Get the current context and model
-			const oContext = this.getView().getBindingContext();
-			const oModel = this.getView().getModel();
+		// Create a new claim entry
+		const oNewClaim = {
+			ExpenseType: oClaimData.ExpenseType,
+			ExpenseAmount: parseFloat(oClaimData.ExpenseAmount) || 0,
+			AdvanceAmount: parseFloat(oClaimData.AdvanceAmount) || 0,
+			Currency: oClaimData.Currency,
+			TempId: Date.now().toString()
+		};
 
-			// Create a new claim entry
-			const oNewClaim = {
-				ExpenseType: oClaimData.ExpenseType,
-				ExpenseAmount: parseFloat(oClaimData.ExpenseAmount) || 0,
-				AdvanceAmount: parseFloat(oClaimData.AdvanceAmount) || 0,
-				Currency: oClaimData.Currency,
-				TempId: Date.now().toString()
-			};
+		// Use a local JSON model for claims
+		let oLocalModel = this.getView().getModel("localClaims");
+		if (!oLocalModel) {
+			// Create the local model if it doesn't exist
+			oLocalModel = new sap.ui.model.json.JSONModel({ claims: [] });
+			this.getView().setModel(oLocalModel, "localClaims");
+		}
 
-			// Use a local JSON model for claims
-			let oLocalModel = this.getView().getModel("localClaims");
-			if (!oLocalModel) {
-				// Create the local model if it doesn't exist
-				oLocalModel = new sap.ui.model.json.JSONModel({ claims: [] });
-				this.getView().setModel(oLocalModel, "localClaims");
-			}
+		// Get existing claims
+		const aClaims = oLocalModel.getProperty("/claims") || [];
 
-			// Get existing claims
-			const aClaims = oLocalModel.getProperty("/claims") || [];
+		// Add the new claim
+		aClaims.push(oNewClaim);
 
-			// Add the new claim
-			aClaims.push(oNewClaim);
+		// Update the local model
+		oLocalModel.setProperty("/claims", aClaims);
 
-			// Update the local model
-			oLocalModel.setProperty("/claims", aClaims);
+		// Show success message
+		sap.m.MessageToast.show(this.getText("claimAdded"));
 
-			// Show success message
-			sap.m.MessageToast.show(this.getText("claimAdded"));
-
-			// Close dialog
-			this._removeClaimAddDialog();
-		},
-
-		/**
+		// Close dialog
+		this._removeClaimAddDialog();
+	},		/**
 		 * Confirms the addition of a new advance
 		 * Validates the data and adds it to the AdvanceItems local model
 		 * Note: AdvanceItems est stocké localement - pas encore d'association ABAP ToAdvanceItems
 		 * @private
 		 */
-		_onConfirmAddAdvance: function () {
-			const oDialogModel = this.fragments._oAddAdvanceDialog.getModel("advanceModel");
-			const oAdvanceData = oDialogModel.getData();
+	/**
+	 * Confirms the addition of a new advance
+	 * Adds entry to local JSON model "adv"
+	 * @private
+	 */
+	_onConfirmAddAdvance: function () {
+		debugger;
+		const oDialogModel = this.fragments._oAddAdvanceDialog.getModel("advanceModel");
+		const oAdvanceData = oDialogModel.getData();
 
-			// Create a new advance entry
-			const oNewAdvance = {
-				ExpenseType: oAdvanceData.ExpenseType,
-				ExpenseAmount: parseFloat(oAdvanceData.ExpenseAmount) || 0,
-				Currency: oAdvanceData.Currency,
-				Comments: oAdvanceData.Comments || "",
-				TempId: Date.now().toString()
-			};
+		// Format amount as string for Edm.Decimal
+		const sAmount = oAdvanceData.Examt ? parseFloat(oAdvanceData.Examt).toFixed(3) : "0.000";
 
-			// Use a local JSON model for advances
-			let oLocalModel = this.getView().getModel("localAdvances");
-			if (!oLocalModel) {
-				// Create the local model if it doesn't exist
-				oLocalModel = new sap.ui.model.json.JSONModel({ advances: [] });
-				this.getView().setModel(oLocalModel, "localAdvances");
-			}
+		// Create a new advance entry
+		const oNewAdvance = {
+			Excos: oAdvanceData.Excos || "",
+			Examt: sAmount,  // String for Edm.Decimal
+			Waers: (oAdvanceData.Waers || "").toUpperCase(),
+			Exdat: oAdvanceData.Exdat || new Date()
+		};
 
-			// Get existing advances
-			const aAdvances = oLocalModel.getProperty("/advances") || [];
+		// Add to local model
+		const oAdvModel = this.getView().getModel("adv");
+		const aItems = oAdvModel.getProperty("/items") || [];
+		aItems.push(oNewAdvance);
+		oAdvModel.setProperty("/items", aItems);
 
-			// Add the new advance
-			aAdvances.push(oNewAdvance);
-
-			// Update the local model
-			oLocalModel.setProperty("/advances", aAdvances);
-
-			// Show success message
-			sap.m.MessageToast.show(this.getText("advanceAdded"));
-
-			// Close dialog
-			this._removeAdvanceAddDialog();
-		},
-
-		/**
+		sap.m.MessageToast.show(this.getText("advanceAdded"));
+		this._removeAdvanceAddDialog();
+	},		/**
 		 * Private method to open currency dialog and store source field.
 		 * @param {string} sSourceFieldId - The ID of the field that triggered the dialog
 		 * @private
@@ -817,6 +807,7 @@ sap.ui.define([
 			const oSchoolCountryModel = new JSONModel();
 			const oCurrencyPaymentModel = new JSONModel();
 			const oEgCustomerStatusModel = new JSONModel();
+			const oExpenseTypeModel = new JSONModel();
 
 			this.setModel(oGradeModel, "gradeModel");
 			this.setModel(oSchoolTypeAdditModel, "schoolTypeAdditModel");
@@ -830,45 +821,8 @@ sap.ui.define([
 		this.setModel(oSchoolCountryModel, "schoolCountryModel");
 		this.setModel(oCurrencyPaymentModel, "currencyPaymentModel");
 		this.setModel(oEgCustomerStatusModel, "egCustomerStatusModel");
-	},		/**
-		 * Saves position request object with pending changes.
-		 * Uses submitChanges for batch processing and handles success/error responses.
-		 * @private
-		 */
-		_savePosRequestObject: function () {
-			const that = this;
-			const oView = this.getView();
-			const oModel = oView.getModel();
-			const oResourceBundle = this.getResourceBundle();
-			// set status to saved draft
-			oView.byId("draftIndicator").showDraftSaving();
-
-			if (oModel.hasPendingChanges()) {
-
-				// set busy indicator during view binding
-				const oViewModel = this.getModel("detailView");
-				oViewModel.setProperty("/busy", true);
-
-				oModel.submitChanges({
-					success: function (oBatchData) {
-						oViewModel.setProperty("/busy", false);
-						// error in $batch responses / payload ? > no ChangeResponses ?
-						if (!oBatchData.__batchResponses[0].__changeResponses) {
-							const oError = JSON.parse(oBatchData.__batchResponses[0].response.body);
-							MessageBox.error(oError.error.message.value.toString());
-							oModel.resetChanges();
-						} else {
-							// reset the message popover 
-							sap.ui.getCore().getMessageManager().removeAllMessages();
-							//that._resetValidationChecks();
-							oView.byId("draftIndicator").showDraftSaved();
-						}
-					}
-				});
-			} else {
-				//MessageBox.information(oResourceBundle.getText("noChangesToSubmit"));
-			}
-		},
+		this.setModel(oExpenseTypeModel, "expenseTypeModel");
+	},
 
 		/**
 		 * Retrieves UI settings for form fields based on request type and status.
@@ -1179,12 +1133,10 @@ sap.ui.define([
 			// Always use bindElement() to ensure events are properly configured
 			this.getView().bindElement({
 				path: sObjectPath,
-				// Reactivated for deep insert - ToEduGrantDetail must be loaded for save
+				// Expand only ToEduGrantDetail (advances are managed via local JSON model)
 				parameters: {
 					expand: "ToEduGrantDetail"
 				},
-				// Note: ToClaimItems and ToAdvanceItems are not yet implemented on the ABAP side
-				// expand: "ToEduGrantDetail,ToClaimItems,ToAdvanceItems"
 				events: {
 					change: this._onBindingChange.bind(this),
 					dataRequested: function () {
@@ -1206,6 +1158,9 @@ sap.ui.define([
 								const oEgdisSwitch = this.getView().byId("EGDIS");
 								if (oEgdisSwitch) {
 								}
+								
+								// Load advances from backend into local model
+								that._initLocalAdvFromBackend(oContext.getPath());
 							}
 						} catch (e) {
 						}
@@ -1219,38 +1174,77 @@ sap.ui.define([
 			});
 		},
 
-		/**
-		 * Event handler for deleting a claim from the table
-		 * Removes the selected claim from the local claims model
-		 * @param {sap.ui.base.Event} oEvent - The delete event
-		 * @public
-		 */
-		onDeleteClaimButtonPress: function (oEvent) {
-			// Get the list item that was deleted
-			const oListItem = oEvent.getParameter("listItem");
-			const oBindingContext = oListItem.getBindingContext("localClaims");
+	/**
+	 * Reads ReqEGAdvanceSet from backend and populates local "adv" model
+	 * @param {string} sCtxPath - Absolute path of the header (e.g., "/RequestHeaderSet(Guid'...')")
+	 * @private
+	 */
+	_initLocalAdvFromBackend: function (sCtxPath) {
+		const oModel = this.getView().getModel();
+		const oAdvModel = this.getView().getModel("adv");
 
-			if (oBindingContext) {
-				// Get the index of the item to delete
-				const sPath = oBindingContext.getPath();
-				const iIndex = parseInt(sPath.split("/").pop());
+		// If request is not yet persisted, leave empty
+		const sGuid = oModel.getProperty(sCtxPath + "/Guid");
+		if (!sGuid || sGuid === "00000000-0000-0000-0000-000000000000") {
+			oAdvModel.setProperty("/items", []);
+			return;
+		}
 
-				// Get the local claims model
-				const oLocalModel = this.getView().getModel("localClaims");
-				const aClaims = oLocalModel.getProperty("/claims") || [];
+		// Create filter for Guid (same approach as Timeline)
+		const oFilter = new Filter("Guid", FilterOperator.EQ, sGuid);
 
-				// Remove the claim at the specified index
-				aClaims.splice(iIndex, 1);
-
-				// Update the model
-				oLocalModel.setProperty("/claims", aClaims);
-
-				// Show confirmation message
-				sap.m.MessageToast.show(this.getText("claimDeleted"));
+		// Read advances from ReqEGAdvanceSet entity set with GUID filter
+		oModel.read("/ReqEGAdvanceSet", {
+			filters: [oFilter],
+			success: (oData) => {
+				const aAdvances = (oData && oData.results) ? oData.results : [];
+				// Normalize data (keep string format for Edm.Decimal)
+				const items = aAdvances.map(x => ({
+					Excos: x.Excos || "",
+					Examt: (x.Examt != null ? String(x.Examt) : "0.000"),
+					Waers: (x.Waers || "").toUpperCase(),
+					// Convert to JS Date if necessary
+					Exdat: x.Exdat ? new Date(x.Exdat) : new Date()
+				}));
+				oAdvModel.setProperty("/items", items);
+			},
+			error: () => {
+				// On read error, keep table empty
+				oAdvModel.setProperty("/items", []);
 			}
-		},
+		});
+	},
 
-		/**
+	/**
+	 * Event handler for deleting a claim from the table
+	 * Removes the selected claim from the local claims model
+	 * @param {sap.ui.base.Event} oEvent - The delete event
+	 * @public
+	 */
+	onDeleteClaimButtonPress: function (oEvent) {
+		// Get the list item that was deleted
+		const oListItem = oEvent.getParameter("listItem");
+		const oBindingContext = oListItem.getBindingContext("localClaims");
+
+		if (oBindingContext) {
+			// Get the index of the item to delete
+			const sPath = oBindingContext.getPath();
+			const iIndex = parseInt(sPath.split("/").pop());
+
+			// Get the local claims model
+			const oLocalModel = this.getView().getModel("localClaims");
+			const aClaims = oLocalModel.getProperty("/claims") || [];
+
+			// Remove the claim at the specified index
+			aClaims.splice(iIndex, 1);
+
+			// Update the model
+			oLocalModel.setProperty("/claims", aClaims);
+
+			// Show confirmation message
+			sap.m.MessageToast.show(this.getText("claimDeleted"));
+		}
+	},		/**
 		 * Removes and destroys the Add Claim dialog
 		 * @private
 		 */
@@ -1465,85 +1459,96 @@ sap.ui.define([
 				oModel.setProperty("Note", sComment, oContext);
 			}
 
-			// set busy indicator during save
-			const oViewModel = this.getModel("detailView");
-			oViewModel.setProperty("/busy", true);
+		// set busy indicator during save
+		const oViewModel = this.getModel("detailView");
+		oViewModel.setProperty("/busy", true);
 
-			// For deep insert, retrieve form data and create a new object
-			const oRequestData = oModel.getObject(oContext.getPath());
-			const oEduGrantDetail = oModel.getObject(oContext.getPath() + "/ToEduGrantDetail");
+		// For deep insert, retrieve form data and create a new object
+		const oRequestData = oModel.getObject(oContext.getPath());
+		const oEduGrantDetail = oModel.getObject(oContext.getPath() + "/ToEduGrantDetail");
+		
+		// Get advances from local model "adv" instead of OData
+		const oAdvModel = oView.getModel("adv");
+		const aAdvances = oAdvModel.getProperty("/items") || [];
 
-			// Build the object for deep insert with new GUID
-			const oDeepInsertData = {
-				// Header properties - new GUID
-				...oRequestData,
-				// Deep insert association with form data
-				ToEduGrantDetail: {
-					...oEduGrantDetail,
+		// Build the object for deep insert with new GUID
+		const oDeepInsertData = {
+			// Header properties - new GUID
+			...oRequestData,
+			// Deep insert association with form data
+			ToEduGrantDetail: {
+				...oEduGrantDetail,
+			},
+			// Deep insert association for advances from local model
+			ToEduGrantAdvances: aAdvances
+		};
+
+		// Console log to see the complete object before create
+		console.log("=== DEEP INSERT DATA BEFORE CREATE ===");
+		console.log("Complete oDeepInsertData object:", oDeepInsertData);
+		console.log("ToEduGrantDetail:", oDeepInsertData.ToEduGrantDetail);
+		console.log("ToEduGrantAdvances:", oDeepInsertData.ToEduGrantAdvances);
+		console.log("Number of advances:", oDeepInsertData.ToEduGrantAdvances?.length || 0);
+		console.log("=====================================");
+
+		// Override status if provided as parameter
+		if (sStatus) {
+			oDeepInsertData.RequestStatus = sStatus;
+		}
+
+		// Use create() for deep insert of a new record
+		oModel.create("/RequestHeaderSet", oDeepInsertData, {
+			success: function (oData, oResponse) {
+				oViewModel.setProperty("/busy", false);
+				// Success - clean messages and indicate save
+				that.clearMessages();
+				that.addSuccessMessage(
+					that.getText("requestSavedSuccessfully"),
+					that.getText("requestSavedWithGuid", [oData.Guid])
+				);
+				that._resetValidationChecks && that._resetValidationChecks();
+				oView.byId("draftIndicator").showDraftSaved();
+				// Reset pending changes because the new object has been created
+				oModel.resetChanges();
+				// Refresh OData to get updated data from backend
+				const oElementBinding = oView.getElementBinding();
+				if (oElementBinding) {
+					oElementBinding.refresh(true); // Force refresh from backend
 				}
-			};
+				// Refresh Timeline to show new submit entry
+				that._refreshTimeline();
+				// Update UI settings after status change (e.g., from Draft to Submitted)
+				// Note: This will be called again in _onBindingChange after the refresh
+				//that._getUISettings();
+				// Navigate to the newly created object
+				const currentUrl = window.location.href;
+				if (currentUrl.includes("DetailOnly")) {
+					that.getRouter().navTo("RouteDetailOnly", {
+						benefitRequestId: oData.Guid,
+						role: oData.Objps,
+						nextActorCode: oData.NextActor,
+						requestStatus: oData.RequestStatus,
+						requestType: oData.RequestType
+					});
+				} else {
+					// Navigate to standard master-detail route
+					that.getRouter().navTo("RouteDetail", {
+						benefitRequestId: oData.Guid
+					});
+				}
 
-			// Diagnostic : log complet de l'objet ToEduGrantDetail avant le save
-
-			// Override status if provided as parameter
-			if (sStatus) {
-				oDeepInsertData.RequestStatus = sStatus;
+			},
+			error: function (oError) {
+				oViewModel.setProperty("/busy", false);
+				that.addODataErrorMessage(
+					oError,
+					that.getText("saveErrorTitle"),
+					"/SaveOperation"
+				);
+				oView.byId("draftIndicator").clearDraftState();
 			}
-
-			// Use create() for deep insert of a new record
-			oModel.create("/RequestHeaderSet", oDeepInsertData, {
-				success: function (oData, oResponse) {
-					oViewModel.setProperty("/busy", false);
-					// Success - clean messages and indicate save
-					that.clearMessages();
-					that.addSuccessMessage(
-						that.getText("requestSavedSuccessfully"),
-						that.getText("requestSavedWithGuid", [oData.Guid])
-					);
-					that._resetValidationChecks && that._resetValidationChecks();
-					oView.byId("draftIndicator").showDraftSaved();
-					// Reset pending changes because the new object has been created
-					oModel.resetChanges();
-					// Refresh OData to get updated data from backend
-					const oElementBinding = oView.getElementBinding();
-					if (oElementBinding) {
-						oElementBinding.refresh(true); // Force refresh from backend
-					}
-					// Refresh Timeline to show new submit entry
-					that._refreshTimeline();
-					// Update UI settings after status change (e.g., from Draft to Submitted)
-					// Note: This will be called again in _onBindingChange after the refresh
-					that._getUISettings();
-					// Navigate to the newly created object
-					const currentUrl = window.location.href;
-					if (currentUrl.includes("DetailOnly")) {
-						that.getRouter().navTo("RouteDetailOnly", {
-							benefitRequestId: oData.Guid,
-							role: oData.Objps,
-							nextActorCode: oData.NextActor,
-							requestStatus: oData.RequestStatus,
-							requestType: oData.RequestType
-						});
-					} else {
-						// Navigate to standard master-detail route
-						that.getRouter().navTo("RouteDetail", {
-							benefitRequestId: oData.Guid
-						});
-					}
-
-				},
-				error: function (oError) {
-					oViewModel.setProperty("/busy", false);
-					that.addODataErrorMessage(
-						oError,
-						that.getText("saveErrorTitle"),
-						"/SaveOperation"
-					);
-					oView.byId("draftIndicator").clearDraftState();
-				}
-			});
-		},
-
+		});
+	},
 		/**
 		 * Load value help data into separate JSON models to avoid key collisions
 		 * Loads configuration from valueHelpConfig.json file
@@ -1903,28 +1908,20 @@ sap.ui.define([
 		 * @private
 		 */
 		_clearLocalModels: function () {
-			const oView = this.getView();
+		const oView = this.getView();
 
-			// Clear advances model
-			const oAdvancesModel = oView.getModel("localAdvances");
-			if (oAdvancesModel) {
-				oAdvancesModel.setData({ advances: [] });
-			}
+		// Clear claims model
+		const oClaimsModel = oView.getModel("localClaims");
+		if (oClaimsModel) {
+			oClaimsModel.setProperty("/claims", []);
+		}
 
-			// Clear claims model
-			const oClaimsModel = oView.getModel("localClaims");
-			if (oClaimsModel) {
-				oClaimsModel.setData({ claims: [] });
-			}
-
-			// Clear any other local models if they exist
-			const oCommentsModel = oView.getModel("localComments");
-			if (oCommentsModel) {
-				oCommentsModel.setData({ comments: [] });
-			}
-		},
-
-		/**
+		// Clear advances model
+		const oAdvModel = oView.getModel("adv");
+		if (oAdvModel) {
+			oAdvModel.setProperty("/items", []);
+		}
+	},		/**
 		 * Attach event listeners to all form fields for real-time completion calculation
 		 * @private
 		 */
@@ -2166,6 +2163,19 @@ sap.ui.define([
 			else{
 				console.log("No UI settings found on SAP.check table ZTHRFIORI_UI5PRO!");
 			}
+		},
+
+		/**
+		 * Generates a GUID in the format required by SAP (lowercase with dashes)
+		 * @returns {string} A new GUID
+		 * @private
+		 */
+		_generateGUID: function() {
+			return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+				const r = Math.random() * 16 | 0;
+				const v = c === 'x' ? r : (r & 0x3 | 0x8);
+				return v.toString(16);
+			});
 		}
 
 	});

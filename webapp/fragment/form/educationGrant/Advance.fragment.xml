@@ -8,7 +8,9 @@
             width="100%"
             noDataText="{i18n>noAdvances}"
             mode="Delete"
-            items="{localAdvances>/advances}"
+            items="{
+                path: 'adv>/items'
+            }"
             delete="onDeleteAdvanceButtonPress"
         >
             <headerToolbar>
@@ -33,9 +35,9 @@
             <items>
                 <ColumnListItem>
                     <cells>
-                        <Text text="{localAdvances>ExpenseType}" />
-                        <ObjectNumber number="{localAdvances>ExpenseAmount}" />
-                        <Text text="{localAdvances>Currency}" />
+                        <Text text="{Excos}" />
+                        <ObjectNumber number="{Examt}" />
+                        <Text text="{Waers}" />
                     </cells>
                 </ColumnListItem>
             </items>

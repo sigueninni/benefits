@@ -25,28 +25,20 @@
         <form:content>
             <core:Title text="{i18n>advanceDetails}" />
             <Label text="{i18n>expenseType}" />
-            <Select id="expenseTypeAdvanceAdd" selectedKey="{advanceModel>/ExpenseType}">
-                <core:Item key="tuition" text="{i18n>tuitionFees}" />
-                <core:Item key="admission" text="{i18n>admissionFee}" />
-                <core:Item key="registration" text="{i18n>registrationFee}" />
-                <core:Item key="examination" text="{i18n>examinationFee}" />
-                <core:Item key="capital" text="{i18n>capitalLevy}" />
-                <core:Item key="languages" text="{i18n>languagesMotherTongue}" />
-                <core:Item key="specialEquipment" text="{i18n>specialEquipment}" />
-                <core:Item key="specialTraining" text="{i18n>specialTraining}" />
-                <core:Item key="boarding" text="{i18n>boardingExpenses}" />
-                <core:Item key="distanceTuition" text="{i18n>distanceTuition}" />
-                <core:Item key="meals" text="{i18n>meals}" />
-                <core:Item key="transportation" text="{i18n>transportation}" />
-                <core:Item key="books" text="{i18n>books}" />
+            <Select 
+                id="expenseTypeAdvanceAdd" 
+                selectedKey="{advanceModel>/Excos}"
+                items="{expenseTypeModel>/items}"
+            >
+                <core:Item key="{expenseTypeModel>Id}" text="{expenseTypeModel>Txt}" />
             </Select>
             <Label text="{i18n>expenseAmount}" />
-            <Input id="amountAdvanceAdd" type="Number" value="{advanceModel>/ExpenseAmount}" />
+            <Input id="amountAdvanceAdd" type="Number" value="{advanceModel>/Examt}" />
             <Label text="{i18n>currency}" />
             <Input 
                 id="currencyAdvanceAdd" 
                 type="Text"
-                value="{advanceModel>/Currency}"
+                value="{advanceModel>/Waers}"
                 showValueHelp="true"
                 valueHelpOnly="true"
                 valueHelpRequest="onCurrencyValueHelpPress"

@@ -47,6 +47,10 @@
     {
       "modelName": "egCustomerStatusModel",
       "method": "GET_EG_CUSTOMER_STATUS_LIST"
+    },
+    {
+      "modelName": "expenseTypeModel",
+      "method": "GET_EXPENSE_TYPE_LIST"
     }
   ]
 }
