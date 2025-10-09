@@ -39,9 +39,7 @@
                 id="currencyAdvanceAdd" 
                 type="Text"
                 value="{advanceModel>/Waers}"
-                showValueHelp="true"
-                valueHelpOnly="true"
-                valueHelpRequest="onCurrencyValueHelpPress"
+                editable="false"
             />
         </form:content>
     </form:SimpleForm>

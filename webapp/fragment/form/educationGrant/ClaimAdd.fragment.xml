@@ -41,9 +41,8 @@
                 id="currencyAdd" 
                 type="Text"
                 value="{claimModel>/Currency}"
-                showValueHelp="true"
-                valueHelpOnly="true"
-                valueHelpRequest="onCurrencyValueHelpPress"
+                editable="false"
+                enabled="false"
             />
         </form:content>
     </form:SimpleForm>

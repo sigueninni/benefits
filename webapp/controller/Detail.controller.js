@@ -59,8 +59,8 @@ sap.ui.define([
 		});
 
 		// Initialize local models for claims and advances
-		const oLocalClaimsModel = new JSONModel({ claims: [] });
-		this.getView().setModel(oLocalClaimsModel, "localClaims");
+		const oLocalClaimsModel = new JSONModel({ items: [] });
+		this.getView().setModel(oLocalClaimsModel, "clm");
 		
 		const oLocalAdvancesModel = new JSONModel({ items: [] });
 		this.getView().setModel(oLocalAdvancesModel, "adv");
@@ -230,12 +230,19 @@ sap.ui.define([
 				this.fragments._oAddClaimDialog.setModel(oView.getModel("i18n"), "i18n");
 			}
 
+			// Get Egcur from binding context
+			const oContext = oView.getBindingContext();
+			const oModel = oView.getModel();
+			const sPath = oContext.getPath() + "/ToEduGrantDetail";
+			const eduGrantDetail = oModel.getProperty(sPath);
+			const sEgcur = eduGrantDetail?.Egcur || "";
+
 			// Create a fresh model for each dialog opening
 			const oDialogModel = new sap.ui.model.json.JSONModel({
 				ExpenseType: "tuition",
 				ExpenseAmount: "",
 				AdvanceAmount: "",
-				Currency: ""
+				Currency: sEgcur
 			});
 			oDialogModel.setDefaultBindingMode(sap.ui.model.BindingMode.TwoWay);
 
@@ -276,11 +283,18 @@ sap.ui.define([
 		this.fragments._oAddAdvanceDialog.setModel(oView.getModel("i18n"), "i18n");
 	}
 
+	// Get Egcur from binding context
+	const oContext = oView.getBindingContext();
+	const oModel = oView.getModel();
+	const sPath = oContext.getPath() + "/ToEduGrantDetail";
+	const eduGrantDetail = oModel.getProperty(sPath);
+	const sEgcur = eduGrantDetail?.Egcur || "";
+
 	// Create a fresh model with OData property names
 	const oDialogModel = new sap.ui.model.json.JSONModel({
 		Excos: "",      // Expense Type
 		Examt: "",      // Expense Amount
-		Waers: "",      // Currency
+		Waers: sEgcur,  // Currency initialized from Egcur
 		Exdat: new Date() // Date
 	});
 	oDialogModel.setDefaultBindingMode(sap.ui.model.BindingMode.TwoWay);
@@ -695,41 +709,35 @@ sap.ui.define([
 	 * Validates the data and adds it to the ClaimItems local model
 	 * @private
 	 */
+	/**
+	 * Confirms the addition of a new claim
+	 * Adds entry to local JSON model "clm"
+	 * @private
+	 */
 	_onConfirmAddClaim: function () {
 		debugger;
 		const oDialogModel = this.fragments._oAddClaimDialog.getModel("claimModel");
 		const oClaimData = oDialogModel.getData();
 
+		// Format amounts as string for Edm.Decimal
+		const sExpenseAmount = oClaimData.ExpenseAmount ? parseFloat(oClaimData.ExpenseAmount).toFixed(3) : "0.000";
+		const sAdvanceAmount = oClaimData.AdvanceAmount ? parseFloat(oClaimData.AdvanceAmount).toFixed(3) : "0.000";
+
 		// Create a new claim entry
 		const oNewClaim = {
-			ExpenseType: oClaimData.ExpenseType,
-			ExpenseAmount: parseFloat(oClaimData.ExpenseAmount) || 0,
-			AdvanceAmount: parseFloat(oClaimData.AdvanceAmount) || 0,
-			Currency: oClaimData.Currency,
-			TempId: Date.now().toString()
+			Excos: oClaimData.ExpenseType || "",
+			Examt: sExpenseAmount,  // String for Edm.Decimal
+			ExamtE: sAdvanceAmount,  // String for Edm.Decimal
+			Waers: (oClaimData.Currency || "").toUpperCase()
 		};
 
-		// Use a local JSON model for claims
-		let oLocalModel = this.getView().getModel("localClaims");
-		if (!oLocalModel) {
-			// Create the local model if it doesn't exist
-			oLocalModel = new sap.ui.model.json.JSONModel({ claims: [] });
-			this.getView().setModel(oLocalModel, "localClaims");
-		}
+		// Add to local model
+		const oClmModel = this.getView().getModel("clm");
+		const aItems = oClmModel.getProperty("/items") || [];
+		aItems.push(oNewClaim);
+		oClmModel.setProperty("/items", aItems);
 
-		// Get existing claims
-		const aClaims = oLocalModel.getProperty("/claims") || [];
-
-		// Add the new claim
-		aClaims.push(oNewClaim);
-
-		// Update the local model
-		oLocalModel.setProperty("/claims", aClaims);
-
-		// Show success message
 		sap.m.MessageToast.show(this.getText("claimAdded"));
-
-		// Close dialog
 		this._removeClaimAddDialog();
 	},		/**
 		 * Confirms the addition of a new advance
@@ -1161,6 +1169,8 @@ sap.ui.define([
 								
 								// Load advances from backend into local model
 								that._initLocalAdvFromBackend(oContext.getPath());
+								// Load claims from backend into local model
+								that._initLocalClmFromBackend(oContext.getPath());
 							}
 						} catch (e) {
 						}
@@ -1202,9 +1212,9 @@ sap.ui.define([
 				const items = aAdvances.map(x => ({
 					Excos: x.Excos || "",
 					Examt: (x.Examt != null ? String(x.Examt) : "0.000"),
-					Waers: (x.Waers || "").toUpperCase(),
-					// Convert to JS Date if necessary
-					Exdat: x.Exdat ? new Date(x.Exdat) : new Date()
+					Waers: x.Waers || "",
+	/* 				// Convert to JS Date if necessary
+					Exdat: x.Exdat ? new Date(x.Exdat) : new Date() */
 				}));
 				oAdvModel.setProperty("/items", items);
 			},
@@ -1216,15 +1226,60 @@ sap.ui.define([
 	},
 
 	/**
+	 * Reads ReqEGClaimSet from backend and populates local "clm" model
+	 * @param {string} sCtxPath - Absolute path of the header (e.g., "/RequestHeaderSet(Guid'...')")
+	 * @private
+	 */
+	_initLocalClmFromBackend: function (sCtxPath) {
+		const oModel = this.getView().getModel();
+		const oClmModel = this.getView().getModel("clm");
+
+		// If request is not yet persisted, leave empty
+		const sGuid = oModel.getProperty(sCtxPath + "/Guid");
+		if (!sGuid || sGuid === "00000000-0000-0000-0000-000000000000") {
+			oClmModel.setProperty("/items", []);
+			return;
+		}
+
+		// Create filter for Guid (same approach as Timeline)
+		const oFilter = new Filter("Guid", FilterOperator.EQ, sGuid);
+
+		// Read claims from ReqEGClaimSet entity set with GUID filter
+		oModel.read("/ReqEGClaimSet", {
+			filters: [oFilter],
+			success: (oData) => {
+				const aClaims = (oData && oData.results) ? oData.results : [];
+				// Normalize data (keep string format for Edm.Decimal)
+				const items = aClaims.map(x => ({
+					Excos: x.Excos || "",
+					Examt: (x.Examt != null ? String(x.Examt) : "0.000"),
+					ExamtE: (x.ExamtE != null ? String(x.ExamtE) : "0.000"),
+					Waers: x.Waers || ""
+				}));
+				oClmModel.setProperty("/items", items);
+			},
+			error: () => {
+				// On read error, keep table empty
+				oClmModel.setProperty("/items", []);
+			}
+		});
+	},
+
+	/**
 	 * Event handler for deleting a claim from the table
 	 * Removes the selected claim from the local claims model
 	 * @param {sap.ui.base.Event} oEvent - The delete event
 	 * @public
 	 */
+	/**
+	 * Event handler for deleting a claim from the table
+	 * Removes the selected claim from the local model "clm"
+	 * @param {sap.ui.base.Event} oEvent - The delete event
+	 * @public
+	 */
 	onDeleteClaimButtonPress: function (oEvent) {
-		// Get the list item that was deleted
 		const oListItem = oEvent.getParameter("listItem");
-		const oBindingContext = oListItem.getBindingContext("localClaims");
+		const oBindingContext = oListItem.getBindingContext("clm");
 
 		if (oBindingContext) {
 			// Get the index of the item to delete
@@ -1232,14 +1287,14 @@ sap.ui.define([
 			const iIndex = parseInt(sPath.split("/").pop());
 
 			// Get the local claims model
-			const oLocalModel = this.getView().getModel("localClaims");
-			const aClaims = oLocalModel.getProperty("/claims") || [];
+			const oClmModel = this.getView().getModel("clm");
+			const aItems = oClmModel.getProperty("/items") || [];
 
 			// Remove the claim at the specified index
-			aClaims.splice(iIndex, 1);
+			aItems.splice(iIndex, 1);
 
 			// Update the model
-			oLocalModel.setProperty("/claims", aClaims);
+			oClmModel.setProperty("/items", aItems);
 
 			// Show confirmation message
 			sap.m.MessageToast.show(this.getText("claimDeleted"));
@@ -1471,6 +1526,10 @@ sap.ui.define([
 		const oAdvModel = oView.getModel("adv");
 		const aAdvances = oAdvModel.getProperty("/items") || [];
 
+		// Get claims from local model "clm"
+		const oClmModel = oView.getModel("clm");
+		const aClaims = oClmModel.getProperty("/items") || [];
+
 		// Build the object for deep insert with new GUID
 		const oDeepInsertData = {
 			// Header properties - new GUID
@@ -1480,7 +1539,9 @@ sap.ui.define([
 				...oEduGrantDetail,
 			},
 			// Deep insert association for advances from local model
-			ToEduGrantAdvances: aAdvances
+			ToEduGrantAdvances: aAdvances,
+			// Deep insert association for claims from local model
+			ToEduGrantClaims: aClaims
 		};
 
 		// Console log to see the complete object before create
@@ -1489,6 +1550,8 @@ sap.ui.define([
 		console.log("ToEduGrantDetail:", oDeepInsertData.ToEduGrantDetail);
 		console.log("ToEduGrantAdvances:", oDeepInsertData.ToEduGrantAdvances);
 		console.log("Number of advances:", oDeepInsertData.ToEduGrantAdvances?.length || 0);
+		console.log("ToEduGrantClaims:", oDeepInsertData.ToEduGrantClaims);
+		console.log("Number of claims:", oDeepInsertData.ToEduGrantClaims?.length || 0);
 		console.log("=====================================");
 
 		// Override status if provided as parameter
@@ -1911,9 +1974,9 @@ sap.ui.define([
 		const oView = this.getView();
 
 		// Clear claims model
-		const oClaimsModel = oView.getModel("localClaims");
-		if (oClaimsModel) {
-			oClaimsModel.setProperty("/claims", []);
+		const oClmModel = oView.getModel("clm");
+		if (oClmModel) {
+			oClmModel.setProperty("/items", []);
 		}
 
 		// Clear advances model

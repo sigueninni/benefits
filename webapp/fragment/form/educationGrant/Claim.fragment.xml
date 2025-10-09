@@ -8,7 +8,7 @@
             width="100%"
             noDataText="{i18n>noClaims}"
             mode="Delete"
-            items="{localClaims>/claims}"
+            items="{clm>/items}"
             delete="onDeleteClaimButtonPress"
         >
             <headerToolbar>
@@ -34,10 +34,10 @@
             <items>
                 <ColumnListItem>
                     <cells>
-                        <Text text="{localClaims>ExpenseType}" />
-                        <ObjectNumber number="{localClaims>ExpenseAmount}" />
-                        <ObjectNumber number="{localClaims>AdvanceAmount}" />
-                        <Text text="{localClaims>Currency}" />
+                        <Text text="{clm>Excos}" />
+                        <ObjectNumber number="{clm>Examt}" />
+                        <ObjectNumber number="{clm>ExamtE}" />
+                        <Text text="{clm>Waers}" />
                     </cells>
                 </ColumnListItem>
             </items>
