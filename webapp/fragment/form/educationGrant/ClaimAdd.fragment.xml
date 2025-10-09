@@ -35,7 +35,7 @@
             <Label text="{i18n>expenseAmount}" />
             <Input id="expenseAmountAdd" type="Number" value="{claimModel>/ExpenseAmount}" />
             <Label text="{i18n>advanceAmount}" />
-            <Input id="advanceAmountAdd" type="Number" value="{claimModel>/AdvanceAmount}" />
+            <Input id="advanceAmountAdd" type="Number" value="{claimModel>/AdvanceAmount}" editable="false" enabled="false" />
             <Label text="{i18n>currency}" />
             <Input 
                 id="currencyAdd" 

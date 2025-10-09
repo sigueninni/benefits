@@ -35,8 +35,8 @@
                 <ColumnListItem>
                     <cells>
                         <Text text="{clm>Excos}" />
-                        <ObjectNumber number="{clm>Examt}" />
                         <ObjectNumber number="{clm>ExamtE}" />
+                        <ObjectNumber number="{clm>Examt}" />
                         <Text text="{clm>Waers}" />
                     </cells>
                 </ColumnListItem>

@@ -632,24 +632,14 @@ sap.ui.define([
 				// Bind Timeline with new request Guid filter
 				this._bindTimelineData(sBenefitRequestId);
 
-				// Handle route-specific logic if needed
+		/* 		// Handle route-specific logic if needed
 				if (routeName === "RouteDetailOnly") {
 					// ...existing code...
 					// ...existing code...
-				}
+				} */
 
 				// Form completion will be calculated in dataReceived event of _bindView
 
-				// Diagnostic: log the actual value of Special Arrangement (EGSAR) after binding
-				try {
-					const oContext = this.getView().getBindingContext();
-					if (oContext) {
-						const oModel = this.getView().getModel();
-						const sPath = oContext.getPath() + "/ToEduGrantDetail/EGSAR";
-						const specialArrangementValue = oModel.getProperty(sPath);
-					}
-				} catch (e) {
-				}
 			}.bind(this));
 		},
 
@@ -726,8 +716,8 @@ sap.ui.define([
 		// Create a new claim entry
 		const oNewClaim = {
 			Excos: oClaimData.ExpenseType || "",
-			Examt: sExpenseAmount,  // String for Edm.Decimal
-			ExamtE: sAdvanceAmount,  // String for Edm.Decimal
+			ExamtE: sExpenseAmount,  // ExamtE = Expense Amount (String for Edm.Decimal)
+			Examt: sAdvanceAmount,   // Examt = Advance Amount (String for Edm.Decimal)
 			Waers: (oClaimData.Currency || "").toUpperCase()
 		};
 
@@ -1162,20 +1152,28 @@ sap.ui.define([
 								const eduGrantDetail = oModel.getProperty(sPath);
 								console.log("[DIAG] ToEduGrantDetail object after binding:", eduGrantDetail);
 
-								// Log EGDIS Switch UI state to check binding synchronization
-								const oEgdisSwitch = this.getView().byId("EGDIS");
-								if (oEgdisSwitch) {
-								}
-								
-								// Load advances from backend into local model
+							// Log EGDIS Switch UI state to check binding synchronization
+							const oEgdisSwitch = this.getView().byId("EGDIS");
+							if (oEgdisSwitch) {
+							}
+							
+							// Get RequestType and flags from binding context
+							const sRequestType = oModel.getProperty(oContext.getPath() + "/RequestType");
+							const bIsClaim = oModel.getProperty(oContext.getPath() + "/Isclaim");
+							const bIsAdvance = oModel.getProperty(oContext.getPath() + "/Isadvance");
+							
+							// Load advances from backend into local model only if IsAdvance is true
+							if (bIsAdvance && sRequestType === '01') {
 								that._initLocalAdvFromBackend(oContext.getPath());
-								// Load claims from backend into local model
+							}
+							
+							// Load claims from backend into local model only if IsClaim is true
+							if (bIsClaim && sRequestType === '01') {
 								that._initLocalClmFromBackend(oContext.getPath());
 							}
-						} catch (e) {
 						}
-
-						// Note: _getUISettings is now called in _onBindingChange
+					} catch (e) {
+					}						
 						// Restore or calculate form completion once data is received
 						//that._restoreFormCompletion();
 						//that._attachCompletionListeners();
@@ -1190,6 +1188,7 @@ sap.ui.define([
 	 * @private
 	 */
 	_initLocalAdvFromBackend: function (sCtxPath) {
+		debugger;
 		const oModel = this.getView().getModel();
 		const oAdvModel = this.getView().getModel("adv");
 
@@ -1231,6 +1230,7 @@ sap.ui.define([
 	 * @private
 	 */
 	_initLocalClmFromBackend: function (sCtxPath) {
+		debugger;
 		const oModel = this.getView().getModel();
 		const oClmModel = this.getView().getModel("clm");
 
@@ -1252,8 +1252,8 @@ sap.ui.define([
 				// Normalize data (keep string format for Edm.Decimal)
 				const items = aClaims.map(x => ({
 					Excos: x.Excos || "",
-					Examt: (x.Examt != null ? String(x.Examt) : "0.000"),
-					ExamtE: (x.ExamtE != null ? String(x.ExamtE) : "0.000"),
+					ExamtE: (x.ExamtE != null ? String(x.ExamtE) : "0.000"),  // ExamtE = Expense Amount
+					Examt: (x.Examt != null ? String(x.Examt) : "0.000"),     // Examt = Advance Amount
 					Waers: x.Waers || ""
 				}));
 				oClmModel.setProperty("/items", items);
