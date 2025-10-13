@@ -642,7 +642,7 @@ sap.ui.define([
 				oViewModel = this.getModel("detailView");
 
 			this.getOwnerComponent().oListSelector.selectAListItem(sPath);			// Get UI settings now that binding context is available
-			this._getUISettings();
+			//this._getUISettings();
 		},
 
 		/**
@@ -778,36 +778,38 @@ sap.ui.define([
 		 */
 		_initializeValueHelpModels: function () {
 			// Create separate JSON models for value helps to avoid key collisions
-			const oGradeModel = new JSONModel();
-			const oSchoolTypeAdditModel = new JSONModel();
-			const oSchoolListModel = new JSONModel();
-			const oSchoolTypeModel = new JSONModel();
-			const oAttendanceTypeModel = new JSONModel();
-			const oSpecialArrangementModel = new JSONModel();
-			const oChangeReasonModel = new JSONModel();
-			const oReasonBoardingModel = new JSONModel();
-			const oCurrencyModel = new JSONModel();
-			const oSchoolCountryModel = new JSONModel();
-			const oCurrencyPaymentModel = new JSONModel();
-			const oEgCustomerStatusModel = new JSONModel();
-			const oExpenseTypeModel = new JSONModel();
+		const oGradeModel = new JSONModel();
+		const oSchoolTypeAdditModel = new JSONModel();
+		const oSchoolListModel = new JSONModel();
+		const oSchoolTypeModel = new JSONModel();
+		const oAttendanceTypeModel = new JSONModel();
+		const oSpecialArrangementModel = new JSONModel();
+		const oChangeReasonModel = new JSONModel();
+		const oReasonBoardingModel = new JSONModel();
+		const oCurrencyModel = new JSONModel();
+		const oSchoolCountryModel = new JSONModel();
+		const oCurrencyPaymentModel = new JSONModel();
+		const oEgCustomerStatusModel = new JSONModel();
+		const oExpenseTypeModel = new JSONModel();
+		const oApplicationReasonModel = new JSONModel();
+		const oDwellingRentTypeModel = new JSONModel();
 
-			this.setModel(oGradeModel, "gradeModel");
-			this.setModel(oSchoolTypeAdditModel, "schoolTypeAdditModel");
-			this.setModel(oSchoolListModel, "schoolListModel");
-			this.setModel(oSchoolTypeModel, "schoolTypeModel");
-			this.setModel(oAttendanceTypeModel, "attendanceTypeModel");
-			this.setModel(oSpecialArrangementModel, "specialArrangementModel");
-			this.setModel(oChangeReasonModel, "changeReasonModel");
-			this.setModel(oReasonBoardingModel, "reasonBoardingModel");
-			this.setModel(oCurrencyModel, "currencyModel");
-			this.setModel(oSchoolCountryModel, "schoolCountryModel");
-			this.setModel(oCurrencyPaymentModel, "currencyPaymentModel");
-			this.setModel(oEgCustomerStatusModel, "egCustomerStatusModel");
-			this.setModel(oExpenseTypeModel, "expenseTypeModel");
-		},
-
-		/**
+		this.setModel(oGradeModel, "gradeModel");
+		this.setModel(oSchoolTypeAdditModel, "schoolTypeAdditModel");
+		this.setModel(oSchoolListModel, "schoolListModel");
+		this.setModel(oSchoolTypeModel, "schoolTypeModel");
+		this.setModel(oAttendanceTypeModel, "attendanceTypeModel");
+		this.setModel(oSpecialArrangementModel, "specialArrangementModel");
+		this.setModel(oChangeReasonModel, "changeReasonModel");
+		this.setModel(oReasonBoardingModel, "reasonBoardingModel");
+		this.setModel(oCurrencyModel, "currencyModel");
+		this.setModel(oSchoolCountryModel, "schoolCountryModel");
+		this.setModel(oCurrencyPaymentModel, "currencyPaymentModel");
+		this.setModel(oEgCustomerStatusModel, "egCustomerStatusModel");
+		this.setModel(oExpenseTypeModel, "expenseTypeModel");
+		this.setModel(oApplicationReasonModel, "applicationReasonModel");
+		this.setModel(oDwellingRentTypeModel, "dwellingRentTypeModel");
+	},		/**
 		 * Retrieves UI settings for form fields based on request type and status.
 		 * Applies dynamic visibility, editability and requirement rules to form controls.
 		 * @private
@@ -1532,7 +1534,7 @@ sap.ui.define([
 					that._refreshTimeline();
 					// Update UI settings after status change (e.g., from Draft to Submitted)
 					// Note: This will be called again in _onBindingChange after the refresh
-					that._getUISettings();
+					//that._getUISettings();
 					// Navigate to the newly created object
 					const currentUrl = window.location.href;
 					if (currentUrl.includes("DetailOnly")) {
@@ -1594,7 +1596,7 @@ sap.ui.define([
 
 					// Load all models dynamically
 					aValueHelpConfig.forEach(config => {
-						this._loadGenericData(config.modelName, config.method);
+						this._loadGenericData(config.modelName, config.method, sRequestType);
 					});
 				})
 				.catch(oError => {
@@ -1602,36 +1604,38 @@ sap.ui.define([
 				});
 		},
 
-		/**
-		 * Generic method to load data from GenericVHSet into a specific JSON model
-		 * @param {string} sModelName - Name of the JSON model to populate
-		 * @param {string} sMethod - Method name for the GenericVHSet filter
-		 * @private
-		 */
-		_loadGenericData: function (sModelName, sMethod) {
-			const oModel = this.getModel();
-			const aFilters = [new sap.ui.model.Filter("Method", sap.ui.model.FilterOperator.EQ, sMethod)];
+	/**
+	 * Generic method to load data from GenericVHSet into a specific JSON model
+	 * @param {string} sModelName - Name of the JSON model to populate
+	 * @param {string} sMethod - Method name for the GenericVHSet filter
+	 * @param {string} sRequestType - Request type for the GenericVHSet filter
+	 * @private
+	 */
+	_loadGenericData: function (sModelName, sMethod, sRequestType) {
+		const oModel = this.getModel();
+		const aFilters = [
+			new sap.ui.model.Filter("Method", sap.ui.model.FilterOperator.EQ, sMethod),
+			new sap.ui.model.Filter("RequestType", sap.ui.model.FilterOperator.EQ, sRequestType)
+		];
 
-			oModel.read("/GenericVHSet", {
-				filters: aFilters,
-				success: (oData) => {
-					this.getModel(sModelName).setData({
-						items: oData.results
-					});
+		oModel.read("/GenericVHSet", {
+			filters: aFilters,
+			success: (oData) => {
+				this.getModel(sModelName).setData({
+					items: oData.results
+				});
 
-					// Log content specifically for currencyPaymentModel
-					if (sModelName === "currencyPaymentModel") {
-						console.log("[CURRENCY PAYMENT MODEL] Loaded data:", oData.results);
-						console.table(oData.results);
-					}
-				},
-				error: (oError) => {
-					// Handle error silently or with minimal logging
+				// Log content specifically for currencyPaymentModel
+				if (sModelName === "currencyPaymentModel") {
+					console.log("[CURRENCY PAYMENT MODEL] Loaded data:", oData.results);
+					console.table(oData.results);
 				}
-			});
-		},
-
-		/**
+			},
+			error: (oError) => {
+				// Handle error silently or with minimal logging
+			}
+		});
+	},		/**
 		 * Handler for multiple attendance switch state change
 		 * Converts switch state to model value
 		 * @param {sap.ui.base.Event} oEvent - The switch change event

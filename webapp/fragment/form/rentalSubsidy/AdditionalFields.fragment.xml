@@ -4,7 +4,7 @@
     xmlns:form="sap.ui.layout.form"
 >
     <form:SimpleForm
-        layout="ResponsiveGridLayout"
+   layout="ResponsiveGridLayout"
         labelSpanXL="4"
         labelSpanL="4"
         labelSpanM="12"
@@ -14,12 +14,30 @@
         emptySpanL="0"
         emptySpanM="0"
         emptySpanS="0"
-        columnsXL="3"
-        columnsL="3"
-        columnsM="3"
-        editable="true"
+        columnsXL="2"
+        columnsL="2"
+        columnsM="2"
     >
         <form:content>
+            <!-- Additional Fields (SAP) -->
+            <core:Title text="{i18n>additionalFields}" />
+
+            <Label text="{i18n>sharedRent}" />
+            <Switch id="RSSCR" customTextOn="{i18n>yes}" customTextOff="{i18n>no}" enabled="true" />
+
+            <Label text="{i18n>periodConsumptionYears}" />
+            <Input id="DSYRS" type="Number" />
+
+            <Label text="{i18n>periodConsumptionMonths}" />
+            <Input id="DSMNT" type="Number" />
+
+            <Label text="{i18n>periodConsumptionDays}" />
+            <Input id="DSDAY" type="Number" />
+
+            <Label text="{i18n>lwopCalendarDays}" />
+            <Input id="DSCLWOP" type="Number" />
+
+            <!-- Additional Fields not in SAP -->
             <core:Title text="{i18n>householdInfo}" />
 
             <Label text="{i18n>spouseResidingAtDS}" />

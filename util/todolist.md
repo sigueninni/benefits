@@ -22,25 +22,28 @@
 - ~~Regarder les problémes du save sur les zones côté ABAP~~
 - ~~Vérifications : begda < endda et type de requête obligatoire~~
 - ~~Enlever setTimeout~~  
+- ~~Nettoyer l'écran quand pas de requête~~
 
 ## 📋 Ongoing Tasks
-- Claim/Advance Odata sap
-- Eligibility for Boarding	EGC01	ToDo	Logic to be extracted from the infotype --> not even used and depend on country of school on code but not executed?
 
+- Rental subsidy
+- Gestion de l'éligibilité
 
 ## ⏳ Pending Tasks
-- Gestion de l'éligibilité
-- Completer les fonction de tri/search de la Timeline
-- revoir la 'completeness'  
-- Factoriser dans des méthodes du 'Save'
-- Vérifier les switchs côté front et mettre booleans côté OData & problème des switchs qui se mettent à true après UI SETTINGS
-- Ajouter les valeurs suggérées sur les Select avec beaucoup de données
 - Gestion des pièces jointes
 - Attention : le facteur de proration se recalcule si on change egyto... regarder le PAI pour d'autres champs et ajuster au Save (plus simple sinon au changement de date)
-- Nettoyer l'écran quand pas de requête
+
 - Améliorer le filtre master pour le case sensitive
 - Tri
 - i18n
 - Gérer les dates de rétroactivité possibles, création de requête dans le passé etc...
 - Exceptions côté backend à gérer côté frontend
 - Corriger les Value Help des eligibility et dependency
+
+## ⏳ Last to do Tasks
+- Claim/Advance Odata sap
+- Eligibility for Boarding	EGC01	ToDo	Logic to be extracted from the infotype --> not even used and depend on country of school on code but not executed?
+- Completer les fonction de tri/search de la Timeline
+- revoir la 'completeness'  
+- Factoriser dans des méthodes du 'Save'
+- Vérifier les switchs côté front et mettre booleans côté OData & problème des switchs qui se mettent à true après UI SETTINGS

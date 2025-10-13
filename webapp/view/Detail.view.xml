@@ -188,11 +188,11 @@
                     <!-- Others Data -->
                     <uxap:ObjectPageSubSection
                         id="RENTALOTHERSSUBSECTION"
-                        title="{i18n>rentalOthersData}"
+                        title="{i18n>additionalFields}"
                     >
                         <uxap:blocks>
                             <core:Fragment
-                                fragmentName="com.un.zhrbenefrequests.fragment.form.rentalSubsidy.OtherData"
+                                fragmentName="com.un.zhrbenefrequests.fragment.form.rentalSubsidy.AdditionalFields"
                                 type="XML"
                                 xmlns:core="sap.ui.core"
                             />

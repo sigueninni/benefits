@@ -15,20 +15,40 @@
         emptySpanL="0"
         emptySpanM="0"
         emptySpanS="0"
-        columnsXL="3"
-        columnsL="3"
-        columnsM="3"
-        editable="true"
+        columnsXL="1"
+        columnsL="1"
+        columnsM="1"
+        
     >
         <form:content>
             <!-- Rental Subsidy Fields -->
-            <core:Title text="{i18n>rentalSubsidy}" />
+            <!-- <core:Title text="{i18n>rentalSubsidy}" /> -->
 
             <Label text="{i18n>applicationReason}" />
-            <Select id="PREAS" />
+            <Select 
+                id="PREAS"
+                forceSelection="false"
+                items="{applicationReasonModel>/items}"
+                selectedKey="{ToRentalSubsidyDetail/Preas}"
+            >
+                <core:Item 
+                    key="{applicationReasonModel>Id}" 
+                    text="{applicationReasonModel>Txt}" 
+                />
+            </Select>
 
             <Label text="{i18n>dwellingRentType}" />
-            <Select id="RSDRT" />
+            <Select 
+                id="RSDRT"
+                forceSelection="false"
+                items="{dwellingRentTypeModel>/items}"
+                selectedKey="{ToRentalSubsidyDetail/Rsdrt}"
+            >
+                <core:Item 
+                    key="{dwellingRentTypeModel>Id}" 
+                    text="{dwellingRentTypeModel>Txt}" 
+                />
+            </Select>
 
             <Label text="{i18n>reimbursementApplicationType}" />
             <Select id="RSREA" />
@@ -86,24 +106,6 @@
 
             <Label text="{i18n>numberOfBedrooms}" />
             <Input id="RSNBR" type="Number" />
-
-            <!-- Additional Fields -->
-            <core:Title text="{i18n>additionalFields}" />
-
-            <Label text="{i18n>sharedRent}" />
-            <Switch id="RSSCR" customTextOn="{i18n>yes}" customTextOff="{i18n>no}" enabled="true" />
-
-            <Label text="{i18n>periodConsumptionYears}" />
-            <Input id="DSYRS" type="Number" />
-
-            <Label text="{i18n>periodConsumptionMonths}" />
-            <Input id="DSMNT" type="Number" />
-
-            <Label text="{i18n>periodConsumptionDays}" />
-            <Input id="DSDAY" type="Number" />
-
-            <Label text="{i18n>lwopCalendarDays}" />
-            <Input id="DSCLWOP" type="Number" />
         </form:content>
     </form:SimpleForm>
 </core:FragmentDefinition>

@@ -1,3 +1,12 @@
 {
-  "valueHelpConfig": []
+  "valueHelpConfig": [
+    {
+      "modelName": "applicationReasonModel",
+      "method": "GET_APPLICATION_REASON_LIST"
+    },
+    {
+      "modelName": "dwellingRentTypeModel",
+      "method": "GET_DWEL_RENT_TYPE_LIST"
+    }
+  ]
 }
