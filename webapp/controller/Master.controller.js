@@ -83,23 +83,30 @@ sap.ui.define([
                 // get the list item, either from the listItem parameter or from the event's source itself (will depend on the device-dependent mode).
                 this._showDetail(oEvent.getParameter("listItem") || oEvent.getSource());
             },
-            /**
-             * Event handler for the select event TypeFlowChoice.fragment
-             * @param {sap.ui.base.Event} oEvent the select event
-             * @public
-             */
-            onReqTypChange: function (oEvent) {
-                const oSelectedItem = oEvent.getParameter("selectedItem");
-                const sSelectedKey = oSelectedItem.getKey();
+        /**
+         * Event handler for the select event TypeFlowChoice.fragment
+         * @param {sap.ui.base.Event} oEvent the select event
+         * @public
+         */
+        onReqTypChange: function (oEvent) {
+            const oSelectedItem = oEvent.getParameter("selectedItem");
+            const sSelectedKey = oSelectedItem.getKey();
 
-                // Update the type model to control visibility
-                const oTypeModel = this.fragments._oTypeReqDialog.getModel("typeModel");
-                oTypeModel.setProperty("/RequestType", sSelectedKey);
+            // Update the type model to control visibility
+            const oTypeModel = this.fragments._oTypeReqDialog.getModel("typeModel");
+            oTypeModel.setProperty("/RequestType", sSelectedKey);
 
-                console.log("Request Type changed to:", sSelectedKey);
-            },
+            // Reset Isclaim and Isadvance based on request type
+            if (sSelectedKey === "02") { // Rental Subsidy
+                oTypeModel.setProperty("/Isclaim", false);
+                oTypeModel.setProperty("/Isadvance", false);
+            } else if (sSelectedKey === "01") { // Education Grant
+                oTypeModel.setProperty("/Isclaim", false);
+                oTypeModel.setProperty("/Isadvance", true); // Default to Advance for EG
+            }
 
-            /**
+            console.log("Request Type changed to:", sSelectedKey);
+        },            /**
              * Event handler for the RadioButtonGroup select event
              * @param {sap.ui.base.Event} oEvent the select event
              * @public
