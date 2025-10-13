@@ -274,3 +274,28 @@
         </endButton>
     </Dialog>
 </core:FragmentDefinition>
+
+
+
+
+dans master dans letete !
+
+                        // OK → retrieve the created entry
+                        const change = batch.__changeResponses && batch.__changeResponses[0];                 }
+
+                        // OK → retrieve the created entry
+                        const change = batch.__changeResponses && batch.__changeResponses[0];           if (err) {
+                            this._showODataError(); // always generic
+                            return;
+                        }
+
+                        // OK → retrieve the created entry
+                        const change = batch.__changeResponses && batch.__changeResponses[0];               }
+
+                        // OK → retrieve the created entry
+                        const change = batch.__changeResponses && batch.__changeResponses[0];
+                        if (!change || !change.data) {
+                            this._showODataError(); // security                    // OK → retrieve the created entry                  }
+
+                        // OK → retrieve the created entry
+                        const change = batch.__changeResponses && batch.__changeResponses[0];                      // OK → retrieve the created entry                       // OK → retrieve the created entry                  		    *-->

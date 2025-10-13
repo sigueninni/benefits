@@ -166,7 +166,7 @@ Grade-->
                         { path : 'Method', operator : 'EQ', value1 :'GET_SCHOOL_COUNTRY_LIST' }
                     ]
                     }"
-                selectedKey="{ToEduGrantDetail/Egsct}"
+                selectedKey="{path: 'ToEduGrantDetail/Egsct', mode: 'OneWay'}"
                 forceSelection="false"
             >
                 <core:Item

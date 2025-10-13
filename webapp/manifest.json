@@ -94,7 +94,8 @@
                         "sap-documentation": "heading"
                     },
                     "defaultBindingMode": "TwoWay",
-                    "defaultCountMode": "Inline"
+                    "defaultCountMode": "Inline",
+                    "refreshAfterChange": false
                 },
                 "preload": true
             },
@@ -157,7 +158,7 @@
                 },
                 {
                     "name": "RouteDetail",
-                    "pattern": "Requests/{benefitRequestId}",
+                    "pattern": "Requests/{benefitRequestId}/{requestType}",
                     "target": [
                         "TargetMaster",
                         "TargetDetail"

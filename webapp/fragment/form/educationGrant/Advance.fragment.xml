@@ -18,6 +18,7 @@
                     <content>
                         <ToolbarSpacer />
                         <Button
+                            id="BTNADDADVANCE"
                             type="Default"
                             icon="sap-icon://add"
                             enabled="{RequestSettings/IsFormEditable}"

@@ -213,7 +213,7 @@
                     <!-- Child Information -->
                     <uxap:ObjectPageSubSection
                         id="CHILDINFORMATIONSUBSECTION"
-                        title="{i18n>Child Information}"
+                        title="{i18n>childInformation}"
                     >
                         <uxap:blocks>
                             <core:Fragment

@@ -78,8 +78,6 @@
                         type="{= ${device>/system/phone} ? 'Active' : 'Inactive'}"
                         press="onSelectionChange"
                         title="{RequestKey}"
-                        condensed="true"
-                        
                     >
                         <!-- icon="sap-icon://warning" -->
                         <firstStatus>

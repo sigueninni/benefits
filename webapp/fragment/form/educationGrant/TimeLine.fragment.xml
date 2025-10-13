@@ -9,7 +9,10 @@
         enableDoubleSided="false"
         growingThreshold="0"
         sortOldestFirst="true"
-        content="{/RequestHistoryAndComentsSet}"
+        content="{
+            path: '/RequestHistoryAndComentsSet',
+            templateShareable: true
+        }"
         enableScroll="false"
         showHeaderBar="false"
         	lazyLoading="true"

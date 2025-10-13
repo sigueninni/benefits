@@ -4,26 +4,6 @@
 <!--* Auteur           :  Saad Igueninni                            		*-->
 <!--* Societe      	   :  KYWAN                                          	*-->
 <!--* Date de creation :  08/07/2025                                                   }
-
-                        // OK → retrieve the created entry
-                        const change = batch.__changeResponses && batch.__changeResponses[0];                 }
-
-                        // OK → retrieve the created entry
-                        const change = batch.__changeResponses && batch.__changeResponses[0];           if (err) {
-                            this._showODataError(); // always generic
-                            return;
-                        }
-
-                        // OK → retrieve the created entry
-                        const change = batch.__changeResponses && batch.__changeResponses[0];               }
-
-                        // OK → retrieve the created entry
-                        const change = batch.__changeResponses && batch.__changeResponses[0];
-                        if (!change || !change.data) {
-                            this._showODataError(); // security                    // OK → retrieve the created entry                  }
-
-                        // OK → retrieve the created entry
-                        const change = batch.__changeResponses && batch.__changeResponses[0];                      // OK → retrieve the created entry                       // OK → retrieve the created entry                  		    *-->
 <!--* Version	       :  Initial											*-->
 <!--* Description  	   :  Master(Dashboard) Controller for Benefits         *-->
 <!--*                     Request App                                       *-->
@@ -138,12 +118,11 @@ sap.ui.define([
 
                 // More robust way: check the button's text or use index
                 const sButtonText = oSelectedButton.getText();
-                const oResourceBundle = this.getResourceBundle();
                 
-                if (sButtonId.includes("isClaim") || sButtonText === oResourceBundle.getText("isClaim")) {
+                if (sButtonId.includes("isClaim") || sButtonText === this.getText("isClaim")) {
                     oTypeModel.setProperty("/Isclaim", true);
                     oTypeModel.setProperty("/Isadvance", false);
-                } else if (sButtonId.includes("isAdvance") || sButtonText === oResourceBundle.getText("isAdvance")) {
+                } else if (sButtonId.includes("isAdvance") || sButtonText === this.getText("isAdvance")) {
                     oTypeModel.setProperty("/Isclaim", false);
                     oTypeModel.setProperty("/Isadvance", true);
                 }
@@ -194,7 +173,7 @@ sap.ui.define([
                 const oViewModel = this.getModel("masterView");
                 
                 if (oViewModel) {
-                    const sTitle = this.getResourceBundle().getText("masterTitleCount", [iTotalItems]);
+                    const sTitle = this.getText("masterTitleCount", [iTotalItems]);
                     oViewModel.setProperty("/title", sTitle);
                 }
                 
@@ -291,8 +270,8 @@ sap.ui.define([
                     isFilterBarVisible: false,
                     filterBarLabel: "",
                     delay: 0,
-                    title: this.getResourceBundle().getText("masterTitleCount", [0]),
-                    noDataText: this.getResourceBundle().getText("masterListNoDataText"),
+                    title: this.getText("masterTitleCount", [0]),
+                    noDataText: this.getText("masterListNoDataText"),
                     sortBy: "Title",
                     groupBy: "None"
                 });
@@ -306,8 +285,10 @@ sap.ui.define([
              */
             _showDetail: function (oItem) {
                 const bReplace = !Device.system.phone;
+                const oContext = oItem.getBindingContext();
                 this.getRouter().navTo("RouteDetail", {
-                    benefitRequestId: oItem.getBindingContext().getProperty("Guid")
+                    benefitRequestId: oContext.getProperty("Guid"),
+                    requestType: oContext.getProperty("RequestType")
                 }, bReplace);
 
 
@@ -320,6 +301,12 @@ sap.ui.define([
              * @private
              */
             _onMasterMatched: function () {
+                // Refresh the master list when navigating to master view
+                const oList = this.byId("list");
+                if (oList && oList.getBinding("items")) {
+                    oList.getBinding("items").refresh();
+                }
+                
                 this.getOwnerComponent().oListSelector.oWhenListLoadingIsDone.then(
 
                     function (mParams) {
@@ -328,10 +315,13 @@ sap.ui.define([
                             return;
                         }
 
-                        let sObjectId = mParams.firstListitem.getBindingContext().getProperty("Guid");
+                        const oContext = mParams.firstListitem.getBindingContext();
+                        let sObjectId = oContext.getProperty("Guid");
+                        let sRequestType = oContext.getProperty("RequestType");
                         console.log({ sObjectId });
                         this.getRouter().navTo("RouteDetail", {
-                            benefitRequestId: sObjectId
+                            benefitRequestId: sObjectId,
+                            requestType: sRequestType
                         }, true);
                     }.bind(this),
                     function (mParams) {
@@ -444,7 +434,7 @@ sap.ui.define([
                         "Isadvance": Isadvance,
                         "Begda": Begda,
                         "Endda": Endda,
-                        "RequestDesc": this.getResourceBundle().getText("newBenefitRequestTitle"),
+                        "RequestDesc": this.getText("newBenefitRequestTitle"),
                         "Subty": _famsa ? _famsa : "",
                         "Objps": _objps ? _objps : "",
                         "Note": Comments || ""
@@ -480,7 +470,26 @@ sap.ui.define([
                         }
 
                         const oNewEntry = change.data;
-                        oRouter.navTo("RouteDetail", { benefitRequestId: oNewEntry.Guid }, true);
+                        
+                        // Refresh the master list to include the newly created request
+                        const oList = this.byId("list");
+                        if (oList && oList.getBinding("items")) {
+                            oList.getBinding("items").refresh();
+                        }
+                        
+                        // Navigate to the new request
+                        oRouter.navTo("RouteDetail", { 
+                            benefitRequestId: oNewEntry.Guid,
+                            requestType: oNewEntry.RequestType
+                        }, true);
+                        
+                        // Select the new item in the master list after a short delay
+                        setTimeout(function() {
+                            const sNewItemPath = oModel.createKey("/RequestHeaderSet", {
+                                Guid: oNewEntry.Guid
+                            });
+                            this.getOwnerComponent().oListSelector.selectAListItem(sNewItemPath);
+                        }.bind(this), 300);
 
                         // Cleanup type dialog
                         this.fragments._oTypeReqDialog?.close();

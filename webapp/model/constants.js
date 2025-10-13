@@ -1,6 +1,11 @@
 sap.ui.define([], function () {
     "use strict";
     return {
+        REQUEST_TYPES: {
+            EDUCATION_GRANT: "01",          // Education Grant
+            RENTAL_SUBSIDY: "02"            // Rental Subsidy
+        },
+        
         REQUEST_STATUS: {
             DRAFT: "00",                    // Draft
             SUBMITTED: "01",                // Request submitted by the employee
