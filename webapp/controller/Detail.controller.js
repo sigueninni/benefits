@@ -1527,38 +1527,14 @@ sap.ui.define([
 			}
 
 		// set busy indicator during save
+		// set busy indicator during save
 		const oViewModel = this.getModel("detailView");
 		oViewModel.setProperty("/busy", true);
 
 		// For deep insert, retrieve form data and create a new object
 		const oRequestData = oModel.getObject(oContext.getPath());
-		console.log("=== CHECKING oRequestData PROPERTIES ===");
-		console.log("All properties:", Object.keys(oRequestData));
-		console.log("Properties starting with __:", Object.keys(oRequestData).filter(key => key.startsWith("__")));
-		console.log("Properties starting with To:", Object.keys(oRequestData).filter(key => key.startsWith("To")));
-		console.log("RequestSettings exists?", oRequestData.hasOwnProperty("RequestSettings"));
-		console.log("RequestSettings value:", oRequestData.RequestSettings);
-		console.log("========================================");
 		const oEduGrantDetail = oModel.getObject(oContext.getPath() + "/ToEduGrantDetail");
 		const oRentalSubsidy = oModel.getObject(oContext.getPath() + "/ToRentalSubsidyDetail");
-		
-		console.log("=== CHECKING ToEduGrantDetail PROPERTIES ===");
-		if (oEduGrantDetail) {
-			console.log("ToEduGrantDetail keys:", Object.keys(oEduGrantDetail));
-			console.log("Properties starting with __:", Object.keys(oEduGrantDetail).filter(key => key.startsWith("__")));
-		} else {
-			console.log("ToEduGrantDetail is null/undefined");
-		}
-		
-		const oRentalSubsidyDetail = oModel.getObject(oContext.getPath() + "/ToRentalSubsidyDetail");
-		console.log("=== CHECKING ToRentalSubsidyDetail PROPERTIES ===");
-		if (oRentalSubsidyDetail) {
-			console.log("ToRentalSubsidyDetail keys:", Object.keys(oRentalSubsidyDetail));
-			console.log("Properties starting with __:", Object.keys(oRentalSubsidyDetail).filter(key => key.startsWith("__")));
-		} else {
-			console.log("ToRentalSubsidyDetail is null/undefined");
-		}
-		console.log("============================================");
 
 		// Get advances from local model "adv" instead of OData
 		const oAdvModel = oView.getModel("adv");
@@ -1585,19 +1561,6 @@ sap.ui.define([
 			ToEduGrantClaims: aClaims
 		};
 
-		// Console log to see the complete object before create
-		console.log("=== DEEP INSERT DATA BEFORE CREATE ===");
-		console.log("Complete oDeepInsertData object:", oDeepInsertData);
-		console.log("ToEduGrantDetail:", oDeepInsertData.ToEduGrantDetail);
-		console.log("ToEduGrantAdvances:", oDeepInsertData.ToEduGrantAdvances);
-		console.log("Number of advances:", oDeepInsertData.ToEduGrantAdvances?.length || 0);
-		console.log("ToEduGrantClaims:", oDeepInsertData.ToEduGrantClaims);
-		console.log("Number of claims:", oDeepInsertData.ToEduGrantClaims?.length || 0);
-		console.log("=====================================");
-		
-		// DEBUGGER: Stop here to inspect oDeepInsertData before sending to backend
-		debugger;
-		
 		// Override status if provided as parameter
 		if (sStatus) {
 			oDeepInsertData.RequestStatus = sStatus;
