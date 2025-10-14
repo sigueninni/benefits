@@ -20,34 +20,34 @@
     >
         <form:content>
             <!-- Additional Fields (SAP) -->
-            <core:Title text="{i18n>additionalFields}" />
+          
 
             <Label text="{i18n>sharedRent}" />
-            <Switch id="RSSCR" customTextOn="{i18n>yes}" customTextOff="{i18n>no}" enabled="true" />
+            <Switch id="RSSCR" state="{ToRentalSubsidyDetail/Rsscr}" customTextOn="{i18n>yes}" customTextOff="{i18n>no}" enabled="true" />
 
             <Label text="{i18n>periodConsumptionYears}" />
-            <Input id="DSYRS" type="Number" />
+            <Input id="DSYRS" type="Number" value="{ToRentalSubsidyDetail/Dsyrs}" />
 
             <Label text="{i18n>periodConsumptionMonths}" />
-            <Input id="DSMNT" type="Number" />
+            <Input id="DSMNT" type="Number" value="{ToRentalSubsidyDetail/Dsmnt}" />
 
             <Label text="{i18n>periodConsumptionDays}" />
-            <Input id="DSDAY" type="Number" />
+            <Input id="DSDAY" type="Number" value="{ToRentalSubsidyDetail/Dsday}" />
 
             <Label text="{i18n>lwopCalendarDays}" />
-            <Input id="DSCLWOP" type="Number" />
+            <Input id="DSCLWOP" type="Number" value="{ToRentalSubsidyDetail/Dsclwop}" />
 
             <!-- Additional Fields not in SAP -->
-            <core:Title text="{i18n>householdInfo}" />
+            <!-- <core:Title text="{i18n>householdInfo}" /> -->
 
             <Label text="{i18n>spouseResidingAtDS}" />
-            <Switch id="spouseResidingAtDS" customTextOn="{i18n>yes}" customTextOff="{i18n>no}" enabled="true" />
+            <Switch id="YRSSPOUSERES" state="{ToRentalSubsidyDetail/Yrsspouseres}" customTextOn="{i18n>yes}" customTextOff="{i18n>no}" enabled="true" />
 
             <Label text="{i18n>spouseReceivesSubsidy}" />
-            <Switch id="spouseReceivesSubsidy" customTextOn="{i18n>yes}" customTextOff="{i18n>no}" enabled="true" />
+            <Switch id="YRSSPOUSEREC" state="{ToRentalSubsidyDetail/Yrsspouserec}" customTextOn="{i18n>yes}" customTextOff="{i18n>no}" enabled="true" />
 
             <Label text="{i18n>childrenResidingAtDS}" />
-            <Switch id="childrenResidingAtDS" customTextOn="{i18n>yes}" customTextOff="{i18n>no}" enabled="true" />
+            <Switch id="YRSCHILDRES" state="{ToRentalSubsidyDetail/Yrschildres}" customTextOn="{i18n>yes}" customTextOff="{i18n>no}" enabled="true" />
         </form:content>
     </form:SimpleForm>
 </core:FragmentDefinition>

@@ -19,7 +19,6 @@
                             id="BTNADDCLAIM"
                             type="Default"
                             icon="sap-icon://add"
-                            enabled="{RequestSettings/IsFormEditable}"
                             tooltip="{i18n>add}"
                             press="onAddClaimButtonPress"
                         />

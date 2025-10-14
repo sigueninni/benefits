@@ -467,6 +467,21 @@ sap.ui.define([
 			this._openCurrencyDialog(sFieldId);
 		},
 
+		/**
+		 * Event handler for currency value help button press in Rental Subsidy.
+		 * Opens a dialog to select currency from available options.
+		 * Automatically detects the source field from the event.
+		 * @param {sap.ui.base.Event} oEvent - The button press event
+		 * @public
+		 */
+		onCurrencyValueHelpPressRS: function (oEvent) {
+			// Get the ID of the control that triggered the event
+			const sSourceFieldId = oEvent.getSource().getId();
+			// Extract just the field ID (remove view prefix if present)
+			const sFieldId = sSourceFieldId.split("--").pop();
+			this._openCurrencyDialogRS(sFieldId);
+		},
+
 
 
 		/**
@@ -642,7 +657,7 @@ sap.ui.define([
 				oViewModel = this.getModel("detailView");
 
 			this.getOwnerComponent().oListSelector.selectAListItem(sPath);			// Get UI settings now that binding context is available
-			//this._getUISettings();
+			this._getUISettings();
 		},
 
 		/**
@@ -754,13 +769,33 @@ sap.ui.define([
 				this.fragments._oCurrencyDialog.addStyleClass(this.getOwnerComponent().getContentDensityClass());
 			}
 
-			this.fragments._oCurrencyDialog.open();
-		},
+		this.fragments._oCurrencyDialog.open();
+	},
+
+	/**
+	 * Private method to open currency dialog for Rental Subsidy and store source field.
+	 * @param {string} sSourceFieldId - The ID of the field that triggered the dialog
+	 * @private
+	 */
+	_openCurrencyDialogRS: function (sSourceFieldId) {
+		const oView = this.getView();
+
+		// Store the source field ID for later use
+		this._sCurrencySourceField = sSourceFieldId;
+
+		if (!this.fragments._oCurrencyDialogRS) {
+			this.fragments._oCurrencyDialogRS = sap.ui.xmlfragment(
+				"com.un.zhrbenefrequests.fragment.form.rentalSubsidy.CurrencyChoiceRS", this);
+			this.getView().addDependent(this.fragments._oCurrencyDialogRS);
+			// forward compact/cozy style into Dialog
+			this.fragments._oCurrencyDialogRS.addStyleClass(this.getOwnerComponent().getContentDensityClass());
+		}
+
+		this.fragments._oCurrencyDialogRS.open();
+	},
 
 
-		_initLocalModels: function () {
-
-			// Initialize local models for claims and advances
+	_initLocalModels: function () {			// Initialize local models for claims and advances
 			const oLocalClaimsModel = new JSONModel({ items: [] });
 			this.getView().setModel(oLocalClaimsModel, "clm");
 
@@ -793,6 +828,7 @@ sap.ui.define([
 		const oExpenseTypeModel = new JSONModel();
 		const oApplicationReasonModel = new JSONModel();
 		const oDwellingRentTypeModel = new JSONModel();
+		const oCurrencyRSModel = new JSONModel();
 
 		this.setModel(oGradeModel, "gradeModel");
 		this.setModel(oSchoolTypeAdditModel, "schoolTypeAdditModel");
@@ -809,6 +845,7 @@ sap.ui.define([
 		this.setModel(oExpenseTypeModel, "expenseTypeModel");
 		this.setModel(oApplicationReasonModel, "applicationReasonModel");
 		this.setModel(oDwellingRentTypeModel, "dwellingRentTypeModel");
+		this.setModel(oCurrencyRSModel, "currencyRSModel");
 	},		/**
 		 * Retrieves UI settings for form fields based on request type and status.
 		 * Applies dynamic visibility, editability and requirement rules to form controls.
@@ -1128,7 +1165,7 @@ sap.ui.define([
 				path: sObjectPath,
 				// Expand only ToEduGrantDetail (advances are managed via local JSON model)
 				parameters: {
-					expand: "ToEduGrantDetail"
+					expand: "ToEduGrantDetail,ToRentalSubsidyDetail"
 				},
 				events: {
 					change: this._onBindingChange.bind(this),
@@ -1137,6 +1174,29 @@ sap.ui.define([
 					},
 					dataReceived: function (oEvent) {
 						oViewModel.setProperty("/busy", false);
+						
+						// Log expanded data properties
+						const oContext = that.getView().getBindingContext();
+						if (oContext) {
+							const oCurrentModel = that.getView().getModel();
+							const oData = oCurrentModel.getObject(oContext.getPath());
+							console.log("=== DATA RECEIVED FROM EXPAND ===");
+							console.log("Header properties:", Object.keys(oData));
+							console.log("RequestSettings exists?", oData.hasOwnProperty("RequestSettings"));
+							console.log("RequestSettings value:", oData.RequestSettings);
+							
+							const oEduGrantDetail = oCurrentModel.getObject(oContext.getPath() + "/ToEduGrantDetail");
+							if (oEduGrantDetail) {
+								console.log("ToEduGrantDetail properties:", Object.keys(oEduGrantDetail));
+							}
+							
+							const oRentalSubsidyDetail = oCurrentModel.getObject(oContext.getPath() + "/ToRentalSubsidyDetail");
+							if (oRentalSubsidyDetail) {
+								console.log("ToRentalSubsidyDetail properties:", Object.keys(oRentalSubsidyDetail));
+							}
+							console.log("==================================");
+						}
+						
 						// Form completion will be calculated if needed
 						//that._restoreFormCompletion();
 						//that._attachCompletionListeners();
@@ -1466,53 +1526,85 @@ sap.ui.define([
 				oModel.setProperty("Note", sComment, oContext);
 			}
 
-			// set busy indicator during save
-			const oViewModel = this.getModel("detailView");
-			oViewModel.setProperty("/busy", true);
+		// set busy indicator during save
+		const oViewModel = this.getModel("detailView");
+		oViewModel.setProperty("/busy", true);
 
-			// For deep insert, retrieve form data and create a new object
-			const oRequestData = oModel.getObject(oContext.getPath());
-			const oEduGrantDetail = oModel.getObject(oContext.getPath() + "/ToEduGrantDetail");
+		// For deep insert, retrieve form data and create a new object
+		const oRequestData = oModel.getObject(oContext.getPath());
+		console.log("=== CHECKING oRequestData PROPERTIES ===");
+		console.log("All properties:", Object.keys(oRequestData));
+		console.log("Properties starting with __:", Object.keys(oRequestData).filter(key => key.startsWith("__")));
+		console.log("Properties starting with To:", Object.keys(oRequestData).filter(key => key.startsWith("To")));
+		console.log("RequestSettings exists?", oRequestData.hasOwnProperty("RequestSettings"));
+		console.log("RequestSettings value:", oRequestData.RequestSettings);
+		console.log("========================================");
+		const oEduGrantDetail = oModel.getObject(oContext.getPath() + "/ToEduGrantDetail");
+		const oRentalSubsidy = oModel.getObject(oContext.getPath() + "/ToRentalSubsidyDetail");
+		
+		console.log("=== CHECKING ToEduGrantDetail PROPERTIES ===");
+		if (oEduGrantDetail) {
+			console.log("ToEduGrantDetail keys:", Object.keys(oEduGrantDetail));
+			console.log("Properties starting with __:", Object.keys(oEduGrantDetail).filter(key => key.startsWith("__")));
+		} else {
+			console.log("ToEduGrantDetail is null/undefined");
+		}
+		
+		const oRentalSubsidyDetail = oModel.getObject(oContext.getPath() + "/ToRentalSubsidyDetail");
+		console.log("=== CHECKING ToRentalSubsidyDetail PROPERTIES ===");
+		if (oRentalSubsidyDetail) {
+			console.log("ToRentalSubsidyDetail keys:", Object.keys(oRentalSubsidyDetail));
+			console.log("Properties starting with __:", Object.keys(oRentalSubsidyDetail).filter(key => key.startsWith("__")));
+		} else {
+			console.log("ToRentalSubsidyDetail is null/undefined");
+		}
+		console.log("============================================");
 
-			// Get advances from local model "adv" instead of OData
-			const oAdvModel = oView.getModel("adv");
-			const aAdvances = oAdvModel.getProperty("/items") || [];
+		// Get advances from local model "adv" instead of OData
+		const oAdvModel = oView.getModel("adv");
+		const aAdvances = oAdvModel.getProperty("/items") || [];
 
-			// Get claims from local model "clm"
-			const oClmModel = oView.getModel("clm");
-			const aClaims = oClmModel.getProperty("/items") || [];
+		// Get claims from local model "clm"
+		const oClmModel = oView.getModel("clm");
+		const aClaims = oClmModel.getProperty("/items") || [];
 
-			// Build the object for deep insert with new GUID
-			const oDeepInsertData = {
-				// Header properties - new GUID
-				...oRequestData,
-				// Deep insert association with form data
-				ToEduGrantDetail: {
-					...oEduGrantDetail,
-				},
-				// Deep insert association for advances from local model
-				ToEduGrantAdvances: aAdvances,
-				// Deep insert association for claims from local model
-				ToEduGrantClaims: aClaims
-			};
+		// Build the object for deep insert with new GUID
+		const oDeepInsertData = {
+			// Header properties - new GUID
+			...oRequestData,
+			// Deep insert association with form data
+			ToEduGrantDetail: {
+				...oEduGrantDetail,
+			},
+			ToRentalSubsidyDetail: {
+				...oRentalSubsidy,
+			},
+			// Deep insert association for advances from local model
+			ToEduGrantAdvances: aAdvances,
+			// Deep insert association for claims from local model
+			ToEduGrantClaims: aClaims
+		};
 
-			// Console log to see the complete object before create
-			console.log("=== DEEP INSERT DATA BEFORE CREATE ===");
-			console.log("Complete oDeepInsertData object:", oDeepInsertData);
-			console.log("ToEduGrantDetail:", oDeepInsertData.ToEduGrantDetail);
-			console.log("ToEduGrantAdvances:", oDeepInsertData.ToEduGrantAdvances);
-			console.log("Number of advances:", oDeepInsertData.ToEduGrantAdvances?.length || 0);
-			console.log("ToEduGrantClaims:", oDeepInsertData.ToEduGrantClaims);
-			console.log("Number of claims:", oDeepInsertData.ToEduGrantClaims?.length || 0);
-			console.log("=====================================");
+		// Console log to see the complete object before create
+		console.log("=== DEEP INSERT DATA BEFORE CREATE ===");
+		console.log("Complete oDeepInsertData object:", oDeepInsertData);
+		console.log("ToEduGrantDetail:", oDeepInsertData.ToEduGrantDetail);
+		console.log("ToEduGrantAdvances:", oDeepInsertData.ToEduGrantAdvances);
+		console.log("Number of advances:", oDeepInsertData.ToEduGrantAdvances?.length || 0);
+		console.log("ToEduGrantClaims:", oDeepInsertData.ToEduGrantClaims);
+		console.log("Number of claims:", oDeepInsertData.ToEduGrantClaims?.length || 0);
+		console.log("=====================================");
+		
+		// DEBUGGER: Stop here to inspect oDeepInsertData before sending to backend
+		debugger;
+		
+		// Override status if provided as parameter
+		if (sStatus) {
+			oDeepInsertData.RequestStatus = sStatus;
+		}
 
-			// Override status if provided as parameter
-			if (sStatus) {
-				oDeepInsertData.RequestStatus = sStatus;
-			}
-
-			// Use create() for deep insert of a new record
-			oModel.create("/RequestHeaderSet", oDeepInsertData, {
+		// Use create() for deep insert of a new record
+		oModel.create("/RequestHeaderSet", oDeepInsertData, {
 				success: function (oData, oResponse) {
 					oViewModel.setProperty("/busy", false);
 					// Success - clean messages and indicate save
@@ -1534,7 +1626,7 @@ sap.ui.define([
 					that._refreshTimeline();
 					// Update UI settings after status change (e.g., from Draft to Submitted)
 					// Note: This will be called again in _onBindingChange after the refresh
-					//that._getUISettings();
+					that._getUISettings();
 					// Navigate to the newly created object
 					const currentUrl = window.location.href;
 					if (currentUrl.includes("DetailOnly")) {

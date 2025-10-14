@@ -21,7 +21,6 @@
                             id="BTNADDADVANCE"
                             type="Default"
                             icon="sap-icon://add"
-                            enabled="{RequestSettings/IsFormEditable}"
                             tooltip="{i18n>add}"
                             press="onAddAdvanceButtonPress"
                         />

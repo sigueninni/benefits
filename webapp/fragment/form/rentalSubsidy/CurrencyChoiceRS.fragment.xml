@@ -1,0 +1,19 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+    xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+>
+    <SelectDialog
+        id="currencyRSSelectDialog"
+        noDataText="{i18n>noCurrencyFound}"
+        title="{i18n>selectCurrency}"
+        search="onSearchCurrencySelectDialog"
+        confirm="onConfirmCurrencySelectDialogPress"
+        items="{currencyRSModel>/items}"
+        rememberSelections="false"
+    >
+        <ObjectListItem title="{currencyRSModel>Id}">
+            <ObjectAttribute text="{currencyRSModel>Txt}" />
+        </ObjectListItem>
+    </SelectDialog>
+</core:FragmentDefinition>

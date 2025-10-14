@@ -317,7 +317,6 @@
                             <FeedInput
                                 post="onFeedInputPosted"
                                 showIcon="false"
-                                visible="{RequestSettings/IsCommentsEnabled}"
                             />
                          
                             <List
@@ -450,7 +449,6 @@
                         id="draftIndicator"
                         state="Saved"
                         minDisplayTime="1500"
-                        visible="{RequestSettings/IsDraftHandlingEnabled}"
                     />
                     <ToolbarSpacer width="" />
                     <Button
@@ -458,13 +456,11 @@
                         text="{i18n>save}"
                         press="onSaveBenefitRequestObject"
                         type="Emphasized"
-                        visible="{RequestSettings/IsDraftHandlingEnabled}"
                     />
                     <Button
                         id="BTNcancel"
                         text="{i18n>cancel}"
                         press="onCancelButtonPress"
-                        visible="{RequestSettings/IsDraftHandlingEnabled}"
                     />
                     <!--                     <Button
                         text="{i18n>saveAndClose}"

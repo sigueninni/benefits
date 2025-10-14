@@ -51,61 +51,68 @@
             </Select>
 
             <Label text="{i18n>reimbursementApplicationType}" />
-            <Select id="RSREA" />
+            <Select id="RSREA" selectedKey="{ToRentalSubsidyDetail/Rsrea}" />
 
             <Label text="{i18n>wageType}" />
-            <Select id="LGART" />
+            <Select id="LGART" selectedKey="{ToRentalSubsidyDetail/Lgart}" />
 
             <Label text="{i18n>operationIndicator}" />
-            <Select id="OPKEN" />
+            <Select id="OPKEN" selectedKey="{ToRentalSubsidyDetail/Opken}" />
 
             <Label text="{i18n>amount}" />
-            <Input id="BETRG" type="Number" />
+            <Input id="BETRG" type="Number" value="{ToRentalSubsidyDetail/Betrg}" />
 
             <Label text="{i18n>currency}" />
-            <Select id="WAERS" />
+            <Input
+                id="WAERS"
+                type="Text"
+                value="{ToRentalSubsidyDetail/Waers}"
+                showValueHelp="true"
+                valueHelpOnly="true"
+                valueHelpRequest="onCurrencyValueHelpPressRS"
+            />
 
             <Label text="{i18n>fixedValueOverwriting}" />
-            <Input id="RSAMT" type="Number" />
+            <Input id="RSAMT" type="Number" value="{ToRentalSubsidyDetail/Rsamt}" />
 
             <Label text="{i18n>currencyWage}" />
-            <Select id="WAAMT" />
+            <Select id="WAAMT" selectedKey="{ToRentalSubsidyDetail/Waamt}" />
 
             <Label text="{i18n>brokersFeeAmount}" />
-            <Input id="RSBFA" type="Number" />
+            <Input id="RSBFA" type="Number" value="{ToRentalSubsidyDetail/Rsbfa}" />
 
             <Label text="{i18n>currencyKey}" />
-            <Select id="WABFA" />
+            <Select id="WABFA" selectedKey="{ToRentalSubsidyDetail/Wabfa}" />
 
             <Label text="{i18n>brokersFeePayDate}" />
-            <DatePicker id="RSFMD" />
+            <DatePicker id="RSFMD" value="{ path: 'ToRentalSubsidyDetail/Rsfmd', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy' }}" />
 
             <Label text="{i18n>dutyStation}" />
-            <Input id="DSTXT" type="Text" showValueHelp="true" />
+            <Input id="DSTXT" type="Text" value="{ToRentalSubsidyDetail/Dstxt}" showValueHelp="true" />
 
             <Label text="{i18n>arrivalDateDutyStation}" />
-            <DatePicker id="RSADT" />
+            <DatePicker id="RSADT" value="{ path: 'ToRentalSubsidyDetail/Rsadt', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy' }}" />
 
             <Label text="{i18n>rentalSubsidyExpiryDate}" />
-            <DatePicker id="RSEXD" />
+            <DatePicker id="RSEXD" value="{ path: 'ToRentalSubsidyDetail/Rsexd', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy' }}" />
 
             <Label text="{i18n>rentalSubsidyLeaseBeginDate}" />
-            <DatePicker id="RSLBD" />
+            <DatePicker id="RSLBD" value="{ path: 'ToRentalSubsidyDetail/Rslbd', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy' }}" />
 
             <Label text="{i18n>rentalSubsidyLeaseEndDate}" />
-            <DatePicker id="RSLED" />
+            <DatePicker id="RSLED" value="{ path: 'ToRentalSubsidyDetail/Rsled', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy' }}" />
 
             <Label text="{i18n>totalDependents}" />
-            <Input id="RSDEP" type="Number" />
+            <Input id="RSDEP" type="Number" value="{ToRentalSubsidyDetail/Rsdep}" />
 
             <Label text="{i18n>dependentsAway}" />
-            <Input id="RSDAS" type="Number" />
+            <Input id="RSDAS" type="Number" value="{ToRentalSubsidyDetail/Rsdas}" />
 
             <Label text="{i18n>electricityFlag}" />
-            <Switch id="RSEIC" customTextOn="{i18n>yes}" customTextOff="{i18n>no}" enabled="true" />
+            <Switch id="RSEIC" state="{ToRentalSubsidyDetail/Rseic}" customTextOn="{i18n>yes}" customTextOff="{i18n>no}" enabled="true" />
 
             <Label text="{i18n>numberOfBedrooms}" />
-            <Input id="RSNBR" type="Number" />
+            <Input id="RSNBR" type="Number" value="{ToRentalSubsidyDetail/Rsnbr}" />
         </form:content>
     </form:SimpleForm>
 </core:FragmentDefinition>
