@@ -1175,28 +1175,6 @@ sap.ui.define([
 					dataReceived: function (oEvent) {
 						oViewModel.setProperty("/busy", false);
 						
-						// Log expanded data properties
-						const oContext = that.getView().getBindingContext();
-						if (oContext) {
-							const oCurrentModel = that.getView().getModel();
-							const oData = oCurrentModel.getObject(oContext.getPath());
-							console.log("=== DATA RECEIVED FROM EXPAND ===");
-							console.log("Header properties:", Object.keys(oData));
-							console.log("RequestSettings exists?", oData.hasOwnProperty("RequestSettings"));
-							console.log("RequestSettings value:", oData.RequestSettings);
-							
-							const oEduGrantDetail = oCurrentModel.getObject(oContext.getPath() + "/ToEduGrantDetail");
-							if (oEduGrantDetail) {
-								console.log("ToEduGrantDetail properties:", Object.keys(oEduGrantDetail));
-							}
-							
-							const oRentalSubsidyDetail = oCurrentModel.getObject(oContext.getPath() + "/ToRentalSubsidyDetail");
-							if (oRentalSubsidyDetail) {
-								console.log("ToRentalSubsidyDetail properties:", Object.keys(oRentalSubsidyDetail));
-							}
-							console.log("==================================");
-						}
-						
 						// Form completion will be calculated if needed
 						//that._restoreFormCompletion();
 						//that._attachCompletionListeners();
@@ -1573,8 +1551,7 @@ sap.ui.define([
 					// Success - clean messages and indicate save
 					that.clearMessages();
 					that.addSuccessMessage(
-						that.getText("requestSavedSuccessfully"),
-						that.getText("requestSavedWithGuid", [oData.Guid])
+						that.getText("requestSavedSuccessfully")
 					);
 					that._resetValidationChecks && that._resetValidationChecks();
 					oView.byId("draftIndicator").showDraftSaved();
@@ -1679,12 +1656,6 @@ sap.ui.define([
 				this.getModel(sModelName).setData({
 					items: oData.results
 				});
-
-				// Log content specifically for currencyPaymentModel
-				if (sModelName === "currencyPaymentModel") {
-					console.log("[CURRENCY PAYMENT MODEL] Loaded data:", oData.results);
-					console.table(oData.results);
-				}
 			},
 			error: (oError) => {
 				// Handle error silently or with minimal logging
@@ -2046,7 +2017,15 @@ sap.ui.define([
 
 		// Get the data object that will be sent to backend
 		const oRequestData = oModel.getObject(oContext.getPath());
-		const oEduGrantDetail = oModel.getObject(oContext.getPath() + "/ToEduGrantDetail");
+		const sRequestType = oRequestData.RequestType;
+
+		// Get the appropriate detail object based on request type
+		let oDetailObject;
+		if (sRequestType === constants.REQUEST_TYPES.EDUCATION_GRANT) { // "01"
+			oDetailObject = oModel.getObject(oContext.getPath() + "/ToEduGrantDetail");
+		} else if (sRequestType === constants.REQUEST_TYPES.RENTAL_SUBSIDY) { // "02"
+			oDetailObject = oModel.getObject(oContext.getPath() + "/ToRentalSubsidyDetail");
+		}
 
 		// Validate each required field by checking the binding data
 		this._aRequiredFields.forEach(function (oFieldInfo) {
@@ -2085,7 +2064,7 @@ sap.ui.define([
 			};
 			
 			// Determine the value by checking both data structures
-			let sValue = findPropertyCaseInsensitive(oEduGrantDetail, sFieldId);
+			let sValue = findPropertyCaseInsensitive(oDetailObject, sFieldId);
 			if (sValue === null) {
 				sValue = findPropertyCaseInsensitive(oRequestData, sFieldId);
 			}

@@ -23,16 +23,19 @@
 - ~~Vérifications : begda < endda et type de requête obligatoire~~
 - ~~Enlever setTimeout~~  
 - ~~Nettoyer l'écran quand pas de requête~~
+- ~~Rental subsidy~~
+- ~~Vérifier les switchs côté front et mettre booleans côté OData & problème des switchs qui se mettent à true après UI SETTINGS~~
 
 ## 📋 Ongoing Tasks
 
-- Rental subsidy
+- Remplir la table ui5pro des fields pour tous les cas
 - Gestion de l'éligibilité
 
 ## ⏳ Pending Tasks
 - Gestion des pièces jointes
+- pas de controle retro/futur mais un warning
+- Bloquer la creation d'advance si une advance non settled dans le passé
 - Attention : le facteur de proration se recalcule si on change egyto... regarder le PAI pour d'autres champs et ajuster au Save (plus simple sinon au changement de date)
-
 - Améliorer le filtre master pour le case sensitive
 - Tri
 - i18n
@@ -41,9 +44,7 @@
 - Corriger les Value Help des eligibility et dependency
 
 ## ⏳ Last to do Tasks
-- Claim/Advance Odata sap
 - Eligibility for Boarding	EGC01	ToDo	Logic to be extracted from the infotype --> not even used and depend on country of school on code but not executed?
 - Completer les fonction de tri/search de la Timeline
 - revoir la 'completeness'  
 - Factoriser dans des méthodes du 'Save'
-- Vérifier les switchs côté front et mettre booleans côté OData & problème des switchs qui se mettent à true après UI SETTINGS
