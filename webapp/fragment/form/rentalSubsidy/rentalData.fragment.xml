@@ -51,10 +51,20 @@
             </Select>
 
             <Label text="{i18n>reimbursementApplicationType}" />
-            <Select id="RSREA" selectedKey="{ToRentalSubsidyDetail/Rsrea}" />
+            <Select 
+                id="RSREA"
+                forceSelection="false"
+                items="{reimbursementApplicationTypeModel>/items}"
+                selectedKey="{ToRentalSubsidyDetail/Rsrea}"
+            >
+                <core:Item 
+                    key="{reimbursementApplicationTypeModel>Id}" 
+                    text="{reimbursementApplicationTypeModel>Txt}" 
+                />
+            </Select>
 
             <Label text="{i18n>wageType}" />
-            <Select id="LGART" selectedKey="{ToRentalSubsidyDetail/Lgart}" />
+            <Input id="LGART" type="Text" value="{ToRentalSubsidyDetail/Lgart}" />
 
             <Label text="{i18n>operationIndicator}" />
             <Select id="OPKEN" selectedKey="{ToRentalSubsidyDetail/Opken}" />
@@ -76,13 +86,27 @@
             <Input id="RSAMT" type="Number" value="{ToRentalSubsidyDetail/Rsamt}" />
 
             <Label text="{i18n>currencyWage}" />
-            <Select id="WAAMT" selectedKey="{ToRentalSubsidyDetail/Waamt}" />
+            <Input
+                id="WAAMT"
+                type="Text"
+                value="{ToRentalSubsidyDetail/Waamt}"
+                showValueHelp="true"
+                valueHelpOnly="true"
+                valueHelpRequest="onCurrencyValueHelpPressRS"
+            />
 
             <Label text="{i18n>brokersFeeAmount}" />
             <Input id="RSBFA" type="Number" value="{ToRentalSubsidyDetail/Rsbfa}" />
 
             <Label text="{i18n>currencyKey}" />
-            <Select id="WABFA" selectedKey="{ToRentalSubsidyDetail/Wabfa}" />
+            <Input
+                id="WABFA"
+                type="Text"
+                value="{ToRentalSubsidyDetail/Wabfa}"
+                showValueHelp="true"
+                valueHelpOnly="true"
+                valueHelpRequest="onCurrencyValueHelpPressRS"
+            />
 
             <Label text="{i18n>brokersFeePayDate}" />
             <DatePicker id="RSFMD" value="{ path: 'ToRentalSubsidyDetail/Rsfmd', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy' }}" />

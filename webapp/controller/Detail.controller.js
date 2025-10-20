@@ -493,9 +493,14 @@ sap.ui.define([
 		onSearchCurrencySelectDialog: function (oEvent) {
 			const sValue = oEvent.getParameter("value").toString();
 			if (sValue !== "") {
-				let oFilter = new Filter("Txt", sap.ui.model.FilterOperator.Contains, sValue);
+				let oFilterId = new Filter("Id", sap.ui.model.FilterOperator.Contains, sValue);
+				let oFilterTxt = new Filter("Txt", sap.ui.model.FilterOperator.Contains, sValue);
+				let oCombinedFilter = new Filter({
+					filters: [oFilterId, oFilterTxt],
+					and: false  // OR logic - search in Id OR Txt
+				});
 				let oBinding = oEvent.getSource().getBinding("items");
-				oBinding.filter([oFilter]);
+				oBinding.filter([oCombinedFilter]);
 			} else {
 				// clear filters
 				oEvent.getSource().getBinding("items").filter([]);
@@ -652,15 +657,13 @@ sap.ui.define([
 
 			let sPath = oElementBinding.getPath(),
 				oObject = oView.getModel().getObject(sPath),
-				sObjectId = oObject.Guid,
-				sObjectName = oObject.Title,
-				oViewModel = this.getModel("detailView");
+			sObjectId = oObject.Guid,
+			sObjectName = oObject.Title,
+			oViewModel = this.getModel("detailView");
 
-			this.getOwnerComponent().oListSelector.selectAListItem(sPath);			// Get UI settings now that binding context is available
-			this._getUISettings();
-		},
-
-		/**
+		this.getOwnerComponent().oListSelector.selectAListItem(sPath);			// Get UI settings now that binding context is available
+		this._getUISettings();
+	},		/**
 		 * Called when metadata is loaded for the OData model.
 		 * Sets up initial busy state and delays for the detail view.
 		 * @private
@@ -828,6 +831,7 @@ sap.ui.define([
 		const oExpenseTypeModel = new JSONModel();
 		const oApplicationReasonModel = new JSONModel();
 		const oDwellingRentTypeModel = new JSONModel();
+		const oReimbursementApplicationTypeModel = new JSONModel();
 		const oCurrencyRSModel = new JSONModel();
 
 		this.setModel(oGradeModel, "gradeModel");
@@ -845,6 +849,7 @@ sap.ui.define([
 		this.setModel(oExpenseTypeModel, "expenseTypeModel");
 		this.setModel(oApplicationReasonModel, "applicationReasonModel");
 		this.setModel(oDwellingRentTypeModel, "dwellingRentTypeModel");
+		this.setModel(oReimbursementApplicationTypeModel, "reimbursementApplicationTypeModel");
 		this.setModel(oCurrencyRSModel, "currencyRSModel");
 	},		/**
 		 * Retrieves UI settings for form fields based on request type and status.

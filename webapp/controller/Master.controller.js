@@ -384,11 +384,36 @@ sap.ui.define([
                     return;
                 }
 
-                //Check begda le endda
-                //TODO - check begda lt endda and retro 
+                // Check that start date is before end date
+                const oTypeModel = this.fragments._oTypeReqDialog.getModel("typeModel");
+                let begda = oTypeModel.getProperty("/Begda");
+                let endda = oTypeModel.getProperty("/Endda");
+
+                // Convert string dates to Date objects for comparison
+                if (begda && typeof begda === "string") begda = new Date(begda);
+                if (endda && typeof endda === "string") endda = new Date(endda);
+
+                if (begda && endda && begda >= endda) {
+                    const sErrorMessage = this.getText("startDateBeforeEndDate");
+                    
+                    // Set error state on date fields
+                    oTypeModel.setProperty("/startDateValueState", "Error");
+                    oTypeModel.setProperty("/startDateValueStateText", sErrorMessage);
+                    oTypeModel.setProperty("/endDateValueState", "Error");
+                    oTypeModel.setProperty("/endDateValueStateText", sErrorMessage);
+                    
+                    // Show error message
+                    sap.m.MessageBox.error(sErrorMessage);
+                    return;
+                }
+
+                // Clear error states if validation passes
+                oTypeModel.setProperty("/startDateValueState", "None");
+                oTypeModel.setProperty("/startDateValueStateText", "");
+                oTypeModel.setProperty("/endDateValueState", "None");
+                oTypeModel.setProperty("/endDateValueStateText", "");
 
                 // if Education Grant , open Child dialog Choice otherwise create request directly
-                const oTypeModel = this.fragments._oTypeReqDialog.getModel("typeModel");
                 let ReqType = oTypeModel.getProperty("/RequestType");
                 if (ReqType === "01") { // If Education Grant
                     this._openChildDialog();

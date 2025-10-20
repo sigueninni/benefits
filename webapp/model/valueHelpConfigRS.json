@@ -9,6 +9,10 @@
       "method": "GET_DWEL_RENT_TYPE_LIST"
     },
     {
+      "modelName": "reimbursementApplicationTypeModel",
+      "method": "GET_REIMB_APP_TYPE_LIST"
+    },
+    {
       "modelName": "currencyRSModel",
       "method": "GET_CURRENCY_LIST"
     }

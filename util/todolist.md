@@ -28,11 +28,12 @@
 
 ## 📋 Ongoing Tasks
 
-- Remplir la table ui5pro des fields pour tous les cas
 - Gestion de l'éligibilité
+- Remplir la table ui5pro des fields pour tous les cas
+- Gestion des pièces jointes
 
 ## ⏳ Pending Tasks
-- Gestion des pièces jointes
+
 - pas de controle retro/futur mais un warning
 - Bloquer la creation d'advance si une advance non settled dans le passé
 - Attention : le facteur de proration se recalcule si on change egyto... regarder le PAI pour d'autres champs et ajuster au Save (plus simple sinon au changement de date)
