@@ -680,7 +680,7 @@ sap.ui.define([
 	},
 
 	/**
-	 * Handler to remove an attachment from the local model
+	 * Handler to remove an attachment from the local model or mark for deletion
 	 * @param {sap.ui.base.Event} oEvent - The press event
 	 * @public
 	 */
@@ -696,13 +696,19 @@ sap.ui.define([
 		const oAttachmentsModel = this.getView().getModel("attachments");
 		const aItems = oAttachmentsModel.getProperty("/items") || [];
 		
-		// Find and remove the matching item
+		// Find the matching item
 		const nIndex = aItems.findIndex(item => 
 			item.AttType === oAttachment.AttType && item.Filename === oAttachment.Filename
 		);
 		
 		if (nIndex > -1) {
-			aItems.splice(nIndex, 1);
+			if (oAttachment.IncNb === "00") {
+				// New attachment not yet saved - remove from local model immediately
+				aItems.splice(nIndex, 1);
+			} else {
+				// Existing attachment from backend - mark for deletion
+				aItems[nIndex].toDelete = true;
+			}
 			oAttachmentsModel.setProperty("/items", aItems);
 			sap.m.MessageToast.show(this.getText("fileRemoved") + ": " + oAttachment.Filename);
 		}
@@ -1832,8 +1838,14 @@ sap.ui.define([
 					// Update UI settings after status change (e.g., from Draft to Submitted)
 					// Note: This will be called again in _onBindingChange after the refresh
 					that._getUISettings();
-					// Upload attachments AFTER request is successfully saved
-					that._uploadAttachments(oData.Guid);
+					// Delete attachments marked for deletion, then upload new attachments
+					that._deleteAttachments(oData.Guid).then(function() {
+						that._uploadAttachments(oData.Guid);
+					}).catch(function(oError) {
+						console.error("Error deleting attachments", oError);
+						// Continue with upload even if delete fails
+						that._uploadAttachments(oData.Guid);
+					});
 					// Navigate to the newly created object
 					const currentUrl = window.location.href;
 					if (currentUrl.includes("DetailOnly")) {
@@ -2271,6 +2283,65 @@ sap.ui.define([
 				}
 			});
 		},
+
+		/**
+	 * Deletes attachments marked for deletion from backend
+	 * Uses ZHR_BENEFITS_COMMON_SRV AttachmentSet DELETE
+	 * @param {string} sGuid - The request GUID
+	 * @private
+	 */
+	_deleteAttachments: function(sGuid) {
+		const that = this;
+		const oAttachmentsModel = this.getView().getModel("attachments");
+		const aAttachments = oAttachmentsModel.getProperty("/items") || [];
+		
+		// Filter attachments marked for deletion
+		const aToDelete = aAttachments.filter(att => att.toDelete === true);
+		
+		if (aToDelete.length === 0) {
+			return Promise.resolve(); // No files to delete
+		}
+		
+		// Use the common service model
+		const oCommonModel = this.getOwnerComponent().getModel("commonModel");
+		
+		if (!oCommonModel) {
+			sap.m.MessageBox.error(this.getText("commonServiceNotAvailable"));
+			return Promise.reject();
+		}
+		
+		// Create promises for all deletions
+		const aDeletePromises = aToDelete.map(function(oAtt) {
+			return new Promise(function(resolve, reject) {
+				// Build the path with key parameters
+				// AttachmentSet(Guid=guid'xxx',AttachType='001',IncNb='01')/$value
+				const sPath = "/AttachmentSet(Guid=guid'" + sGuid + 
+							 "',AttachType='" + oAtt.AttType + 
+							 "',IncNb='" + oAtt.IncNb + "')/$value";
+				
+				oCommonModel.remove(sPath, {
+					success: function() {
+						console.log("Attachment deleted:", oAtt.Filename);
+						resolve();
+					},
+					error: function(oError) {
+						console.error("Error deleting attachment:", oAtt.Filename, oError);
+						reject(oError);
+					}
+				});
+			});
+		});
+		
+		// Wait for all deletions to complete
+		return Promise.all(aDeletePromises).then(function() {
+			// Remove deleted items from local model
+			const aRemainingItems = aAttachments.filter(att => att.toDelete !== true);
+			oAttachmentsModel.setProperty("/items", aRemainingItems);
+		});
+	},
+
+
+	
 
 	/**
 	 * Validates all required fields in the current form

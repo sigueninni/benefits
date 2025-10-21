@@ -25,7 +25,10 @@
                     <List
                         items="{
                             path: 'attachments>/items',
-                            filters: [{path: 'AttType', operator: 'EQ', value1: '005'}]
+                            filters: [
+                                {path: 'AttType', operator: 'EQ', value1: '005'},
+                                {path: 'toDelete', operator: 'NE', value1: true}
+                            ]
                         }"
                         noDataText="{i18n>noFilesAttached}"
                         class="sapUiSmallMarginTop">
@@ -59,7 +62,10 @@
                     <List
                         items="{
                             path: 'attachments>/items',
-                            filters: [{path: 'AttType', operator: 'EQ', value1: '004'}]
+                            filters: [
+                                {path: 'AttType', operator: 'EQ', value1: '004'},
+                                {path: 'toDelete', operator: 'NE', value1: true}
+                            ]
                         }"
                         noDataText="{i18n>noFilesAttached}"
                         class="sapUiSmallMarginTop">
@@ -93,7 +99,10 @@
                     <List
                         items="{
                             path: 'attachments>/items',
-                            filters: [{path: 'AttType', operator: 'EQ', value1: '010'}]
+                            filters: [
+                                {path: 'AttType', operator: 'EQ', value1: '010'},
+                                {path: 'toDelete', operator: 'NE', value1: true}
+                            ]
                         }"
                         noDataText="{i18n>noFilesAttached}"
                         class="sapUiSmallMarginTop">
@@ -130,7 +139,10 @@
                     <List
                         items="{
                             path: 'attachments>/items',
-                            filters: [{path: 'AttType', operator: 'EQ', value1: '009'}]
+                            filters: [
+                                {path: 'AttType', operator: 'EQ', value1: '009'},
+                                {path: 'toDelete', operator: 'NE', value1: true}
+                            ]
                         }"
                         noDataText="{i18n>noFilesAttached}"
                         class="sapUiSmallMarginTop">
@@ -164,7 +176,10 @@
                     <List
                         items="{
                             path: 'attachments>/items',
-                            filters: [{path: 'AttType', operator: 'EQ', value1: '011'}]
+                            filters: [
+                                {path: 'AttType', operator: 'EQ', value1: '011'},
+                                {path: 'toDelete', operator: 'NE', value1: true}
+                            ]
                         }"
                         noDataText="{i18n>noFilesAttached}"
                         class="sapUiSmallMarginTop">
