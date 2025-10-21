@@ -25,12 +25,14 @@
 - ~~Nettoyer l'écran quand pas de requête~~
 - ~~Rental subsidy~~
 - ~~Vérifier les switchs côté front et mettre booleans côté OData & problème des switchs qui se mettent à true après UI SETTINGS~~
+- ~~Gestion de l'éligibilité~~
 
 ## 📋 Ongoing Tasks
 
-- Gestion de l'éligibilité
-- Remplir la table ui5pro des fields pour tous les cas
 - Gestion des pièces jointes
+- Claim sur Advance 
+- Checker que egyfr si changée, change begda( same pour egyto et endda)
+- Remplir la table ui5pro des fields pour tous les cas
 
 ## ⏳ Pending Tasks
 
@@ -45,6 +47,9 @@
 - Corriger les Value Help des eligibility et dependency
 
 ## ⏳ Last to do Tasks
+
+- ajouter les popup dinfo sur EG et sur ...voir les échanges
+- Special education grant coté employé
 - Eligibility for Boarding	EGC01	ToDo	Logic to be extracted from the infotype --> not even used and depend on country of school on code but not executed?
 - Completer les fonction de tri/search de la Timeline
 - revoir la 'completeness'  

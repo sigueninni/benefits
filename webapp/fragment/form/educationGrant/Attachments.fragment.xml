@@ -2,8 +2,7 @@
     xmlns:core="sap.ui.core"
     xmlns="sap.m"
     xmlns:u="sap.ui.unified"
-    xmlns:form="sap.ui.layout.form"
-    xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
+    xmlns:form="sap.ui.layout.form">
 
     <VBox>
         <Label text="{i18n>attachments}" class="sapUiMediumMarginBottom" />
@@ -15,45 +14,102 @@
                 <VBox class="sapUiSmallMarginBottom">
                     <Label text="{i18n>proFormaInvoice}" class="sapUiSmallMarginBottom" />
                     <u:FileUploader
-                        id="proFormaUpload"
+                        id="005"
                         multiple="true"
-                        uploadUrl="/upload/proforma"
-                        change="onProFormaFileChange"
+                        change="onAttachmentFileChange"
                         fileType="pdf,jpg,jpeg,png"
                         maximumFileSize="5"
                         buttonText="{i18n>selectFiles}"
                         placeholder="{i18n>chooseProFormaFiles}"
                     />
+                    <List
+                        items="{
+                            path: 'attachments>/items',
+                            filters: [{path: 'AttType', operator: 'EQ', value1: '005'}]
+                        }"
+                        noDataText="{i18n>noFilesAttached}"
+                        class="sapUiSmallMarginTop">
+                        <CustomListItem type="Active" press="onViewAttachment">
+                            <HBox justifyContent="SpaceBetween" alignItems="Center" width="100%">
+                                <HBox alignItems="Center">
+                                    <core:Icon src="sap-icon://document" class="sapUiTinyMarginEnd" />
+                                    <Text text="{attachments>Filename}" />
+                                </HBox>
+                                <Button 
+                                    icon="sap-icon://decline" 
+                                    type="Transparent"
+                                    press="onRemoveAttachment" />
+                            </HBox>
+                        </CustomListItem>
+                    </List>
                 </VBox>
                 
                 <!-- Payment Receipts -->
                 <VBox class="sapUiSmallMarginBottom">
                     <Label text="{i18n>paymentReceipts}" class="sapUiSmallMarginBottom" />
                     <u:FileUploader
-                        id="paymentReceiptsUpload"
+                        id="004"
                         multiple="true"
-                        uploadUrl="/upload/paymentreceipts"
-                        change="onPaymentReceiptsFileChange"
+                        change="onAttachmentFileChange"
                         fileType="pdf,jpg,jpeg,png"
                         maximumFileSize="5"
                         buttonText="{i18n>selectFiles}"
                         placeholder="{i18n>choosePaymentReceiptsFiles}"
                     />
+                    <List
+                        items="{
+                            path: 'attachments>/items',
+                            filters: [{path: 'AttType', operator: 'EQ', value1: '004'}]
+                        }"
+                        noDataText="{i18n>noFilesAttached}"
+                        class="sapUiSmallMarginTop">
+                        <CustomListItem type="Active" press="onViewAttachment">
+                            <HBox justifyContent="SpaceBetween" alignItems="Center" width="100%">
+                                <HBox alignItems="Center">
+                                    <core:Icon src="sap-icon://document" class="sapUiTinyMarginEnd" />
+                                    <Text text="{attachments>Filename}" />
+                                </HBox>
+                                <Button 
+                                    icon="sap-icon://decline" 
+                                    type="Transparent"
+                                    press="onRemoveAttachment" />
+                            </HBox>
+                        </CustomListItem>
+                    </List>
                 </VBox>
                 
                 <!-- Teacher Diploma -->
                 <VBox class="sapUiSmallMarginBottom">
                     <Label text="{i18n>teacherDiploma}" class="sapUiSmallMarginBottom" />
                     <u:FileUploader
-                        id="teacherDiplomaUpload"
+                        id="010"
                         multiple="true"
-                        uploadUrl="/upload/teacherdiploma"
-                        change="onTeacherDiplomaFileChange"
+                        change="onAttachmentFileChange"
                         fileType="pdf,jpg,jpeg,png"
                         maximumFileSize="5"
                         buttonText="{i18n>selectFiles}"
                         placeholder="{i18n>chooseTeacherDiplomaFiles}"
                     />
+                    <List
+                        items="{
+                            path: 'attachments>/items',
+                            filters: [{path: 'AttType', operator: 'EQ', value1: '010'}]
+                        }"
+                        noDataText="{i18n>noFilesAttached}"
+                        class="sapUiSmallMarginTop">
+                        <CustomListItem type="Active" press="onViewAttachment">
+                            <HBox justifyContent="SpaceBetween" alignItems="Center" width="100%">
+                                <HBox alignItems="Center">
+                                    <core:Icon src="sap-icon://document" class="sapUiTinyMarginEnd" />
+                                    <Text text="{attachments>Filename}" />
+                                </HBox>
+                                <Button 
+                                    icon="sap-icon://decline" 
+                                    type="Transparent"
+                                    press="onRemoveAttachment" />
+                            </HBox>
+                        </CustomListItem>
+                    </List>
                 </VBox>
             </VBox>
             
@@ -63,30 +119,68 @@
                 <VBox class="sapUiSmallMarginBottom">
                     <Label text="{i18n>receipts}" class="sapUiSmallMarginBottom" />
                     <u:FileUploader
-                        id="receiptsUpload"
+                        id="009"
                         multiple="true"
-                        uploadUrl="/upload/receipts"
-                        change="onReceiptsFileChange"
+                        change="onAttachmentFileChange"
                         fileType="pdf,jpg,jpeg,png"
                         maximumFileSize="5"
                         buttonText="{i18n>selectFiles}"
                         placeholder="{i18n>chooseReceiptsFiles}"
                     />
+                    <List
+                        items="{
+                            path: 'attachments>/items',
+                            filters: [{path: 'AttType', operator: 'EQ', value1: '009'}]
+                        }"
+                        noDataText="{i18n>noFilesAttached}"
+                        class="sapUiSmallMarginTop">
+                        <CustomListItem type="Active" press="onViewAttachment">
+                            <HBox justifyContent="SpaceBetween" alignItems="Center" width="100%">
+                                <HBox alignItems="Center">
+                                    <core:Icon src="sap-icon://document" class="sapUiTinyMarginEnd" />
+                                    <Text text="{attachments>Filename}" />
+                                </HBox>
+                                <Button 
+                                    icon="sap-icon://decline" 
+                                    type="Transparent"
+                                    press="onRemoveAttachment" />
+                            </HBox>
+                        </CustomListItem>
+                    </List>
                 </VBox>
                 
                 <!-- Teacher Passport/ID -->
                 <VBox class="sapUiSmallMarginBottom">
                     <Label text="{i18n>teacherPassportId}" class="sapUiSmallMarginBottom" />
                     <u:FileUploader
-                        id="teacherPassportUpload"
+                        id="011"
                         multiple="true"
-                        uploadUrl="/upload/teacherpassport"
-                        change="onTeacherPassportFileChange"
+                        change="onAttachmentFileChange"
                         fileType="pdf,jpg,jpeg,png"
                         maximumFileSize="5"
                         buttonText="{i18n>selectFiles}"
                         placeholder="{i18n>choosePassportFiles}"
                     />
+                    <List
+                        items="{
+                            path: 'attachments>/items',
+                            filters: [{path: 'AttType', operator: 'EQ', value1: '011'}]
+                        }"
+                        noDataText="{i18n>noFilesAttached}"
+                        class="sapUiSmallMarginTop">
+                        <CustomListItem type="Active" press="onViewAttachment">
+                            <HBox justifyContent="SpaceBetween" alignItems="Center" width="100%">
+                                <HBox alignItems="Center">
+                                    <core:Icon src="sap-icon://document" class="sapUiTinyMarginEnd" />
+                                    <Text text="{attachments>Filename}" />
+                                </HBox>
+                                <Button 
+                                    icon="sap-icon://decline" 
+                                    type="Transparent"
+                                    press="onRemoveAttachment" />
+                            </HBox>
+                        </CustomListItem>
+                    </List>
                 </VBox>
             </VBox>
         </HBox>

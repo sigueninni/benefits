@@ -160,21 +160,127 @@ sap.ui.define([
 			});
 		},
 
-		/** Show always the generic error message */
-		_showODataError: function () {
-			const msg = this.getText("MSG_SERVICE_ERROR");
+		/** 
+		 * Show OData error message
+		 * @param {string} sCustomMessage - Optional custom error message. If not provided, shows generic error message
+		 * @private
+		 */
+		_showODataError: function (sCustomMessage) {
+			const msg = sCustomMessage || this.getText("MSG_SERVICE_ERROR");
+			const oText = new Text({ text: msg, wrapping: true });
+			oText.addStyleClass("sapUiSmallMargin");
+			
 			new Dialog({
 				title: this.getText("LBL_ERROR"),
 				state: "Error",
 				icon: "sap-icon://warning",
-				content: new Text({ text: msg, wrapping: true }),
+				content: oText,
 				beginButton: new Button({
 					text: this.getText("LBL_CLOSE"),
 					press: function () { this.getParent().close(); }
 				}),
 				afterClose: function () { this.destroy(); }
 			}).open();
-			this.fError(); // fallback
+			// this.fError(); // fallback - commented to avoid double popup
+		},
+
+		/**
+		 * Show a message based on severity level from SAP backend
+		 * @param {string} sSeverity - Message severity (error, warning, info, success)
+		 * @param {string} sMessage - The message text to display
+		 * @private
+		 */
+		_showMessageBySeverity: function (sSeverity, sMessage) {
+			if (!sMessage) return;
+
+			const severity = (sSeverity || "error").toLowerCase();
+			
+			switch (severity) {
+				case "error":
+					const oErrorText = new Text({ text: sMessage, wrapping: true });
+					oErrorText.addStyleClass("sapUiSmallMargin");
+					
+					new Dialog({
+						title: this.getText("LBL_ERROR"),
+						state: "Error",
+						icon: "sap-icon://error",
+						content: oErrorText,
+						beginButton: new Button({
+							text: this.getText("LBL_CLOSE"),
+							press: function () { this.getParent().close(); }
+						}),
+						afterClose: function () { this.destroy(); }
+					}).open();
+					break;
+					
+				case "warning":
+					const oWarningText = new Text({ text: sMessage, wrapping: true });
+					oWarningText.addStyleClass("sapUiSmallMargin");
+					
+					new Dialog({
+						title: this.getText("LBL_WARNING"),
+						state: "Warning",
+						icon: "sap-icon://warning",
+						content: oWarningText,
+						beginButton: new Button({
+							text: this.getText("LBL_CLOSE"),
+							press: function () { this.getParent().close(); }
+						}),
+						afterClose: function () { this.destroy(); }
+					}).open();
+					break;
+					
+				case "info":
+				case "information":
+					const oInfoText = new Text({ text: sMessage, wrapping: true });
+					oInfoText.addStyleClass("sapUiSmallMargin");
+					
+					new Dialog({
+						title: this.getText("LBL_INFO"),
+						state: "Information",
+						icon: "sap-icon://information",
+						content: oInfoText,
+						beginButton: new Button({
+							text: this.getText("LBL_CLOSE"),
+							press: function () { this.getParent().close(); }
+						}),
+						afterClose: function () { this.destroy(); }
+					}).open();
+					break;
+					
+				case "success":
+					MessageToast.show(sMessage, {
+						duration: 3000,
+						width: "15em"
+					});
+					break;
+					
+				default:
+					// Default to error if severity is unknown
+					this._showODataError(sMessage);
+					break;
+			}
+		},
+
+		/**
+		 * Parse SAP message from OData response header and display it
+		 * @param {object} oResponse - The OData response object (from __changeResponses[0])
+		 * @private
+		 */
+		_parseSapMessageFromResponse: function (oResponse) {
+			if (!oResponse || !oResponse.headers) return;
+
+			const sSapMessageHeader = oResponse.headers["sap-message"];
+			if (!sSapMessageHeader) return;
+
+			try {
+				const oSapMessage = JSON.parse(sSapMessageHeader);
+				if (oSapMessage && oSapMessage.message && oSapMessage.severity) {
+					this._showMessageBySeverity(oSapMessage.severity, oSapMessage.message);
+				}
+			} catch (e) {
+				console.warn("Could not parse sap-message header:", e);
+			}
 		},
 
 		/** Service Error (fallback) */

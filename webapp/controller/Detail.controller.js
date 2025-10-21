@@ -556,15 +556,165 @@ sap.ui.define([
 			}
 		},
 
-		/*************************************************************************************************/
-		/********************************  End of Currency Management *************************************/
-		/*************************************************************************************************/
+	/*************************************************************************************************/
+	/********************************  End of Currency Management *************************************/
+	/*************************************************************************************************/
 
-		/* =========================================================== */
-		/* Internal & private  methods                                 */
-		/* =========================================================== */
+	/*************************************************************************************************/
+	/********************************  Begin of Attachment Management ********************************/
+	/*************************************************************************************************/
 
+	/**
+	 * Generic handler for all attachment file selections
+	 * Reads the FileUploader ID to determine attachment type
+	 * Validates, converts to Base64, and stores in local model
+	 * @param {sap.ui.base.Event} oEvent - The file change event
+	 * @public
+	 */
+	onAttachmentFileChange: function(oEvent) {
+		const that = this;
+		const oFileUploader = oEvent.getSource();
+		
+		// Get attachment type from FileUploader ID (005, 004, 010, 009, 011)
+		const sAttachmentType = oFileUploader.getId().split("--").pop(); // Remove view prefix
+		
+		const domRef = oFileUploader.getFocusDomRef();
+		const aFiles = domRef.files; // Read files IMMEDIATELY
+		
+		if (!aFiles || aFiles.length === 0) {
+			return;
+		}
+		
+		const oAttachmentsModel = this.getView().getModel("attachments");
+		const aExistingItems = oAttachmentsModel.getProperty("/items") || [];
+		
+		// Process each file immediately
+		Array.from(aFiles).forEach(function(file) {
+			// Validate file type
+			const sFileType = file.type;
+			const aAllowedTypes = ["application/pdf", "image/jpeg", "image/jpg", "image/png"];
+			
+			if (!aAllowedTypes.includes(sFileType)) {
+				sap.m.MessageBox.error(that.getText("invalidFileType") + ": " + file.name);
+				return;
+			}
+			
+			// Validate file size (5MB max)
+			const nMaxSize = 5 * 1024 * 1024; // 5MB in bytes
+			if (file.size > nMaxSize) {
+				sap.m.MessageBox.error(that.getText("fileTooLarge") + ": " + file.name);
+				return;
+			}
+			
+			// Read file content immediately
+			const reader = new FileReader();
+			
+			reader.onload = function(e) {
+				const sContent = e.currentTarget.result; // Base64 string
+				
+				// Add to local model
+				aExistingItems.push({
+					AttType: sAttachmentType,
+					IncNb: '00', // New files always start with '00'
+					Filename: file.name,
+					Filetype: file.type,
+					Filecontent: sContent
+				});
+				
+				oAttachmentsModel.setProperty("/items", aExistingItems);
+				sap.m.MessageToast.show(that.getText("fileAdded") + ": " + file.name);
+			};
+			
+			reader.onerror = function(ex) {
+				sap.m.MessageBox.error(that.getText("fileReadError") + ": " + file.name);
+			};
+			
+			reader.readAsDataURL(file); // Convert to Base64 immediately
+		});
+		
+		// Clear the FileUploader to allow re-selection of same file
+		oFileUploader.clear();
+	},
 
+	/**
+	 * Handler to view/download an attachment
+	 * @param {sap.ui.base.Event} oEvent - The press event
+	 * @public
+	 */
+	onViewAttachment: function(oEvent) {
+		const oListItem = oEvent.getSource();
+		const oContext = oListItem.getBindingContext("attachments");
+		
+		if (!oContext) {
+			console.error("No binding context found for attachment");
+			return;
+		}
+		
+		const oAttachment = oContext.getObject();
+		console.log("Attachment object:", oAttachment);
+		
+		// Only allow viewing files that are saved on backend (IncNb != '00')
+		if (oAttachment.IncNb === "00") {
+			sap.m.MessageToast.show(this.getText("fileNotYetSaved"));
+			return;
+		}
+		
+		// Get the Guid from the main view context
+		const oBindingContext = this.getView().getBindingContext();
+		if (!oBindingContext) {
+			console.error("No binding context for view");
+			return;
+		}
+		
+		const sGuid = oBindingContext.getProperty("Guid");
+		console.log("Request Guid:", sGuid);
+		console.log("AttachType:", oAttachment.AttType);
+		console.log("IncNb:", oAttachment.IncNb);
+		
+		// Construct the URL to download the file
+		const sUrl = `/sap/opu/odata/sap/ZHR_BENEFITS_COMMON_SRV/AttachmentSet(Guid=guid'${sGuid}',AttachType='${oAttachment.AttType}',IncNb='${oAttachment.IncNb}')/$value`;
+		console.log("Opening URL:", sUrl);
+		
+		// Open in new window
+		window.open(sUrl, "_blank");
+	},
+
+	/**
+	 * Handler to remove an attachment from the local model
+	 * @param {sap.ui.base.Event} oEvent - The press event
+	 * @public
+	 */
+	onRemoveAttachment: function(oEvent) {
+		// Stop event propagation to prevent triggering the list item's press event
+		oEvent.cancelBubble();
+		
+		const oButton = oEvent.getSource();
+		const oListItem = oButton.getParent().getParent(); // Button -> HBox -> CustomListItem
+		const oContext = oListItem.getBindingContext("attachments");
+		const oAttachment = oContext.getObject();
+		
+		const oAttachmentsModel = this.getView().getModel("attachments");
+		const aItems = oAttachmentsModel.getProperty("/items") || [];
+		
+		// Find and remove the matching item
+		const nIndex = aItems.findIndex(item => 
+			item.AttType === oAttachment.AttType && item.Filename === oAttachment.Filename
+		);
+		
+		if (nIndex > -1) {
+			aItems.splice(nIndex, 1);
+			oAttachmentsModel.setProperty("/items", aItems);
+			sap.m.MessageToast.show(this.getText("fileRemoved") + ": " + oAttachment.Filename);
+		}
+	},
+
+	/*************************************************************************************************/
+	/********************************  End of Attachment Management **********************************/
+	/*************************************************************************************************/
+
+	/* =========================================================== */
+	/* Internal & private  methods                                 */
+	/* =========================================================== */
 		/**
  * Internal method to submit the benefit request with comment
  * @param {string} sComment - The submission comment
@@ -626,14 +776,13 @@ sap.ui.define([
 				// Load value help data for dropdown lists based on request type
 				this._loadValueHelpData(sRequestType);
 
-				// Bind Timeline with new request Guid filter
-				this._bindTimelineData(sBenefitRequestId);
+			// Bind Timeline with new request Guid filter
+			this._bindTimelineData(sBenefitRequestId);
 
-				// Load claims and advances from backend (like Timeline)
-				this._initLocalAdvFromBackend(sBenefitRequestId);
-				this._initLocalClmFromBackend(sBenefitRequestId);
-
-
+			// Load claims and advances from backend (like Timeline)
+			this._initLocalAdvFromBackend(sBenefitRequestId);
+			this._initLocalClmFromBackend(sBenefitRequestId);
+			this._initLocalAttachmentsFromBackend(sBenefitRequestId);
 			}.bind(this));
 		},
 
@@ -804,6 +953,10 @@ sap.ui.define([
 
 			const oLocalAdvancesModel = new JSONModel({ items: [] });
 			this.getView().setModel(oLocalAdvancesModel, "adv");
+
+			// Initialize local model for attachments
+			const oLocalAttachmentsModel = new JSONModel({ items: [] });
+			this.getView().setModel(oLocalAttachmentsModel, "attachments");
 
 			// Initialize value help models
 			this._initializeValueHelpModels();
@@ -1268,6 +1421,113 @@ sap.ui.define([
 		},
 
 		/**
+		 * Reads AttachmentSet from common service backend and populates local "attachments" model
+		 * @param {string} sGuid - The request GUID
+		 * @private
+		 */
+		_initLocalAttachmentsFromBackend: function (sGuid) {
+			const oCommonModel = this.getOwnerComponent().getModel("commonModel");
+			const oAttachmentsModel = this.getView().getModel("attachments");
+
+			// If request is not yet persisted, leave empty
+			if (!sGuid || sGuid === "00000000-0000-0000-0000-000000000000") {
+				oAttachmentsModel.setProperty("/items", []);
+				return;
+			}
+
+			// Check if common model is available
+			if (!oCommonModel) {
+				oAttachmentsModel.setProperty("/items", []);
+				return;
+			}
+
+			// Create filter for Guid
+			const oFilter = new Filter("Guid", FilterOperator.EQ, sGuid);
+
+			// Read attachments from AttachmentSet entity set with GUID filter
+			oCommonModel.read("/AttachmentSet", {
+				filters: [oFilter],
+				success: (oData) => {
+					const aAttachments = (oData && oData.results) ? oData.results : [];
+					// Map backend data to local model structure
+					const items = aAttachments.map(x => ({
+						AttType: x.AttachType || "",
+						IncNb: x.IncNb || "00",
+						Filename: x.Filename || "",
+						Filetype: x.Filetype || "",
+						Filecontent: x.Filecontent || ""
+					}));
+					oAttachmentsModel.setProperty("/items", items);
+				},
+				error: () => {
+					// On read error, keep attachments empty
+					oAttachmentsModel.setProperty("/items", []);
+				}
+			});
+		},
+
+		/**
+		 * Uploads all attachments stored in local model to backend
+		 * Uses ZHR_BENEFITS_COMMON_SRV AttachmentSet with Upload action
+		 * @param {string} sGuid - The request GUID
+		 * @private
+		 */
+		_uploadAttachments: function(sGuid) {
+			const that = this;
+			const oAttachmentsModel = this.getView().getModel("attachments");
+			const aAttachments = oAttachmentsModel.getProperty("/items") || [];
+			
+			// Use the common service model
+			const oCommonModel = this.getOwnerComponent().getModel("commonModel");
+			
+			if (!oCommonModel) {
+				sap.m.MessageBox.error(this.getText("commonServiceNotAvailable"));
+				return;
+			}
+			
+			// Filter only new attachments (IncNb = '00')
+			const aNewAttachments = aAttachments.filter(att => att.IncNb === '00');
+			
+			if (aNewAttachments.length === 0) {
+				return; // No new files to upload
+			}
+			
+			// Create promises for all uploads
+			const aUploadPromises = aNewAttachments.map(function(oAtt) {
+				return new Promise(function(resolve, reject) {
+					const oPayload = {
+						Filename: oAtt.Filename,
+						Filetype: oAtt.Filetype,
+						Filecontent: oAtt.Filecontent
+					};
+					
+					// Build the path with key parameters
+					// AttachmentSet(Guid=guid'xxx',AttachType='005',IncNb='00')/Upload
+					const sPath = "/AttachmentSet(Guid=guid'" + sGuid + 
+								 "',AttachType='" + oAtt.AttType + 
+								 "',IncNb='00')/Upload";
+					
+					oCommonModel.create(sPath, oPayload, {
+						success: function() {
+							sap.m.MessageToast.show(that.getText("fileUploaded") + ": " + oAtt.Filename);
+							resolve();
+						},
+						error: function(oError) {
+							that._showODataError(that.getText("fileUploadError") + ": " + oAtt.Filename);
+							reject(oError);
+						}
+					});
+				});
+			});
+			
+			// Wait for all uploads to complete, then reload attachments from backend
+			Promise.all(aUploadPromises).finally(function() {
+				// Reload attachments from backend to get the correct IncNb values
+				that._initLocalAttachmentsFromBackend(sGuid);
+			});
+		},
+
+		/**
 		 * Event handler for deleting a claim from the table
 		 * Removes the selected claim from the local claims model
 		 * @param {sap.ui.base.Event} oEvent - The delete event
@@ -1572,6 +1832,8 @@ sap.ui.define([
 					// Update UI settings after status change (e.g., from Draft to Submitted)
 					// Note: This will be called again in _onBindingChange after the refresh
 					that._getUISettings();
+					// Upload attachments AFTER request is successfully saved
+					that._uploadAttachments(oData.Guid);
 					// Navigate to the newly created object
 					const currentUrl = window.location.href;
 					if (currentUrl.includes("DetailOnly")) {
@@ -1980,6 +2242,12 @@ sap.ui.define([
 			const oAdvModel = oView.getModel("adv");
 			if (oAdvModel) {
 				oAdvModel.setProperty("/items", []);
+			}
+
+			// Clear attachments model
+			const oAttachmentsModel = oView.getModel("attachments");
+			if (oAttachmentsModel) {
+				oAttachmentsModel.setProperty("/items", []);
 			}
 		},		/**
 		 * Attach event listeners to all form fields for real-time completion calculation

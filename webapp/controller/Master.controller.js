@@ -37,9 +37,6 @@ sap.ui.define([
                     oViewModel = this._createViewModel(),
                     iOriginalBusyDelay = oList.getBusyIndicatorDelay();
 
-                //TODO : add the groupSortState    
-                // this._oGroupSortState = new GroupSortState(oViewModel, grouper.groupUnitNumber(this.getResourceBundle()));
-
                 this._oList = oList;
                 this.setModel(oViewModel, "masterView");
                 // Make sure, busy indication is showing immediately so there is no
@@ -104,8 +101,6 @@ sap.ui.define([
                 oTypeModel.setProperty("/Isclaim", false);
                 oTypeModel.setProperty("/Isadvance", true); // Default to Advance for EG
             }
-
-            console.log("Request Type changed to:", sSelectedKey);
         },            /**
              * Event handler for the RadioButtonGroup select event
              * @param {sap.ui.base.Event} oEvent the select event
@@ -229,37 +224,14 @@ sap.ui.define([
             onConfirmChild: function (oEvent) {
                 const oModel = this.getView().getModel();
 
-                //    const path = bindingContext.getPath();
-
-                // reset the filter
+                // Reset the filter
                 const oBinding = oEvent.getSource().getBinding("items");
                 oBinding.filter([]);
 
 
                 const aContexts = oEvent.getParameter("selectedContexts");
                 if (aContexts && aContexts.length) {
-                    const selectedChild = aContexts[0].getObject(); // Get first selected child
-
-                    // Update the model only - the UI will update automatically
-                    /*               const sEduGrantDetailPath = path + "/ToEduGrantDetail";
-                                  oModel.setProperty(sEduGrantDetailPath + "/Favor", selectedChild.Favor);
-                                  oModel.setProperty(sEduGrantDetailPath + "/Fanam", selectedChild.Fanam);
-                                  oModel.setProperty(sEduGrantDetailPath + "/Fgbdt", selectedChild.Fgbdt);
-                                  oModel.setProperty(sEduGrantDetailPath + "/Fgbna", selectedChild.Fgbna);
-                                  oModel.setProperty(sEduGrantDetailPath + "/Fanat", selectedChild.Fanat);
-                                  oModel.setProperty(sEduGrantDetailPath + "/Objps", selectedChild.Objps); */
-                    oModel.setProperty(+ "/Subty", selectedChild.Famsa);
-                    oModel.setProperty(+ "/Objps", selectedChild.Famsa);
-                    /*                    oModel.setProperty(sEduGrantDetailPath + "/Famsa", selectedChild.Famsa);
-                                       oModel.setProperty(sEduGrantDetailPath + "/Fasex", selectedChild.Fasex);
-                                       oModel.setProperty(sEduGrantDetailPath + "/Egage", selectedChild.Egage);
-                   
-                                       //Descriptions
-                                       this.getView().byId("FANAT").setDescription(selectedChild.FanatTxt);
-                                       this.getView().byId("FASEX").setDescription(selectedChild.FasexTxt); */
-
-                    //  MessageToast.show("You have chosen " + selectedChild.Favor);
-
+                    const selectedChild = aContexts[0].getObject();
                     this._createRequest(selectedChild.Famsa, selectedChild.Objps);
                 }
             },
@@ -317,7 +289,6 @@ sap.ui.define([
                 this.getOwnerComponent().oListSelector.oWhenListLoadingIsDone.then(
 
                     function (mParams) {
-                        console.log('done');
                         if (mParams.list.getMode() === "None") {
                             return;
                         }
@@ -325,7 +296,6 @@ sap.ui.define([
                         const oContext = mParams.firstListitem.getBindingContext();
                         let sObjectId = oContext.getProperty("Guid");
                         let sRequestType = oContext.getProperty("RequestType");
-                        console.log({ sObjectId });
                         this.getRouter().navTo("RouteDetail", {
                             benefitRequestId: sObjectId,
                             requestType: sRequestType
@@ -333,13 +303,11 @@ sap.ui.define([
                     }.bind(this),
                     function (mParams) {
                         if (mParams.error) {
-                            console.log(mParams.error)
                             return;
                         }
                         this.getRouter().getTargets().display("detailNoObjectsAvailable");
                     }.bind(this)
                 );
-                //  }
             },
 
             onCreateButtonPress: function () {
@@ -483,21 +451,28 @@ sap.ui.define([
 
                         const batch = oSuccess?.__batchResponses?.[0];
                         if (!batch) {
-                            this._showODataError(); // always MSG_SERVICE_ERROR
+                            this._showODataError();
                             return;
                         }
 
-                        // detect an error encapsulated in the batch 200
+                        // Get the first change response
+                        const change = batch.__changeResponses && batch.__changeResponses[0];
+                        
+                        // FIRST: Try to parse SAP message header (warnings, info, success)
+                        if (change) {
+                            this._parseSapMessageFromResponse(change);
+                        }
+
+                        // THEN: detect an error encapsulated in the batch 200
                         const err = this._parseODataErrorFromBatch ? this._parseODataErrorFromBatch(batch) : null;
                         if (err) {
-                            this._showODataError(); // always generic
+                            this._showODataError(err);
                             return;
                         }
 
-                        // OK → récupérer l’entry créée
-                        const change = batch.__changeResponses && batch.__changeResponses[0];
+                        // OK - retrieve created entry
                         if (!change || !change.data) {
-                            this._showODataError(); // security
+                            this._showODataError();
                             return;
                         }
 
@@ -531,7 +506,7 @@ sap.ui.define([
 
                     error: function (/*oError*/) {
                         oViewModel?.setProperty("/busy", false);
-                        this._showODataError(); // toujours MSG_SERVICE_ERROR
+                        this._showODataError();
                     }.bind(this)
                 });
             },
@@ -627,9 +602,9 @@ sap.ui.define([
                     const bDescending = oParams.groupDescending;
                     aGroupers.push(new Sorter(sGroupPath, bDescending, true));
                     
-                    // Si pas de tri explicite, ajouter un tri par défaut dans les groupes
+                    // If no explicit sorting, add default sorting within groups
                     if (!oParams.sortItem) {
-                        aSorters.push(new Sorter("CreationDate", true)); // Tri par CreationDate descendant
+                        aSorters.push(new Sorter("CreationDate", true)); // Sort by CreationDate descending
                     }
                 }
 
