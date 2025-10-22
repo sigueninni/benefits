@@ -388,22 +388,33 @@ sap.ui.define([
 		 * Discards all unsaved changes and refreshes data from backend
 		 * @public
 		 */
-		onCancelButtonPress: function () {
-			const oModel = this.getView().getModel();
+	onCancelButtonPress: function () {
+		const oModel = this.getView().getModel();
+		const oContext = this.getView().getBindingContext();
 
-			// Reset any pending changes to discard unsaved modifications
-			if (oModel.hasPendingChanges()) {
-				oModel.resetChanges();
-				sap.m.MessageToast.show(this.getText("changesDiscarded"));
-			} else {
-				sap.m.MessageToast.show(this.getText("noChangesToDiscard"));
+		// Reset any pending changes to discard unsaved modifications
+		if (oModel.hasPendingChanges()) {
+			oModel.resetChanges();
+			sap.m.MessageToast.show(this.getText("changesDiscarded"));
+		} else {
+			sap.m.MessageToast.show(this.getText("noChangesToDiscard"));
+		}
+
+		// Reload local models from backend to restore original state
+		if (oContext) {
+			const sGuid = oContext.getProperty("Guid");
+			const sRequestType = oContext.getProperty("RequestType");
+			
+			// Reload attachments from backend
+			this._initLocalAttachmentsFromBackend(sGuid);
+			
+			// Reload claims and advances based on request type
+			if (sRequestType === "01") { // Education Grant
+				this._initLocalClaimsFromBackend(sGuid);
+				this._initLocalAdvancesFromBackend(sGuid);
 			}
-
-			// Clear any local models that might have unsaved data
-			this._clearLocalModels();
-		},
-
-		/**
+		}
+	},		/**
 		 * Event handler for school type (EGTYP) change
 		 * Resets Child Boarder to false if school type is not primary (0002) or secondary (0003)
 		 * @param {sap.ui.base.Event} oEvent the change event
@@ -606,30 +617,19 @@ sap.ui.define([
 				return;
 			}
 			
-			// Read file content immediately
-			const reader = new FileReader();
+			// Store File (Blob) directly - no need for FileReader!
+			aExistingItems.push({
+				AttType: sAttachmentType,
+				IncNb: '00', // New files always start with '00'
+				Filename: file.name,
+				Filetype: file.type,
+				Blob: file,  // Store File object (Blob) for binary upload
+				toDelete: false  // Ensure new files are not marked for deletion
+			});
 			
-			reader.onload = function(e) {
-				const sContent = e.currentTarget.result; // Base64 string
-				
-				// Add to local model
-				aExistingItems.push({
-					AttType: sAttachmentType,
-					IncNb: '00', // New files always start with '00'
-					Filename: file.name,
-					Filetype: file.type,
-					Filecontent: sContent
-				});
-				
-				oAttachmentsModel.setProperty("/items", aExistingItems);
-				sap.m.MessageToast.show(that.getText("fileAdded") + ": " + file.name);
-			};
-			
-			reader.onerror = function(ex) {
-				sap.m.MessageBox.error(that.getText("fileReadError") + ": " + file.name);
-			};
-			
-			reader.readAsDataURL(file); // Convert to Base64 immediately
+			oAttachmentsModel.setProperty("/items", aExistingItems);
+			oAttachmentsModel.refresh(true); // Force refresh to update bindings
+			sap.m.MessageToast.show(that.getText("fileAdded") + ": " + file.name);
 		});
 		
 		// Clear the FileUploader to allow re-selection of same file
@@ -693,15 +693,14 @@ sap.ui.define([
 		const oContext = oListItem.getBindingContext("attachments");
 		const oAttachment = oContext.getObject();
 		
+		// Get the index directly from the binding context path
+		const sPath = oContext.getPath(); // "/items/3"
+		const nIndex = parseInt(sPath.split("/").pop()); // Extract index (3)
+		
 		const oAttachmentsModel = this.getView().getModel("attachments");
 		const aItems = oAttachmentsModel.getProperty("/items") || [];
 		
-		// Find the matching item
-		const nIndex = aItems.findIndex(item => 
-			item.AttType === oAttachment.AttType && item.Filename === oAttachment.Filename
-		);
-		
-		if (nIndex > -1) {
+		if (nIndex >= 0 && nIndex < aItems.length) {
 			if (oAttachment.IncNb === "00") {
 				// New attachment not yet saved - remove from local model immediately
 				aItems.splice(nIndex, 1);
@@ -710,6 +709,7 @@ sap.ui.define([
 				aItems[nIndex].toDelete = true;
 			}
 			oAttachmentsModel.setProperty("/items", aItems);
+			oAttachmentsModel.refresh(true); // Force refresh to apply filters
 			sap.m.MessageToast.show(this.getText("fileRemoved") + ": " + oAttachment.Filename);
 		}
 	},
@@ -1461,7 +1461,8 @@ sap.ui.define([
 						IncNb: x.IncNb || "00",
 						Filename: x.Filename || "",
 						Filetype: x.Filetype || "",
-						Filecontent: x.Filecontent || ""
+						Filecontent: x.Filecontent || "",
+						toDelete: false
 					}));
 					oAttachmentsModel.setProperty("/items", items);
 				},
@@ -1498,42 +1499,55 @@ sap.ui.define([
 				return; // No new files to upload
 			}
 			
-			// Create promises for all uploads
-			const aUploadPromises = aNewAttachments.map(function(oAtt) {
-				return new Promise(function(resolve, reject) {
-					const oPayload = {
-						Filename: oAtt.Filename,
-						Filetype: oAtt.Filetype,
-						Filecontent: oAtt.Filecontent
-					};
-					
-					// Build the path with key parameters
-					// AttachmentSet(Guid=guid'xxx',AttachType='005',IncNb='00')/Upload
-					const sPath = "/AttachmentSet(Guid=guid'" + sGuid + 
-								 "',AttachType='" + oAtt.AttType + 
-								 "',IncNb='00')/Upload";
-					
-					oCommonModel.create(sPath, oPayload, {
-						success: function() {
-							sap.m.MessageToast.show(that.getText("fileUploaded") + ": " + oAtt.Filename);
-							resolve();
-						},
-						error: function(oError) {
-							that._showODataError(that.getText("fileUploadError") + ": " + oAtt.Filename);
-							reject(oError);
-						}
-					});
-				});
-			});
+		// Get CSRF token
+		const sCsrfToken = oCommonModel.getSecurityToken();
+		
+		// Create promises for all uploads using fetch + binary
+		const aUploadPromises = aNewAttachments.map(async (oAtt) => {
+			// Construct URL for /Upload action endpoint
+			const sUrl = `/sap/opu/odata/sap/ZHR_BENEFITS_COMMON_SRV/AttachmentSet(Guid=guid'${sGuid}',AttachType='${oAtt.AttType}',IncNb='00')/Upload`;
 			
-			// Wait for all uploads to complete, then reload attachments from backend
-			Promise.all(aUploadPromises).finally(function() {
-				// Reload attachments from backend to get the correct IncNb values
+			// Prepare Slug header with metadata
+			const sSlug = encodeURIComponent(JSON.stringify({
+				filename: oAtt.Filename,
+				guid: sGuid,
+				attType: oAtt.AttType,
+				incNb: "00"
+			}));
+			
+		try {
+			const response = await fetch(sUrl, {
+				method: "POST",
+				headers: {
+					"x-csrf-token": sCsrfToken,
+					"Content-Type": oAtt.Filetype,
+					"Slug": oAtt.Filename
+				},
+				body: oAtt.Blob  // Binary!
+			});				if (!response.ok) {
+					throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+				}
+				
+				sap.m.MessageToast.show(that.getText("fileUploaded") + ": " + oAtt.Filename);
+				return response;
+				
+			} catch (error) {
+				console.error("Upload error for " + oAtt.Filename + ":", error);
+				that._showODataError(that.getText("fileUploadError") + ": " + oAtt.Filename);
+				throw error;
+			}
+		});
+		
+		// Wait for all uploads
+		Promise.all(aUploadPromises)
+			.then(() => {
+				that._initLocalAttachmentsFromBackend(sGuid);
+			})
+			.catch((error) => {
+				console.error("Some uploads failed, but will still reload from backend:", error);
 				that._initLocalAttachmentsFromBackend(sGuid);
 			});
-		},
-
-		/**
+	},		/**
 		 * Event handler for deleting a claim from the table
 		 * Removes the selected claim from the local claims model
 		 * @param {sap.ui.base.Event} oEvent - The delete event
@@ -2310,26 +2324,34 @@ sap.ui.define([
 			return Promise.reject();
 		}
 		
-		// Create promises for all deletions
-		const aDeletePromises = aToDelete.map(function(oAtt) {
-			return new Promise(function(resolve, reject) {
-				// Build the path with key parameters
-				// AttachmentSet(Guid=guid'xxx',AttachType='001',IncNb='01')/$value
-				const sPath = "/AttachmentSet(Guid=guid'" + sGuid + 
-							 "',AttachType='" + oAtt.AttType + 
-							 "',IncNb='" + oAtt.IncNb + "')/$value";
-				
-				oCommonModel.remove(sPath, {
-					success: function() {
-						console.log("Attachment deleted:", oAtt.Filename);
-						resolve();
-					},
-					error: function(oError) {
-						console.error("Error deleting attachment:", oAtt.Filename, oError);
-						reject(oError);
+		// Get CSRF token
+		const sCsrfToken = oCommonModel.getSecurityToken();
+		
+		// Create promises for all deletions using fetch
+		const aDeletePromises = aToDelete.map(async (oAtt) => {
+			// Build the URL with key parameters
+			// AttachmentSet(Guid=guid'xxx',AttachType='001',IncNb='01')/$value
+			const sUrl = `/sap/opu/odata/sap/ZHR_BENEFITS_COMMON_SRV/AttachmentSet(Guid=guid'${sGuid}',AttachType='${oAtt.AttType}',IncNb='${oAtt.IncNb}')/$value`;
+			
+			try {
+				const response = await fetch(sUrl, {
+					method: "DELETE",
+					headers: {
+						"x-csrf-token": sCsrfToken
 					}
 				});
-			});
+				
+				if (!response.ok) {
+					throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+				}
+				
+				console.log("Attachment deleted:", oAtt.Filename);
+				return response;
+				
+			} catch (error) {
+				console.error("Error deleting attachment:", oAtt.Filename, error);
+				throw error;
+			}
 		});
 		
 		// Wait for all deletions to complete
@@ -2340,8 +2362,6 @@ sap.ui.define([
 		});
 	},
 
-
-	
 
 	/**
 	 * Validates all required fields in the current form
