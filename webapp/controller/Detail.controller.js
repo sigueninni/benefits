@@ -142,21 +142,21 @@ sap.ui.define([
 			debugger;
 			const that = this;
 
-		// Validate required fields before proceeding
-		const aValidationErrors = this._validateRequiredFields();
+			// Validate required fields before proceeding
+			const aValidationErrors = this._validateRequiredFields();
 
-		if (aValidationErrors.length > 0) {
-			// Show generic validation error message (fields are already highlighted in red)
-			const sErrorMessage = this.getText("requiredFieldsValidation");
+			if (aValidationErrors.length > 0) {
+				// Show generic validation error message (fields are already highlighted in red)
+				const sErrorMessage = this.getText("requiredFieldsValidation");
 
-			sap.m.MessageBox.error(sErrorMessage, {
-				title: this.getText("validationErrorTitle")
-			});
+				sap.m.MessageBox.error(sErrorMessage, {
+					title: this.getText("validationErrorTitle")
+				});
 
-			// Set focus on the first invalid field
-			this._focusFirstInvalidField(aValidationErrors);
-			return;
-		}			// Show comment dialog and submit directly after comment
+				// Set focus on the first invalid field
+				this._focusFirstInvalidField(aValidationErrors);
+				return;
+			}			// Show comment dialog and submit directly after comment
 			this.showCommentDialog((sComment) => {
 				// Submit directly with the comment - no second confirmation needed
 				that._submitBenefitRequest(sComment);
@@ -388,33 +388,33 @@ sap.ui.define([
 		 * Discards all unsaved changes and refreshes data from backend
 		 * @public
 		 */
-	onCancelButtonPress: function () {
-		const oModel = this.getView().getModel();
-		const oContext = this.getView().getBindingContext();
+		onCancelButtonPress: function () {
+			const oModel = this.getView().getModel();
+			const oContext = this.getView().getBindingContext();
 
-		// Reset any pending changes to discard unsaved modifications
-		if (oModel.hasPendingChanges()) {
-			oModel.resetChanges();
-			sap.m.MessageToast.show(this.getText("changesDiscarded"));
-		} else {
-			sap.m.MessageToast.show(this.getText("noChangesToDiscard"));
-		}
-
-		// Reload local models from backend to restore original state
-		if (oContext) {
-			const sGuid = oContext.getProperty("Guid");
-			const sRequestType = oContext.getProperty("RequestType");
-			
-			// Reload attachments from backend
-			this._initLocalAttachmentsFromBackend(sGuid);
-			
-			// Reload claims and advances based on request type
-			if (sRequestType === "01") { // Education Grant
-				this._initLocalClaimsFromBackend(sGuid);
-				this._initLocalAdvancesFromBackend(sGuid);
+			// Reset any pending changes to discard unsaved modifications
+			if (oModel.hasPendingChanges()) {
+				oModel.resetChanges();
+				sap.m.MessageToast.show(this.getText("changesDiscarded"));
+			} else {
+				sap.m.MessageToast.show(this.getText("noChangesToDiscard"));
 			}
-		}
-	},		/**
+
+			// Reload local models from backend to restore original state
+			if (oContext) {
+				const sGuid = oContext.getProperty("Guid");
+				const sRequestType = oContext.getProperty("RequestType");
+
+				// Reload attachments from backend
+				this._initLocalAttachmentsFromBackend(sGuid);
+
+				// Reload claims and advances based on request type
+				if (sRequestType === constants.REQUEST_TYPES.EDUCATION_GRANT) { // Education Grant
+					this._initLocalClaimsFromBackend(sGuid);
+					this._initLocalAdvancesFromBackend(sGuid);
+				}
+			}
+		},		/**
 		 * Event handler for school type (EGTYP) change
 		 * Resets Child Boarder to false if school type is not primary (0002) or secondary (0003)
 		 * @param {sap.ui.base.Event} oEvent the change event
@@ -567,160 +567,156 @@ sap.ui.define([
 			}
 		},
 
-	/*************************************************************************************************/
-	/********************************  End of Currency Management *************************************/
-	/*************************************************************************************************/
+		/*************************************************************************************************/
+		/********************************  End of Currency Management *************************************/
+		/*************************************************************************************************/
 
-	/*************************************************************************************************/
-	/********************************  Begin of Attachment Management ********************************/
-	/*************************************************************************************************/
+		/*************************************************************************************************/
+		/********************************  Begin of Attachment Management ********************************/
+		/*************************************************************************************************/
 
 	/**
 	 * Generic handler for all attachment file selections
 	 * Reads the FileUploader ID to determine attachment type
-	 * Validates, converts to Base64, and stores in local model
+	 * Validates file type and size, stores File object (Blob) in local model for binary upload
 	 * @param {sap.ui.base.Event} oEvent - The file change event
 	 * @public
 	 */
-	onAttachmentFileChange: function(oEvent) {
+	onAttachmentFileChange: function (oEvent) {
 		const that = this;
-		const oFileUploader = oEvent.getSource();
-		
-		// Get attachment type from FileUploader ID (005, 004, 010, 009, 011)
-		const sAttachmentType = oFileUploader.getId().split("--").pop(); // Remove view prefix
-		
-		const domRef = oFileUploader.getFocusDomRef();
-		const aFiles = domRef.files; // Read files IMMEDIATELY
-		
-		if (!aFiles || aFiles.length === 0) {
-			return;
-		}
-		
-		const oAttachmentsModel = this.getView().getModel("attachments");
-		const aExistingItems = oAttachmentsModel.getProperty("/items") || [];
-		
-		// Process each file immediately
-		Array.from(aFiles).forEach(function(file) {
-			// Validate file type
-			const sFileType = file.type;
-			const aAllowedTypes = ["application/pdf", "image/jpeg", "image/jpg", "image/png"];
-			
-			if (!aAllowedTypes.includes(sFileType)) {
-				sap.m.MessageBox.error(that.getText("invalidFileType") + ": " + file.name);
+		const oFileUploader = oEvent.getSource();			// Get attachment type from FileUploader ID (005, 004, 010, 009, 011)
+			const sAttachmentType = oFileUploader.getId().split("--").pop(); // Remove view prefix
+
+			const domRef = oFileUploader.getFocusDomRef();
+			const aFiles = domRef.files; // Read files IMMEDIATELY
+
+			if (!aFiles || aFiles.length === 0) {
 				return;
 			}
-			
-			// Validate file size (5MB max)
-			const nMaxSize = 5 * 1024 * 1024; // 5MB in bytes
-			if (file.size > nMaxSize) {
-				sap.m.MessageBox.error(that.getText("fileTooLarge") + ": " + file.name);
-				return;
-			}
-			
-			// Store File (Blob) directly - no need for FileReader!
-			aExistingItems.push({
-				AttType: sAttachmentType,
-				IncNb: '00', // New files always start with '00'
-				Filename: file.name,
-				Filetype: file.type,
-				Blob: file,  // Store File object (Blob) for binary upload
-				toDelete: false  // Ensure new files are not marked for deletion
+
+			const oAttachmentsModel = this.getView().getModel("attachments");
+			const aExistingItems = oAttachmentsModel.getProperty("/items") || [];
+
+			// Process each file immediately
+			Array.from(aFiles).forEach(function (file) {
+				// Validate file type
+				const sFileType = file.type;
+				const aAllowedTypes = ["application/pdf", "image/jpeg", "image/jpg", "image/png"];
+
+				if (!aAllowedTypes.includes(sFileType)) {
+					sap.m.MessageBox.error(that.getText("invalidFileType") + ": " + file.name);
+					return;
+				}
+
+				// Validate file size (5MB max)
+				const nMaxSize = 5 * 1024 * 1024; // 5MB in bytes
+				if (file.size > nMaxSize) {
+					sap.m.MessageBox.error(that.getText("fileTooLarge") + ": " + file.name);
+					return;
+				}
+
+				// Store File object (Blob) directly for binary upload
+				aExistingItems.push({
+					AttType: sAttachmentType,
+					IncNb: '00', // New files always start with '00'
+					Filename: file.name,
+					Filetype: file.type,
+					Blob: file,  // Store File object (Blob) for binary upload
+					toDelete: false  // Ensure new files are not marked for deletion
+				}); oAttachmentsModel.setProperty("/items", aExistingItems);
+				oAttachmentsModel.refresh(true); // Force refresh to update bindings
+				sap.m.MessageToast.show(that.getText("fileAdded") + ": " + file.name);
 			});
-			
-			oAttachmentsModel.setProperty("/items", aExistingItems);
-			oAttachmentsModel.refresh(true); // Force refresh to update bindings
-			sap.m.MessageToast.show(that.getText("fileAdded") + ": " + file.name);
-		});
-		
-		// Clear the FileUploader to allow re-selection of same file
-		oFileUploader.clear();
-	},
 
-	/**
-	 * Handler to view/download an attachment
-	 * @param {sap.ui.base.Event} oEvent - The press event
-	 * @public
-	 */
-	onViewAttachment: function(oEvent) {
-		const oListItem = oEvent.getSource();
-		const oContext = oListItem.getBindingContext("attachments");
-		
-		if (!oContext) {
-			console.error("No binding context found for attachment");
-			return;
-		}
-		
-		const oAttachment = oContext.getObject();
-		console.log("Attachment object:", oAttachment);
-		
-		// Only allow viewing files that are saved on backend (IncNb != '00')
-		if (oAttachment.IncNb === "00") {
-			sap.m.MessageToast.show(this.getText("fileNotYetSaved"));
-			return;
-		}
-		
-		// Get the Guid from the main view context
-		const oBindingContext = this.getView().getBindingContext();
-		if (!oBindingContext) {
-			console.error("No binding context for view");
-			return;
-		}
-		
-		const sGuid = oBindingContext.getProperty("Guid");
-		console.log("Request Guid:", sGuid);
-		console.log("AttachType:", oAttachment.AttType);
-		console.log("IncNb:", oAttachment.IncNb);
-		
-		// Construct the URL to download the file
-		const sUrl = `/sap/opu/odata/sap/ZHR_BENEFITS_COMMON_SRV/AttachmentSet(Guid=guid'${sGuid}',AttachType='${oAttachment.AttType}',IncNb='${oAttachment.IncNb}')/$value`;
-		console.log("Opening URL:", sUrl);
-		
-		// Open in new window
-		window.open(sUrl, "_blank");
-	},
+			// Clear the FileUploader to allow re-selection of same file
+			oFileUploader.clear();
+		},
 
-	/**
-	 * Handler to remove an attachment from the local model or mark for deletion
-	 * @param {sap.ui.base.Event} oEvent - The press event
-	 * @public
-	 */
-	onRemoveAttachment: function(oEvent) {
-		// Stop event propagation to prevent triggering the list item's press event
-		oEvent.cancelBubble();
-		
-		const oButton = oEvent.getSource();
-		const oListItem = oButton.getParent().getParent(); // Button -> HBox -> CustomListItem
-		const oContext = oListItem.getBindingContext("attachments");
-		const oAttachment = oContext.getObject();
-		
-		// Get the index directly from the binding context path
-		const sPath = oContext.getPath(); // "/items/3"
-		const nIndex = parseInt(sPath.split("/").pop()); // Extract index (3)
-		
-		const oAttachmentsModel = this.getView().getModel("attachments");
-		const aItems = oAttachmentsModel.getProperty("/items") || [];
-		
-		if (nIndex >= 0 && nIndex < aItems.length) {
-			if (oAttachment.IncNb === "00") {
-				// New attachment not yet saved - remove from local model immediately
-				aItems.splice(nIndex, 1);
-			} else {
-				// Existing attachment from backend - mark for deletion
-				aItems[nIndex].toDelete = true;
+		/**
+		 * Handler to view/download an attachment
+		 * @param {sap.ui.base.Event} oEvent - The press event
+		 * @public
+		 */
+		onViewAttachment: function (oEvent) {
+			const oListItem = oEvent.getSource();
+			const oContext = oListItem.getBindingContext("attachments");
+
+			if (!oContext) {
+				console.error("No binding context found for attachment");
+				return;
 			}
-			oAttachmentsModel.setProperty("/items", aItems);
-			oAttachmentsModel.refresh(true); // Force refresh to apply filters
-			sap.m.MessageToast.show(this.getText("fileRemoved") + ": " + oAttachment.Filename);
-		}
-	},
 
-	/*************************************************************************************************/
-	/********************************  End of Attachment Management **********************************/
-	/*************************************************************************************************/
+			const oAttachment = oContext.getObject();
+			console.log("Attachment object:", oAttachment);
 
-	/* =========================================================== */
-	/* Internal & private  methods                                 */
-	/* =========================================================== */
+			// Only allow viewing files that are saved on backend (IncNb != '00')
+			if (oAttachment.IncNb === "00") {
+				sap.m.MessageToast.show(this.getText("fileNotYetSaved"));
+				return;
+			}
+
+			// Get the Guid from the main view context
+			const oBindingContext = this.getView().getBindingContext();
+			if (!oBindingContext) {
+				console.error("No binding context for view");
+				return;
+			}
+
+			const sGuid = oBindingContext.getProperty("Guid");
+			console.log("Request Guid:", sGuid);
+			console.log("AttachType:", oAttachment.AttType);
+			console.log("IncNb:", oAttachment.IncNb);
+
+			// Construct the URL to download the file
+			const sUrl = `/sap/opu/odata/sap/ZHR_BENEFITS_COMMON_SRV/AttachmentSet(Guid=guid'${sGuid}',AttachType='${oAttachment.AttType}',IncNb='${oAttachment.IncNb}')/$value`;
+			console.log("Opening URL:", sUrl);
+
+			// Open in new window
+			window.open(sUrl, "_blank");
+		},
+
+		/**
+		 * Handler to remove an attachment from the local model or mark for deletion
+		 * @param {sap.ui.base.Event} oEvent - The press event
+		 * @public
+		 */
+		onRemoveAttachment: function (oEvent) {
+			// Stop event propagation to prevent triggering the list item's press event
+			oEvent.cancelBubble();
+
+			const oButton = oEvent.getSource();
+			const oListItem = oButton.getParent().getParent(); // Button -> HBox -> CustomListItem
+			const oContext = oListItem.getBindingContext("attachments");
+			const oAttachment = oContext.getObject();
+
+			// Get the index directly from the binding context path
+			const sPath = oContext.getPath(); // "/items/3"
+			const nIndex = parseInt(sPath.split("/").pop()); // Extract index (3)
+
+			const oAttachmentsModel = this.getView().getModel("attachments");
+			const aItems = oAttachmentsModel.getProperty("/items") || [];
+
+			if (nIndex >= 0 && nIndex < aItems.length) {
+				if (oAttachment.IncNb === "00") {
+					// New attachment not yet saved - remove from local model immediately
+					aItems.splice(nIndex, 1);
+				} else {
+					// Existing attachment from backend - mark for deletion
+					aItems[nIndex].toDelete = true;
+				}
+				oAttachmentsModel.setProperty("/items", aItems);
+				oAttachmentsModel.refresh(true); // Force refresh to apply filters
+				sap.m.MessageToast.show(this.getText("fileRemoved") + ": " + oAttachment.Filename);
+			}
+		},
+
+		/*************************************************************************************************/
+		/********************************  End of Attachment Management **********************************/
+		/*************************************************************************************************/
+
+		/* =========================================================== */
+		/* Internal & private  methods                                 */
+		/* =========================================================== */
 		/**
  * Internal method to submit the benefit request with comment
  * @param {string} sComment - The submission comment
@@ -728,7 +724,7 @@ sap.ui.define([
  */
 		_submitBenefitRequest: function (sComment) {
 			// Submit the request with status change to "Submitted" status
-			this._saveBenefitRequestObject("01", sComment); // Pass comment to save method
+			this._saveBenefitRequestObject(constants.REQUEST_STATUS.SUBMITTED, sComment); // Pass comment to save method
 		},
 
 
@@ -782,13 +778,17 @@ sap.ui.define([
 				// Load value help data for dropdown lists based on request type
 				this._loadValueHelpData(sRequestType);
 
-			// Bind Timeline with new request Guid filter
-			this._bindTimelineData(sBenefitRequestId);
+				// Bind Timeline with new request Guid filter
+				this._bindTimelineData(sBenefitRequestId);
 
-			// Load claims and advances from backend (like Timeline)
-			this._initLocalAdvFromBackend(sBenefitRequestId);
-			this._initLocalClmFromBackend(sBenefitRequestId);
-			this._initLocalAttachmentsFromBackend(sBenefitRequestId);
+				// Load attachments from backend
+				this._initLocalAttachmentsFromBackend(sBenefitRequestId);
+
+				// Load claims and advances based on request type
+if (sRequestType === constants.REQUEST_TYPES.EDUCATION_GRANT) { // Education Grant only
+					this._initLocalAdvFromBackend(sBenefitRequestId);
+					this._initLocalClmFromBackend(sBenefitRequestId);
+				}
 			}.bind(this));
 		},
 
@@ -812,13 +812,13 @@ sap.ui.define([
 
 			let sPath = oElementBinding.getPath(),
 				oObject = oView.getModel().getObject(sPath),
-			sObjectId = oObject.Guid,
-			sObjectName = oObject.Title,
-			oViewModel = this.getModel("detailView");
+				sObjectId = oObject.Guid,
+				sObjectName = oObject.Title,
+				oViewModel = this.getModel("detailView");
 
-		this.getOwnerComponent().oListSelector.selectAListItem(sPath);			// Get UI settings now that binding context is available
-		this._getUISettings();
-	},		/**
+			this.getOwnerComponent().oListSelector.selectAListItem(sPath);			// Get UI settings now that binding context is available
+			this._getUISettings();
+		},		/**
 		 * Called when metadata is loaded for the OData model.
 		 * Sets up initial busy state and delays for the detail view.
 		 * @private
@@ -838,11 +838,6 @@ sap.ui.define([
 			oViewModel.setProperty("/delay", iOriginalViewBusyDelay);
 		},
 
-		/**
-		 * Confirms the addition of a new claim
-		 * Validates the data and adds it to the ClaimItems local model
-		 * @private
-		 */
 		/**
 		 * Confirms the addition of a new claim
 		 * Adds entry to local JSON model "clm"
@@ -874,11 +869,7 @@ sap.ui.define([
 			sap.m.MessageToast.show(this.getText("claimAdded"));
 			this._removeClaimAddDialog();
 		},		/**
-		 * Confirms the addition of a new advance
-		 * Validates the data and adds it to the AdvanceItems local model
-		 * Note: AdvanceItems est stocké localement - pas encore d'association ABAP ToAdvanceItems
-		 * @private
-		 */
+
 		/**
 		 * Confirms the addition of a new advance
 		 * Adds entry to local JSON model "adv"
@@ -927,33 +918,33 @@ sap.ui.define([
 				this.fragments._oCurrencyDialog.addStyleClass(this.getOwnerComponent().getContentDensityClass());
 			}
 
-		this.fragments._oCurrencyDialog.open();
-	},
+			this.fragments._oCurrencyDialog.open();
+		},
 
-	/**
-	 * Private method to open currency dialog for Rental Subsidy and store source field.
-	 * @param {string} sSourceFieldId - The ID of the field that triggered the dialog
-	 * @private
-	 */
-	_openCurrencyDialogRS: function (sSourceFieldId) {
-		const oView = this.getView();
+		/**
+		 * Private method to open currency dialog for Rental Subsidy and store source field.
+		 * @param {string} sSourceFieldId - The ID of the field that triggered the dialog
+		 * @private
+		 */
+		_openCurrencyDialogRS: function (sSourceFieldId) {
+			const oView = this.getView();
 
-		// Store the source field ID for later use
-		this._sCurrencySourceField = sSourceFieldId;
+			// Store the source field ID for later use
+			this._sCurrencySourceField = sSourceFieldId;
 
-		if (!this.fragments._oCurrencyDialogRS) {
-			this.fragments._oCurrencyDialogRS = sap.ui.xmlfragment(
-				"com.un.zhrbenefrequests.fragment.form.rentalSubsidy.CurrencyChoiceRS", this);
-			this.getView().addDependent(this.fragments._oCurrencyDialogRS);
-			// forward compact/cozy style into Dialog
-			this.fragments._oCurrencyDialogRS.addStyleClass(this.getOwnerComponent().getContentDensityClass());
-		}
+			if (!this.fragments._oCurrencyDialogRS) {
+				this.fragments._oCurrencyDialogRS = sap.ui.xmlfragment(
+					"com.un.zhrbenefrequests.fragment.form.rentalSubsidy.CurrencyChoiceRS", this);
+				this.getView().addDependent(this.fragments._oCurrencyDialogRS);
+				// forward compact/cozy style into Dialog
+				this.fragments._oCurrencyDialogRS.addStyleClass(this.getOwnerComponent().getContentDensityClass());
+			}
 
-		this.fragments._oCurrencyDialogRS.open();
-	},
+			this.fragments._oCurrencyDialogRS.open();
+		},
 
 
-	_initLocalModels: function () {			// Initialize local models for claims and advances
+		_initLocalModels: function () {			// Initialize local models for claims and advances
 			const oLocalClaimsModel = new JSONModel({ items: [] });
 			this.getView().setModel(oLocalClaimsModel, "clm");
 
@@ -975,144 +966,176 @@ sap.ui.define([
 		 */
 		_initializeValueHelpModels: function () {
 			// Create separate JSON models for value helps to avoid key collisions
-		const oGradeModel = new JSONModel();
-		const oSchoolTypeAdditModel = new JSONModel();
-		const oSchoolListModel = new JSONModel();
-		const oSchoolTypeModel = new JSONModel();
-		const oAttendanceTypeModel = new JSONModel();
-		const oSpecialArrangementModel = new JSONModel();
-		const oChangeReasonModel = new JSONModel();
-		const oReasonBoardingModel = new JSONModel();
-		const oCurrencyModel = new JSONModel();
-		const oSchoolCountryModel = new JSONModel();
-		const oCurrencyPaymentModel = new JSONModel();
-		const oEgCustomerStatusModel = new JSONModel();
-		const oExpenseTypeModel = new JSONModel();
-		const oApplicationReasonModel = new JSONModel();
-		const oDwellingRentTypeModel = new JSONModel();
-		const oReimbursementApplicationTypeModel = new JSONModel();
-		const oCurrencyRSModel = new JSONModel();
+			const oGradeModel = new JSONModel();
+			const oSchoolTypeAdditModel = new JSONModel();
+			const oSchoolListModel = new JSONModel();
+			const oSchoolTypeModel = new JSONModel();
+			const oAttendanceTypeModel = new JSONModel();
+			const oSpecialArrangementModel = new JSONModel();
+			const oChangeReasonModel = new JSONModel();
+			const oReasonBoardingModel = new JSONModel();
+			const oCurrencyModel = new JSONModel();
+			const oSchoolCountryModel = new JSONModel();
+			const oCurrencyPaymentModel = new JSONModel();
+			const oEgCustomerStatusModel = new JSONModel();
+			const oExpenseTypeModel = new JSONModel();
+			const oApplicationReasonModel = new JSONModel();
+			const oDwellingRentTypeModel = new JSONModel();
+			const oReimbursementApplicationTypeModel = new JSONModel();
+			const oCurrencyRSModel = new JSONModel();
 
-		this.setModel(oGradeModel, "gradeModel");
-		this.setModel(oSchoolTypeAdditModel, "schoolTypeAdditModel");
-		this.setModel(oSchoolListModel, "schoolListModel");
-		this.setModel(oSchoolTypeModel, "schoolTypeModel");
-		this.setModel(oAttendanceTypeModel, "attendanceTypeModel");
-		this.setModel(oSpecialArrangementModel, "specialArrangementModel");
-		this.setModel(oChangeReasonModel, "changeReasonModel");
-		this.setModel(oReasonBoardingModel, "reasonBoardingModel");
-		this.setModel(oCurrencyModel, "currencyModel");
-		this.setModel(oSchoolCountryModel, "schoolCountryModel");
-		this.setModel(oCurrencyPaymentModel, "currencyPaymentModel");
-		this.setModel(oEgCustomerStatusModel, "egCustomerStatusModel");
-		this.setModel(oExpenseTypeModel, "expenseTypeModel");
-		this.setModel(oApplicationReasonModel, "applicationReasonModel");
-		this.setModel(oDwellingRentTypeModel, "dwellingRentTypeModel");
-		this.setModel(oReimbursementApplicationTypeModel, "reimbursementApplicationTypeModel");
-		this.setModel(oCurrencyRSModel, "currencyRSModel");
-	},		/**
+			this.setModel(oGradeModel, "gradeModel");
+			this.setModel(oSchoolTypeAdditModel, "schoolTypeAdditModel");
+			this.setModel(oSchoolListModel, "schoolListModel");
+			this.setModel(oSchoolTypeModel, "schoolTypeModel");
+			this.setModel(oAttendanceTypeModel, "attendanceTypeModel");
+			this.setModel(oSpecialArrangementModel, "specialArrangementModel");
+			this.setModel(oChangeReasonModel, "changeReasonModel");
+			this.setModel(oReasonBoardingModel, "reasonBoardingModel");
+			this.setModel(oCurrencyModel, "currencyModel");
+			this.setModel(oSchoolCountryModel, "schoolCountryModel");
+			this.setModel(oCurrencyPaymentModel, "currencyPaymentModel");
+			this.setModel(oEgCustomerStatusModel, "egCustomerStatusModel");
+			this.setModel(oExpenseTypeModel, "expenseTypeModel");
+			this.setModel(oApplicationReasonModel, "applicationReasonModel");
+			this.setModel(oDwellingRentTypeModel, "dwellingRentTypeModel");
+			this.setModel(oReimbursementApplicationTypeModel, "reimbursementApplicationTypeModel");
+			this.setModel(oCurrencyRSModel, "currencyRSModel");
+		},		/**
 		 * Retrieves UI settings for form fields based on request type and status.
 		 * Applies dynamic visibility, editability and requirement rules to form controls.
 		 * @private
 		 */
-		_getUISettings: function () {
-			//	debugger;
-			const oCommonModel = this.getOwnerComponent().getModel("commonModel");
-			let aFilters = [];
+	_getUISettings: function () {
+		//	debugger;
+		const oCommonModel = this.getOwnerComponent().getModel("commonModel");
+		let aFilters = [];
 
-			const oCurrentObject = this.getBindingDetailObject();
-			aFilters.push(new Filter("RequestType", FilterOperator.EQ, oCurrentObject.RequestType));
-			aFilters.push(new Filter("Status", FilterOperator.EQ, oCurrentObject.RequestStatus));
-			aFilters.push(new Filter("Actor", FilterOperator.EQ, this.getModel("detailView").getProperty("/role")));
-			//Read entitySet
-			oCommonModel.read("/UI5PropertySet", {
-				filters: aFilters,
-				success: this.getUI5PropertySetSuccess.bind(this),
-				error: this.fError.bind(this)
-			});
-		},
+		const oCurrentObject = this.getBindingDetailObject();
+		aFilters.push(new Filter("RequestType", FilterOperator.EQ, oCurrentObject.RequestType));
+		aFilters.push(new Filter("Status", FilterOperator.EQ, oCurrentObject.RequestStatus));
+		aFilters.push(new Filter("Actor", FilterOperator.EQ, this.getModel("detailView").getProperty("/role")));
+		aFilters.push(new Filter("Guid", FilterOperator.EQ, oCurrentObject.Guid));
+		
+		console.log("UI Settings Filters:", {
+			RequestType: oCurrentObject.RequestType,
+			Status: oCurrentObject.RequestStatus,
+			Actor: this.getModel("detailView").getProperty("/role"),
+			Guid: oCurrentObject.Guid
+		});
+		
+		//Read entitySet
+		oCommonModel.read("/UI5PropertySet", {
+			filters: aFilters,
+			success: this.getUI5PropertySetSuccess.bind(this),
+			error: this.fError.bind(this)
+		});
+	},	/**
+	 * Success callback for UI5PropertySet read operation.
+	 * Processes UI settings and applies them to form controls dynamically.
+	 * @param {object} oData - Response data from the service
+	 * @param {object} oResponse - Full response object
+	 * @private
+	 */
+	getUI5PropertySetSuccess: function (oData) {
+		const aUIProperties = oData?.results || [];
+		const oView = this.getView();
 
-		/**
-		 * Success callback for UI5PropertySet read operation.
-		 * Processes UI settings and applies them to form controls dynamically.
-		 * @param {object} oData - Response data from the service
-		 * @param {object} oResponse - Full response object
-		 * @private
-		 */
-		getUI5PropertySetSuccess: function (oData) {
-			const aUIProperties = oData?.results || [];
-			const oView = this.getView();
+		// Clear and rebuild the required fields array
+		this._aRequiredFields = [];
 
-			// Clear and rebuild the required fields array
-			this._aRequiredFields = [];
+		// Track delete button visibility for tables
+		let bClaimDeleteVisible = true;
+		let bAdvanceDeleteVisible = true;
 
-			for (const oUIProperty of aUIProperties) {				// Defaut is field from the list by Backend is not visible and not editable
-				this._resetVisibility(oUIProperty.Field);
-
-
-				let editable = false,
-					enabled = false,
-					hidden = true,
-					required = false;
-
-
-				//Special cases - Skip fields with custom visibility management
-				if (this._isUISettingsException(oUIProperty.Field)) {
-					continue;
-				}
-
+		for (const oUIProperty of aUIProperties) {				// Defaut is field from the list by Backend is not visible and not editable
+			this._resetVisibility(oUIProperty.Field);
 
 
-				switch (oUIProperty.Property) {
-					case "01":
-						hidden = true; //redundant but ok as Hidden by default
-						break; // Hidden
-					case "02":
-						hidden = false;
-						break; // Visible
-					case "03":
-						hidden = false;
-						editable = enabled = true;
-						break; // Editable
-					case "04":
-						hidden = false;
-						required = editable = enabled = true;
-						break; // Mandatory
-				}
+			let editable = false,
+				enabled = false,
+				hidden = true,
+				required = false;
 
-				// Find the control by its id (which must match Field)
-				const oCtrl = oView.byId(oUIProperty.Field);
-				
-				// Store required field info AFTER getting the control, so we can get the proper label
-				if (oUIProperty.Property === "04" && oCtrl) {
-					this._aRequiredFields.push({
-						fieldId: oUIProperty.Field,
-						label: this._getFieldLabel(oUIProperty.Field, oCtrl)
-					});
-				}
-				
-				if (oCtrl) {
-					// apply dynamically
-					if (oCtrl.setEditable) {
-						oCtrl.setEditable(editable);
-					}
-					if (oCtrl.setEnabled) {
-						oCtrl.setEnabled(enabled);
-					}
-					if (oCtrl.setVisible) {
-						oCtrl.setVisible(!hidden);
-					}
-					if (oCtrl.setRequired) {
-						oCtrl.setRequired(required);
-					}
-				}
+
+			//Special cases - Skip fields with custom visibility management
+			if (this._isUISettingsException(oUIProperty.Field)) {
+				continue;
 			}
 
-			// Call the diagnostic function here
-			this._logImpactedUIFields(aUIProperties);
-		},
 
-		/**
+
+			switch (oUIProperty.Property) {
+				case "01":
+					hidden = true; //redundant but ok as Hidden by default
+					break; // Hidden
+				case "02":
+					hidden = false;
+					break; // Visible
+				case "03":
+					hidden = false;
+					editable = enabled = true;
+					break; // Editable
+				case "04":
+					hidden = false;
+					required = editable = enabled = true;
+					break; // Mandatory
+			}
+
+		// Track delete button visibility for Claims
+		if (oUIProperty.Field === "BTNDELCLAIM") {
+			debugger;
+			bClaimDeleteVisible = !hidden;
+		}
+
+		// Track delete button visibility for Advances
+		if (oUIProperty.Field === "BTNDELADVANCE") {
+			debugger;
+			bAdvanceDeleteVisible = !hidden;
+		}			// Find the control by its id (which must match Field)
+			const oCtrl = oView.byId(oUIProperty.Field);
+
+			// Store required field info AFTER getting the control, so we can get the proper label
+			if (oUIProperty.Property === "04" && oCtrl) {
+				this._aRequiredFields.push({
+					fieldId: oUIProperty.Field,
+					label: this._getFieldLabel(oUIProperty.Field, oCtrl)
+				});
+			}
+
+			if (oCtrl) {
+				// apply dynamically
+				if (oCtrl.setEditable) {
+					oCtrl.setEditable(editable);
+				}
+				if (oCtrl.setEnabled) {
+					oCtrl.setEnabled(enabled);
+				}
+				if (oCtrl.setVisible) {
+					oCtrl.setVisible(!hidden);
+				}
+				if (oCtrl.setRequired) {
+					oCtrl.setRequired(required);
+				}
+			}
+		}
+
+		// Apply table mode based on delete button visibility
+		// Claims Table
+		const oClaimTable = this.byId("claimTable");
+		if (oClaimTable) {
+			oClaimTable.setMode(bClaimDeleteVisible ? "Delete" : "None");
+		}
+
+		// Advances Table
+		const oAdvanceTable = this.byId("advanceTable");
+		if (oAdvanceTable) {
+			oAdvanceTable.setMode(bAdvanceDeleteVisible ? "Delete" : "None");
+		}
+
+		// Call the diagnostic function here
+		this._logImpactedUIFields(aUIProperties);
+	},		/**
 		 * Gets the field label for a given field ID by searching for associated Label controls
 		 * @param {string} sFieldId - The field ID
 		 * @param {sap.ui.core.Control} oControl - The control (optional)
@@ -1338,7 +1361,7 @@ sap.ui.define([
 					},
 					dataReceived: function (oEvent) {
 						oViewModel.setProperty("/busy", false);
-						
+
 						// Form completion will be calculated if needed
 						//that._restoreFormCompletion();
 						//that._attachCompletionListeners();
@@ -1479,75 +1502,76 @@ sap.ui.define([
 		 * @param {string} sGuid - The request GUID
 		 * @private
 		 */
-		_uploadAttachments: function(sGuid) {
+		_uploadAttachments: function (sGuid) {
 			const that = this;
 			const oAttachmentsModel = this.getView().getModel("attachments");
 			const aAttachments = oAttachmentsModel.getProperty("/items") || [];
-			
+
 			// Use the common service model
 			const oCommonModel = this.getOwnerComponent().getModel("commonModel");
-			
+
 			if (!oCommonModel) {
 				sap.m.MessageBox.error(this.getText("commonServiceNotAvailable"));
 				return;
 			}
-			
+
 			// Filter only new attachments (IncNb = '00')
 			const aNewAttachments = aAttachments.filter(att => att.IncNb === '00');
-			
+
 			if (aNewAttachments.length === 0) {
 				return; // No new files to upload
 			}
-			
-		// Get CSRF token
-		const sCsrfToken = oCommonModel.getSecurityToken();
-		
-		// Create promises for all uploads using fetch + binary
-		const aUploadPromises = aNewAttachments.map(async (oAtt) => {
-			// Construct URL for /Upload action endpoint
-			const sUrl = `/sap/opu/odata/sap/ZHR_BENEFITS_COMMON_SRV/AttachmentSet(Guid=guid'${sGuid}',AttachType='${oAtt.AttType}',IncNb='00')/Upload`;
-			
-			// Prepare Slug header with metadata
-			const sSlug = encodeURIComponent(JSON.stringify({
-				filename: oAtt.Filename,
-				guid: sGuid,
-				attType: oAtt.AttType,
-				incNb: "00"
-			}));
-			
-		try {
-			const response = await fetch(sUrl, {
-				method: "POST",
-				headers: {
-					"x-csrf-token": sCsrfToken,
-					"Content-Type": oAtt.Filetype,
-					"Slug": oAtt.Filename
-				},
-				body: oAtt.Blob  // Binary!
-			});				if (!response.ok) {
-					throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+
+			// Get CSRF token
+			const sCsrfToken = oCommonModel.getSecurityToken();
+
+			// Create promises for all uploads using fetch + binary
+			const aUploadPromises = aNewAttachments.map(async (oAtt) => {
+				// Construct URL for /Upload action endpoint
+				const sUrl = `/sap/opu/odata/sap/ZHR_BENEFITS_COMMON_SRV/AttachmentSet(Guid=guid'${sGuid}',AttachType='${oAtt.AttType}',IncNb='00')/Upload`;
+
+				// Prepare Slug header with metadata
+				const sSlug = encodeURIComponent(JSON.stringify({
+					filename: oAtt.Filename,
+					guid: sGuid,
+					attType: oAtt.AttType,
+					incNb: "00"
+				}));
+
+				try {
+					const response = await fetch(sUrl, {
+						method: "POST",
+						headers: {
+							"x-csrf-token": sCsrfToken,
+							"Content-Type": oAtt.Filetype,
+							"Slug": oAtt.Filename
+						},
+						body: oAtt.Blob  // Binary content
+					}); if (!response.ok) {
+						throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+					}
+
+					sap.m.MessageToast.show(that.getText("fileUploaded") + ": " + oAtt.Filename);
+					return response;
+
+				} catch (error) {
+					console.error("Upload error for " + oAtt.Filename + ":", error);
+					that._showODataError(that.getText("fileUploadError") + ": " + oAtt.Filename);
+					throw error;
 				}
-				
-				sap.m.MessageToast.show(that.getText("fileUploaded") + ": " + oAtt.Filename);
-				return response;
-				
-			} catch (error) {
-				console.error("Upload error for " + oAtt.Filename + ":", error);
-				that._showODataError(that.getText("fileUploadError") + ": " + oAtt.Filename);
-				throw error;
-			}
-		});
-		
-		// Wait for all uploads
-		Promise.all(aUploadPromises)
-			.then(() => {
-				that._initLocalAttachmentsFromBackend(sGuid);
-			})
-			.catch((error) => {
-				console.error("Some uploads failed, but will still reload from backend:", error);
-				that._initLocalAttachmentsFromBackend(sGuid);
 			});
-	},		/**
+
+			// Wait for all uploads
+			Promise.all(aUploadPromises)
+				.then(() => {
+					that._initLocalAttachmentsFromBackend(sGuid);
+				})
+				.catch((error) => {
+					console.error("Some uploads failed, but will still reload from backend:", error);
+					that._initLocalAttachmentsFromBackend(sGuid);
+				});
+		},		
+		/**
 		 * Event handler for deleting a claim from the table
 		 * Removes the selected claim from the local claims model
 		 * @param {sap.ui.base.Event} oEvent - The delete event
@@ -1789,48 +1813,48 @@ sap.ui.define([
 				oModel.setProperty("Note", sComment, oContext);
 			}
 
-		// set busy indicator during save
-		// set busy indicator during save
-		const oViewModel = this.getModel("detailView");
-		oViewModel.setProperty("/busy", true);
+			// set busy indicator during save
+			// set busy indicator during save
+			const oViewModel = this.getModel("detailView");
+			oViewModel.setProperty("/busy", true);
 
-		// For deep insert, retrieve form data and create a new object
-		const oRequestData = oModel.getObject(oContext.getPath());
-		const oEduGrantDetail = oModel.getObject(oContext.getPath() + "/ToEduGrantDetail");
-		const oRentalSubsidy = oModel.getObject(oContext.getPath() + "/ToRentalSubsidyDetail");
+			// For deep insert, retrieve form data and create a new object
+			const oRequestData = oModel.getObject(oContext.getPath());
+			const oEduGrantDetail = oModel.getObject(oContext.getPath() + "/ToEduGrantDetail");
+			const oRentalSubsidy = oModel.getObject(oContext.getPath() + "/ToRentalSubsidyDetail");
 
-		// Get advances from local model "adv" instead of OData
-		const oAdvModel = oView.getModel("adv");
-		const aAdvances = oAdvModel.getProperty("/items") || [];
+			// Get advances from local model "adv" instead of OData
+			const oAdvModel = oView.getModel("adv");
+			const aAdvances = oAdvModel.getProperty("/items") || [];
 
-		// Get claims from local model "clm"
-		const oClmModel = oView.getModel("clm");
-		const aClaims = oClmModel.getProperty("/items") || [];
+			// Get claims from local model "clm"
+			const oClmModel = oView.getModel("clm");
+			const aClaims = oClmModel.getProperty("/items") || [];
 
-		// Build the object for deep insert with new GUID
-		const oDeepInsertData = {
-			// Header properties - new GUID
-			...oRequestData,
-			// Deep insert association with form data
-			ToEduGrantDetail: {
-				...oEduGrantDetail,
-			},
-			ToRentalSubsidyDetail: {
-				...oRentalSubsidy,
-			},
-			// Deep insert association for advances from local model
-			ToEduGrantAdvances: aAdvances,
-			// Deep insert association for claims from local model
-			ToEduGrantClaims: aClaims
-		};
+			// Build the object for deep insert with new GUID
+			const oDeepInsertData = {
+				// Header properties - new GUID
+				...oRequestData,
+				// Deep insert association with form data
+				ToEduGrantDetail: {
+					...oEduGrantDetail,
+				},
+				ToRentalSubsidyDetail: {
+					...oRentalSubsidy,
+				},
+				// Deep insert association for advances from local model
+				ToEduGrantAdvances: aAdvances,
+				// Deep insert association for claims from local model
+				ToEduGrantClaims: aClaims
+			};
 
-		// Override status if provided as parameter
-		if (sStatus) {
-			oDeepInsertData.RequestStatus = sStatus;
-		}
+			// Override status if provided as parameter
+			if (sStatus) {
+				oDeepInsertData.RequestStatus = sStatus;
+			}
 
-		// Use create() for deep insert of a new record
-		oModel.create("/RequestHeaderSet", oDeepInsertData, {
+			// Use create() for deep insert of a new record
+			oModel.create("/RequestHeaderSet", oDeepInsertData, {
 				success: function (oData, oResponse) {
 					oViewModel.setProperty("/busy", false);
 					// Success - clean messages and indicate save
@@ -1853,9 +1877,9 @@ sap.ui.define([
 					// Note: This will be called again in _onBindingChange after the refresh
 					that._getUISettings();
 					// Delete attachments marked for deletion, then upload new attachments
-					that._deleteAttachments(oData.Guid).then(function() {
+					that._deleteAttachments(oData.Guid).then(function () {
 						that._uploadAttachments(oData.Guid);
-					}).catch(function(oError) {
+					}).catch(function (oError) {
 						console.error("Error deleting attachments", oError);
 						// Continue with upload even if delete fails
 						that._uploadAttachments(oData.Guid);
@@ -1929,32 +1953,32 @@ sap.ui.define([
 				});
 		},
 
-	/**
-	 * Generic method to load data from GenericVHSet into a specific JSON model
-	 * @param {string} sModelName - Name of the JSON model to populate
-	 * @param {string} sMethod - Method name for the GenericVHSet filter
-	 * @param {string} sRequestType - Request type for the GenericVHSet filter
-	 * @private
-	 */
-	_loadGenericData: function (sModelName, sMethod, sRequestType) {
-		const oModel = this.getModel();
-		const aFilters = [
-			new sap.ui.model.Filter("Method", sap.ui.model.FilterOperator.EQ, sMethod),
-			new sap.ui.model.Filter("RequestType", sap.ui.model.FilterOperator.EQ, sRequestType)
-		];
+		/**
+		 * Generic method to load data from GenericVHSet into a specific JSON model
+		 * @param {string} sModelName - Name of the JSON model to populate
+		 * @param {string} sMethod - Method name for the GenericVHSet filter
+		 * @param {string} sRequestType - Request type for the GenericVHSet filter
+		 * @private
+		 */
+		_loadGenericData: function (sModelName, sMethod, sRequestType) {
+			const oModel = this.getModel();
+			const aFilters = [
+				new sap.ui.model.Filter("Method", sap.ui.model.FilterOperator.EQ, sMethod),
+				new sap.ui.model.Filter("RequestType", sap.ui.model.FilterOperator.EQ, sRequestType)
+			];
 
-		oModel.read("/GenericVHSet", {
-			filters: aFilters,
-			success: (oData) => {
-				this.getModel(sModelName).setData({
-					items: oData.results
-				});
-			},
-			error: (oError) => {
-				// Handle error silently or with minimal logging
-			}
-		});
-	},		/**
+			oModel.read("/GenericVHSet", {
+				filters: aFilters,
+				success: (oData) => {
+					this.getModel(sModelName).setData({
+						items: oData.results
+					});
+				},
+				error: (oError) => {
+					// Handle error silently or with minimal logging
+				}
+			});
+		},		/**
 		 * Handler for multiple attendance switch state change
 		 * Converts switch state to model value
 		 * @param {sap.ui.base.Event} oEvent - The switch change event
@@ -2060,10 +2084,10 @@ sap.ui.define([
 
 			// Get the appropriate form section based on request type (maintenant les IDs correspondent au contenu)
 			let oFormSection;
-			if (sRequestType === '01') {
+			if (sRequestType === constants.REQUEST_TYPES.EDUCATION_GRANT) {
 				// Education Grant 
 				oFormSection = oView.byId("educationGrantFormSection");
-			} else if (sRequestType === '02') {
+			} else if (sRequestType === constants.REQUEST_TYPES.RENTAL_SUBSIDY) {
 				// Rental Subsidy 
 				oFormSection = oView.byId("rentalSubsidyFormSection");
 			}
@@ -2304,185 +2328,185 @@ sap.ui.define([
 	 * @param {string} sGuid - The request GUID
 	 * @private
 	 */
-	_deleteAttachments: function(sGuid) {
-		const that = this;
-		const oAttachmentsModel = this.getView().getModel("attachments");
-		const aAttachments = oAttachmentsModel.getProperty("/items") || [];
-		
-		// Filter attachments marked for deletion
-		const aToDelete = aAttachments.filter(att => att.toDelete === true);
-		
-		if (aToDelete.length === 0) {
-			return Promise.resolve(); // No files to delete
-		}
-		
-		// Use the common service model
-		const oCommonModel = this.getOwnerComponent().getModel("commonModel");
-		
-		if (!oCommonModel) {
-			sap.m.MessageBox.error(this.getText("commonServiceNotAvailable"));
-			return Promise.reject();
-		}
-		
-		// Get CSRF token
-		const sCsrfToken = oCommonModel.getSecurityToken();
-		
-		// Create promises for all deletions using fetch
-		const aDeletePromises = aToDelete.map(async (oAtt) => {
-			// Build the URL with key parameters
-			// AttachmentSet(Guid=guid'xxx',AttachType='001',IncNb='01')/$value
-			const sUrl = `/sap/opu/odata/sap/ZHR_BENEFITS_COMMON_SRV/AttachmentSet(Guid=guid'${sGuid}',AttachType='${oAtt.AttType}',IncNb='${oAtt.IncNb}')/$value`;
-			
-			try {
-				const response = await fetch(sUrl, {
-					method: "DELETE",
-					headers: {
-						"x-csrf-token": sCsrfToken
-					}
-				});
-				
-				if (!response.ok) {
-					throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-				}
-				
-				console.log("Attachment deleted:", oAtt.Filename);
-				return response;
-				
-			} catch (error) {
-				console.error("Error deleting attachment:", oAtt.Filename, error);
-				throw error;
+		_deleteAttachments: function (sGuid) {
+			const that = this;
+			const oAttachmentsModel = this.getView().getModel("attachments");
+			const aAttachments = oAttachmentsModel.getProperty("/items") || [];
+
+			// Filter attachments marked for deletion
+			const aToDelete = aAttachments.filter(att => att.toDelete === true);
+
+			if (aToDelete.length === 0) {
+				return Promise.resolve(); // No files to delete
 			}
-		});
-		
-		// Wait for all deletions to complete
-		return Promise.all(aDeletePromises).then(function() {
-			// Remove deleted items from local model
-			const aRemainingItems = aAttachments.filter(att => att.toDelete !== true);
-			oAttachmentsModel.setProperty("/items", aRemainingItems);
-		});
-	},
+
+			// Use the common service model
+			const oCommonModel = this.getOwnerComponent().getModel("commonModel");
+
+			if (!oCommonModel) {
+				sap.m.MessageBox.error(this.getText("commonServiceNotAvailable"));
+				return Promise.reject();
+			}
+
+			// Get CSRF token
+			const sCsrfToken = oCommonModel.getSecurityToken();
+
+			// Create promises for all deletions using fetch
+			const aDeletePromises = aToDelete.map(async (oAtt) => {
+				// Build the URL with key parameters
+				// AttachmentSet(Guid=guid'xxx',AttachType='001',IncNb='01')/$value
+				const sUrl = `/sap/opu/odata/sap/ZHR_BENEFITS_COMMON_SRV/AttachmentSet(Guid=guid'${sGuid}',AttachType='${oAtt.AttType}',IncNb='${oAtt.IncNb}')/$value`;
+
+				try {
+					const response = await fetch(sUrl, {
+						method: "DELETE",
+						headers: {
+							"x-csrf-token": sCsrfToken
+						}
+					});
+
+					if (!response.ok) {
+						throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+					}
+
+					console.log("Attachment deleted:", oAtt.Filename);
+					return response;
+
+				} catch (error) {
+					console.error("Error deleting attachment:", oAtt.Filename, error);
+					throw error;
+				}
+			});
+
+			// Wait for all deletions to complete
+			return Promise.all(aDeletePromises).then(function () {
+				// Remove deleted items from local model
+				const aRemainingItems = aAttachments.filter(att => att.toDelete !== true);
+				oAttachmentsModel.setProperty("/items", aRemainingItems);
+			});
+		},
 
 
-	/**
-	 * Validates all required fields in the current form
-	 * @returns {Array} Array of field labels that are required but empty
-	 * @private
-	 */
-	_validateRequiredFields: function () {
-		const oView = this.getView();
-		const oContext = oView.getBindingContext();
-		const oModel = oView.getModel();
-		const aValidationErrors = [];
+		/**
+		 * Validates all required fields in the current form
+		 * @returns {Array} Array of field labels that are required but empty
+		 * @private
+		 */
+		_validateRequiredFields: function () {
+			const oView = this.getView();
+			const oContext = oView.getBindingContext();
+			const oModel = oView.getModel();
+			const aValidationErrors = [];
 
-		// If no required fields array or no binding context, skip validation
-		if (!this._aRequiredFields || this._aRequiredFields.length === 0 || !oContext) {
+			// If no required fields array or no binding context, skip validation
+			if (!this._aRequiredFields || this._aRequiredFields.length === 0 || !oContext) {
+				return aValidationErrors;
+			}
+
+			// Get the data object that will be sent to backend
+			const oRequestData = oModel.getObject(oContext.getPath());
+			const sRequestType = oRequestData.RequestType;
+
+			// Get the appropriate detail object based on request type
+			let oDetailObject;
+			if (sRequestType === constants.REQUEST_TYPES.EDUCATION_GRANT) { // "01"
+				oDetailObject = oModel.getObject(oContext.getPath() + "/ToEduGrantDetail");
+			} else if (sRequestType === constants.REQUEST_TYPES.RENTAL_SUBSIDY) { // "02"
+				oDetailObject = oModel.getObject(oContext.getPath() + "/ToRentalSubsidyDetail");
+			}
+
+			// Validate each required field by checking the binding data
+			this._aRequiredFields.forEach(function (oFieldInfo) {
+				const sFieldId = oFieldInfo.fieldId; // e.g., "EGCNA" or "EG_CNA"
+				const sFieldLabel = oFieldInfo.label || sFieldId;
+
+				// Helper function to find property in object with case-insensitive search
+				const findPropertyCaseInsensitive = function (oObject, sPropertyName) {
+					if (!oObject) return null;
+
+					// Try direct match first
+					if (sPropertyName in oObject) {
+						return oObject[sPropertyName];
+					}
+
+					// Remove underscores and try again
+					const sPropertyNameNoUnderscore = sPropertyName.replace(/_/g, '');
+					if (sPropertyNameNoUnderscore !== sPropertyName && sPropertyNameNoUnderscore in oObject) {
+						return oObject[sPropertyNameNoUnderscore];
+					}
+
+					// Search through all keys with case-insensitive comparison (with and without underscores)
+					const sPropertyNameLower = sPropertyName.toLowerCase();
+					const sPropertyNameNoUnderscoreLower = sPropertyNameNoUnderscore.toLowerCase();
+
+					for (const sKey in oObject) {
+						const sKeyLower = sKey.toLowerCase();
+						const sKeyNoUnderscore = sKey.replace(/_/g, '').toLowerCase();
+
+						if (sKeyLower === sPropertyNameLower ||
+							sKeyNoUnderscore === sPropertyNameNoUnderscoreLower) {
+							return oObject[sKey];
+						}
+					}
+					return null;
+				};
+
+				// Determine the value by checking both data structures
+				let sValue = findPropertyCaseInsensitive(oDetailObject, sFieldId);
+				if (sValue === null) {
+					sValue = findPropertyCaseInsensitive(oRequestData, sFieldId);
+				}
+
+				// Check if value is empty (null, undefined, empty string, or whitespace)
+				const bIsEmpty = sValue === null || sValue === undefined ||
+					(typeof sValue === 'string' && sValue.trim() === '');
+
+				if (bIsEmpty) {
+					// Set value state to error on the control for visual feedback
+					const oControl = oView.byId(sFieldId);
+					if (oControl && oControl.setValueState) {
+						oControl.setValueState(sap.ui.core.ValueState.Error);
+						oControl.setValueStateText(this.getText("fieldRequired") || "Ce champ est obligatoire");
+					}
+					aValidationErrors.push(sFieldLabel);
+				} else {
+					// Clear error state if field is filled
+					const oControl = oView.byId(sFieldId);
+					if (oControl && oControl.setValueState) {
+						oControl.setValueState(sap.ui.core.ValueState.None);
+					}
+				}
+			}.bind(this));
+
 			return aValidationErrors;
-		}
+		},
 
-		// Get the data object that will be sent to backend
-		const oRequestData = oModel.getObject(oContext.getPath());
-		const sRequestType = oRequestData.RequestType;
+		/**
+		 * Sets focus on the first invalid field for better user experience
+		 * @param {Array} aValidationErrors - Array of field labels with errors
+		 * @private
+		 */
+		_focusFirstInvalidField: function (aValidationErrors) {
+			if (aValidationErrors.length === 0 || !this._aRequiredFields) {
+				return;
+			}
 
-		// Get the appropriate detail object based on request type
-		let oDetailObject;
-		if (sRequestType === constants.REQUEST_TYPES.EDUCATION_GRANT) { // "01"
-			oDetailObject = oModel.getObject(oContext.getPath() + "/ToEduGrantDetail");
-		} else if (sRequestType === constants.REQUEST_TYPES.RENTAL_SUBSIDY) { // "02"
-			oDetailObject = oModel.getObject(oContext.getPath() + "/ToRentalSubsidyDetail");
-		}
+			const oView = this.getView();
 
-		// Validate each required field by checking the binding data
-		this._aRequiredFields.forEach(function (oFieldInfo) {
-			const sFieldId = oFieldInfo.fieldId; // e.g., "EGCNA" or "EG_CNA"
-			const sFieldLabel = oFieldInfo.label || sFieldId;
-			
-			// Helper function to find property in object with case-insensitive search
-			const findPropertyCaseInsensitive = function(oObject, sPropertyName) {
-				if (!oObject) return null;
-				
-				// Try direct match first
-				if (sPropertyName in oObject) {
-					return oObject[sPropertyName];
-				}
-				
-				// Remove underscores and try again
-				const sPropertyNameNoUnderscore = sPropertyName.replace(/_/g, '');
-				if (sPropertyNameNoUnderscore !== sPropertyName && sPropertyNameNoUnderscore in oObject) {
-					return oObject[sPropertyNameNoUnderscore];
-				}
-				
-				// Search through all keys with case-insensitive comparison (with and without underscores)
-				const sPropertyNameLower = sPropertyName.toLowerCase();
-				const sPropertyNameNoUnderscoreLower = sPropertyNameNoUnderscore.toLowerCase();
-				
-				for (const sKey in oObject) {
-					const sKeyLower = sKey.toLowerCase();
-					const sKeyNoUnderscore = sKey.replace(/_/g, '').toLowerCase();
-					
-					if (sKeyLower === sPropertyNameLower || 
-					    sKeyNoUnderscore === sPropertyNameNoUnderscoreLower) {
-						return oObject[sKey];
+			// Find the first field with an error and set focus
+			for (let i = 0; i < this._aRequiredFields.length; i++) {
+				const oFieldInfo = this._aRequiredFields[i];
+				if (aValidationErrors.includes(oFieldInfo.label)) {
+					const oControl = oView.byId(oFieldInfo.fieldId);
+					if (oControl && oControl.focus) {
+						setTimeout(function () {
+							oControl.focus();
+						}, 100);
+						break;
 					}
 				}
-				return null;
-			};
-			
-			// Determine the value by checking both data structures
-			let sValue = findPropertyCaseInsensitive(oDetailObject, sFieldId);
-			if (sValue === null) {
-				sValue = findPropertyCaseInsensitive(oRequestData, sFieldId);
 			}
-			
-			// Check if value is empty (null, undefined, empty string, or whitespace)
-			const bIsEmpty = sValue === null || sValue === undefined || 
-							(typeof sValue === 'string' && sValue.trim() === '');
-			
-			if (bIsEmpty) {
-				// Set value state to error on the control for visual feedback
-				const oControl = oView.byId(sFieldId);
-				if (oControl && oControl.setValueState) {
-					oControl.setValueState(sap.ui.core.ValueState.Error);
-					oControl.setValueStateText(this.getText("fieldRequired") || "Ce champ est obligatoire");
-				}
-				aValidationErrors.push(sFieldLabel);
-			} else {
-				// Clear error state if field is filled
-				const oControl = oView.byId(sFieldId);
-				if (oControl && oControl.setValueState) {
-					oControl.setValueState(sap.ui.core.ValueState.None);
-				}
-			}
-		}.bind(this));
-
-	return aValidationErrors;
-},
-
-	/**
-	 * Sets focus on the first invalid field for better user experience
-	 * @param {Array} aValidationErrors - Array of field labels with errors
-	 * @private
-	 */
-	_focusFirstInvalidField: function (aValidationErrors) {
-		if (aValidationErrors.length === 0 || !this._aRequiredFields) {
-			return;
-		}
-
-		const oView = this.getView();
-
-		// Find the first field with an error and set focus
-		for (let i = 0; i < this._aRequiredFields.length; i++) {
-			const oFieldInfo = this._aRequiredFields[i];
-			if (aValidationErrors.includes(oFieldInfo.label)) {
-				const oControl = oView.byId(oFieldInfo.fieldId);
-				if (oControl && oControl.focus) {
-					setTimeout(function () {
-						oControl.focus();
-					}, 100);
-					break;
-				}
-			}
-		}
-	},
+		},
 		/**
 		 * Check if a field is an exception that should not be managed by UI settings
 		 * @param {string} sFieldId - The field ID to check

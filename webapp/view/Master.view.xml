@@ -92,7 +92,7 @@
                         <secondStatus>
                             <ObjectStatus
                                 text="{Info1}"
-                                visibility="=%{Info1} !== ''"
+                                visible="{= %{Info1} !== ''}"
                                 state="{
                                     path: 'Info1',
                                     formatter: '.formatter.info1StateText'
