@@ -32,16 +32,26 @@
                         }"
                         noDataText="{i18n>noFilesAttached}"
                         class="sapUiSmallMarginTop">
-                        <CustomListItem type="Active" press="onViewAttachment">
+                        <CustomListItem type="Inactive">
                             <HBox justifyContent="SpaceBetween" alignItems="Center" width="100%">
                                 <HBox alignItems="Center">
                                     <core:Icon src="sap-icon://document" class="sapUiTinyMarginEnd" />
-                                    <Text text="{attachments>Filename}" />
+                                    <Text text="{attachments>Filename}.{attachments>Fileext}" />
                                 </HBox>
-                                <Button 
-                                    icon="sap-icon://decline" 
-                                    type="Transparent"
-                                    press="onRemoveAttachment" />
+                                <FlexBox>
+                                    <Button 
+                                        icon="sap-icon://show" 
+                                        type="Transparent"
+                                        tooltip="{i18n>viewFile}"
+                                        press="onViewAttachment" />
+                                    <Button 
+                                        id="BTNDEL005"
+                                        icon="sap-icon://delete" 
+                                        type="Transparent"
+                                        tooltip="{i18n>deleteFile}"
+                                        press="onRemoveAttachment"
+                                        visible="{attachments>/canDelete005}" />
+                                </FlexBox>
                             </HBox>
                         </CustomListItem>
                     </List>
@@ -69,16 +79,26 @@
                         }"
                         noDataText="{i18n>noFilesAttached}"
                         class="sapUiSmallMarginTop">
-                        <CustomListItem type="Active" press="onViewAttachment">
+                        <CustomListItem type="Inactive">
                             <HBox justifyContent="SpaceBetween" alignItems="Center" width="100%">
                                 <HBox alignItems="Center">
                                     <core:Icon src="sap-icon://document" class="sapUiTinyMarginEnd" />
-                                    <Text text="{attachments>Filename}" />
+                                    <Text text="{attachments>Filename}.{attachments>Fileext}" />
                                 </HBox>
-                                <Button 
-                                    icon="sap-icon://decline" 
-                                    type="Transparent"
-                                    press="onRemoveAttachment" />
+                                <FlexBox>
+                                    <Button 
+                                        icon="sap-icon://show" 
+                                        type="Transparent"
+                                        tooltip="{i18n>viewFile}"
+                                        press="onViewAttachment" />
+                                    <Button 
+                                        id="BTNDEL004"
+                                        icon="sap-icon://delete" 
+                                        type="Transparent"
+                                        tooltip="{i18n>deleteFile}"
+                                        press="onRemoveAttachment"
+                                        visible="{attachments>/canDelete004}" />
+                                </FlexBox>
                             </HBox>
                         </CustomListItem>
                     </List>
@@ -106,16 +126,26 @@
                         }"
                         noDataText="{i18n>noFilesAttached}"
                         class="sapUiSmallMarginTop">
-                        <CustomListItem type="Active" press="onViewAttachment">
+                        <CustomListItem type="Inactive">
                             <HBox justifyContent="SpaceBetween" alignItems="Center" width="100%">
                                 <HBox alignItems="Center">
                                     <core:Icon src="sap-icon://document" class="sapUiTinyMarginEnd" />
-                                    <Text text="{attachments>Filename}" />
+                                    <Text text="{attachments>Filename}.{attachments>Fileext}" />
                                 </HBox>
-                                <Button 
-                                    icon="sap-icon://decline" 
-                                    type="Transparent"
-                                    press="onRemoveAttachment" />
+                                <FlexBox>
+                                    <Button 
+                                        icon="sap-icon://show" 
+                                        type="Transparent"
+                                        tooltip="{i18n>viewFile}"
+                                        press="onViewAttachment" />
+                                    <Button 
+                                        id="BTNDEL010"
+                                        icon="sap-icon://delete" 
+                                        type="Transparent"
+                                        tooltip="{i18n>deleteFile}"
+                                        press="onRemoveAttachment"
+                                        visible="{attachments>/canDelete010}" />
+                                </FlexBox>
                             </HBox>
                         </CustomListItem>
                     </List>
@@ -146,16 +176,26 @@
                         }"
                         noDataText="{i18n>noFilesAttached}"
                         class="sapUiSmallMarginTop">
-                        <CustomListItem type="Active" press="onViewAttachment">
+                        <CustomListItem type="Inactive">
                             <HBox justifyContent="SpaceBetween" alignItems="Center" width="100%">
                                 <HBox alignItems="Center">
                                     <core:Icon src="sap-icon://document" class="sapUiTinyMarginEnd" />
-                                    <Text text="{attachments>Filename}" />
+                                    <Text text="{attachments>Filename}.{attachments>Fileext}" />
                                 </HBox>
-                                <Button 
-                                    icon="sap-icon://decline" 
-                                    type="Transparent"
-                                    press="onRemoveAttachment" />
+                                <FlexBox>
+                                    <Button 
+                                        icon="sap-icon://show" 
+                                        type="Transparent"
+                                        tooltip="{i18n>viewFile}"
+                                        press="onViewAttachment" />
+                                    <Button 
+                                        id="BTNDEL009"
+                                        icon="sap-icon://delete" 
+                                        type="Transparent"
+                                        tooltip="{i18n>deleteFile}"
+                                        press="onRemoveAttachment"
+                                        visible="{attachments>/canDelete009}" />
+                                </FlexBox>
                             </HBox>
                         </CustomListItem>
                     </List>
@@ -183,16 +223,26 @@
                         }"
                         noDataText="{i18n>noFilesAttached}"
                         class="sapUiSmallMarginTop">
-                        <CustomListItem type="Active" press="onViewAttachment">
+                        <CustomListItem type="Inactive">
                             <HBox justifyContent="SpaceBetween" alignItems="Center" width="100%">
                                 <HBox alignItems="Center">
                                     <core:Icon src="sap-icon://document" class="sapUiTinyMarginEnd" />
-                                    <Text text="{attachments>Filename}" />
+                                    <Text text="{attachments>Filename}.{attachments>Fileext}" />
                                 </HBox>
-                                <Button 
-                                    icon="sap-icon://decline" 
-                                    type="Transparent"
-                                    press="onRemoveAttachment" />
+                                <FlexBox>
+                                    <Button 
+                                        icon="sap-icon://show" 
+                                        type="Transparent"
+                                        tooltip="{i18n>viewFile}"
+                                        press="onViewAttachment" />
+                                    <Button 
+                                        id="BTNDEL011"
+                                        icon="sap-icon://delete" 
+                                        type="Transparent"
+                                        tooltip="{i18n>deleteFile}"
+                                        press="onRemoveAttachment"
+                                        visible="{attachments>/canDelete011}" />
+                                </FlexBox>
                             </HBox>
                         </CustomListItem>
                     </List>
@@ -202,3 +252,5 @@
     </VBox>
     
 </core:FragmentDefinition>
+
+

@@ -138,14 +138,11 @@ sap.ui.define([
 		 * Validates required fields before showing comment dialog and submitting
 		 * @public
 		 */
-		onSubmitButtonPress: function () {
-			debugger;
-			const that = this;
+	onSubmitButtonPress: function () {
+		const that = this;
 
-			// Validate required fields before proceeding
-			const aValidationErrors = this._validateRequiredFields();
-
-			if (aValidationErrors.length > 0) {
+		// Validate required fields before proceeding
+		const aValidationErrors = this._validateRequiredFields();			if (aValidationErrors.length > 0) {
 				// Show generic validation error message (fields are already highlighted in red)
 				const sErrorMessage = this.getText("requiredFieldsValidation");
 
@@ -445,13 +442,10 @@ sap.ui.define([
 		 * @param {sap.ui.base.Event} oEvent - The checkbox select event
 		 * @public
 		 */
-		onSelectProrationFactor: function (oEvent) {
-			debugger;
-			const bSelected = oEvent.getSource().getSelected();
-			const oView = this.getView();
-			const oEgfacField = oView.byId("EGFAC");
-
-			if (oEgfacField) {
+	onSelectProrationFactor: function (oEvent) {
+		const bSelected = oEvent.getSource().getSelected();
+		const oView = this.getView();
+		const oEgfacField = oView.byId("EGFAC");			if (oEgfacField) {
 				// Set editability based on checkbox state
 				oEgfacField.setEditable(bSelected);
 				oEgfacField.setEnabled(bSelected);
@@ -843,12 +837,9 @@ if (sRequestType === constants.REQUEST_TYPES.EDUCATION_GRANT) { // Education Gra
 		 * Adds entry to local JSON model "clm"
 		 * @private
 		 */
-		_onConfirmAddClaim: function () {
-			debugger;
-			const oDialogModel = this.fragments._oAddClaimDialog.getModel("claimModel");
-			const oClaimData = oDialogModel.getData();
-
-			// Format amounts as string for Edm.Decimal
+	_onConfirmAddClaim: function () {
+		const oDialogModel = this.fragments._oAddClaimDialog.getModel("claimModel");
+		const oClaimData = oDialogModel.getData();			// Format amounts as string for Edm.Decimal
 			const sExpenseAmount = oClaimData.ExpenseAmount ? parseFloat(oClaimData.ExpenseAmount).toFixed(3) : "0.000";
 			const sAdvanceAmount = oClaimData.AdvanceAmount ? parseFloat(oClaimData.AdvanceAmount).toFixed(3) : "0.000";
 
@@ -875,12 +866,9 @@ if (sRequestType === constants.REQUEST_TYPES.EDUCATION_GRANT) { // Education Gra
 		 * Adds entry to local JSON model "adv"
 		 * @private
 		 */
-		_onConfirmAddAdvance: function () {
-			debugger;
-			const oDialogModel = this.fragments._oAddAdvanceDialog.getModel("advanceModel");
-			const oAdvanceData = oDialogModel.getData();
-
-			// Format amount as string for Edm.Decimal
+	_onConfirmAddAdvance: function () {
+		const oDialogModel = this.fragments._oAddAdvanceDialog.getModel("advanceModel");
+		const oAdvanceData = oDialogModel.getData();			// Format amount as string for Edm.Decimal
 			const sAmount = oAdvanceData.Examt ? parseFloat(oAdvanceData.Examt).toFixed(3) : "0.000";
 
 			// Create a new advance entry
@@ -952,10 +940,24 @@ if (sRequestType === constants.REQUEST_TYPES.EDUCATION_GRANT) { // Education Gra
 			this.getView().setModel(oLocalAdvancesModel, "adv");
 
 			// Initialize local model for attachments
-			const oLocalAttachmentsModel = new JSONModel({ items: [] });
-			this.getView().setModel(oLocalAttachmentsModel, "attachments");
-
-			// Initialize value help models
+		const oLocalAttachmentsModel = new JSONModel({ 
+			items: [],
+			// Education Grant
+			canDelete005: false,
+			canDelete004: false,
+			canDelete010: false,
+			canDelete009: false,
+			canDelete011: false,
+			// Rental Subsidy
+			canDelete001: false,
+			canDelete002: false,
+			canDelete003: false,
+			canDelete006: false,
+			canDelete007: false,
+			canDelete008: false,
+			canDelete012: false
+		});
+		this.getView().setModel(oLocalAttachmentsModel, "attachments");			// Initialize value help models
 			this._initializeValueHelpModels();
 		},
 
@@ -1084,16 +1086,57 @@ if (sRequestType === constants.REQUEST_TYPES.EDUCATION_GRANT) { // Education Gra
 
 		// Track delete button visibility for Claims
 		if (oUIProperty.Field === "BTNDELCLAIM") {
-			debugger;
 			bClaimDeleteVisible = !hidden;
 		}
 
 		// Track delete button visibility for Advances
 		if (oUIProperty.Field === "BTNDELADVANCE") {
-			debugger;
 			bAdvanceDeleteVisible = !hidden;
-		}			// Find the control by its id (which must match Field)
-			const oCtrl = oView.byId(oUIProperty.Field);
+		}
+
+		// Track delete button visibility for Attachments (based on FileUploader visibility)
+		const oAttachmentsModel = this.getView().getModel("attachments");
+		// Education Grant
+		if (oUIProperty.Field === "005" && oAttachmentsModel) {
+			oAttachmentsModel.setProperty("/canDelete005", !hidden);
+		}
+		if (oUIProperty.Field === "004" && oAttachmentsModel) {
+			oAttachmentsModel.setProperty("/canDelete004", !hidden);
+		}
+		if (oUIProperty.Field === "010" && oAttachmentsModel) {
+			oAttachmentsModel.setProperty("/canDelete010", !hidden);
+		}
+		if (oUIProperty.Field === "009" && oAttachmentsModel) {
+			oAttachmentsModel.setProperty("/canDelete009", !hidden);
+		}
+		if (oUIProperty.Field === "011" && oAttachmentsModel) {
+			oAttachmentsModel.setProperty("/canDelete011", !hidden);
+		}
+		// Rental Subsidy
+		if (oUIProperty.Field === "001" && oAttachmentsModel) {
+			oAttachmentsModel.setProperty("/canDelete001", !hidden);
+		}
+		if (oUIProperty.Field === "002" && oAttachmentsModel) {
+			oAttachmentsModel.setProperty("/canDelete002", !hidden);
+		}
+		if (oUIProperty.Field === "003" && oAttachmentsModel) {
+			oAttachmentsModel.setProperty("/canDelete003", !hidden);
+		}
+		if (oUIProperty.Field === "006" && oAttachmentsModel) {
+			oAttachmentsModel.setProperty("/canDelete006", !hidden);
+		}
+		if (oUIProperty.Field === "007" && oAttachmentsModel) {
+			oAttachmentsModel.setProperty("/canDelete007", !hidden);
+		}
+		if (oUIProperty.Field === "008" && oAttachmentsModel) {
+			oAttachmentsModel.setProperty("/canDelete008", !hidden);
+		}
+		if (oUIProperty.Field === "012" && oAttachmentsModel) {
+			oAttachmentsModel.setProperty("/canDelete012", !hidden);
+		}
+
+		// Find the control by its id (which must match Field)
+		const oCtrl = oView.byId(oUIProperty.Field);
 
 			// Store required field info AFTER getting the control, so we can get the proper label
 			if (oUIProperty.Property === "04" && oCtrl) {
@@ -1483,6 +1526,7 @@ if (sRequestType === constants.REQUEST_TYPES.EDUCATION_GRANT) { // Education Gra
 						AttType: x.AttachType || "",
 						IncNb: x.IncNb || "00",
 						Filename: x.Filename || "",
+						Fileext: x.Fileext || "",
 						Filetype: x.Filetype || "",
 						Filecontent: x.Filecontent || "",
 						toDelete: false
@@ -2449,36 +2493,54 @@ if (sRequestType === constants.REQUEST_TYPES.EDUCATION_GRANT) { // Education Gra
 						}
 					}
 					return null;
-				};
+		};
 
-				// Determine the value by checking both data structures
-				let sValue = findPropertyCaseInsensitive(oDetailObject, sFieldId);
-				if (sValue === null) {
-					sValue = findPropertyCaseInsensitive(oRequestData, sFieldId);
-				}
+		// Determine the value by checking both data structures
+		let sValue = findPropertyCaseInsensitive(oDetailObject, sFieldId);
+		if (sValue === null) {
+			sValue = findPropertyCaseInsensitive(oRequestData, sFieldId);
+		}
 
-				// Check if value is empty (null, undefined, empty string, or whitespace)
-				const bIsEmpty = sValue === null || sValue === undefined ||
-					(typeof sValue === 'string' && sValue.trim() === '');
+		// Special handling for FileUploader controls (attachments)
+		const aFileUploaderIds = ["005", "004", "010", "009", "011"];
+		if (aFileUploaderIds.includes(sFieldId)) {
+			// Check in attachments model instead of OData model
+			const oAttachmentsModel = oView.getModel("attachments");
+			const aAttachments = oAttachmentsModel.getProperty("/items") || [];
+			
+			// Count files of this type that are not marked for deletion
+			const aValidFiles = aAttachments.filter(function(oAtt) {
+				return oAtt.AttType === sFieldId && oAtt.toDelete !== true;
+			});
+			
+			// If at least one file exists, consider the field as filled
+			if (aValidFiles.length > 0) {
+				sValue = "HAS_FILES"; // Non-empty value to pass validation
+			} else {
+				sValue = ""; // Empty to fail validation
+			}
+		}
 
-				if (bIsEmpty) {
-					// Set value state to error on the control for visual feedback
-					const oControl = oView.byId(sFieldId);
-					if (oControl && oControl.setValueState) {
-						oControl.setValueState(sap.ui.core.ValueState.Error);
-						oControl.setValueStateText(this.getText("fieldRequired") || "Ce champ est obligatoire");
-					}
-					aValidationErrors.push(sFieldLabel);
-				} else {
-					// Clear error state if field is filled
-					const oControl = oView.byId(sFieldId);
-					if (oControl && oControl.setValueState) {
-						oControl.setValueState(sap.ui.core.ValueState.None);
-					}
-				}
-			}.bind(this));
+		// Check if value is empty (null, undefined, empty string, or whitespace)
+		const bIsEmpty = sValue === null || sValue === undefined ||
+			(typeof sValue === 'string' && sValue.trim() === '');
 
-			return aValidationErrors;
+		if (bIsEmpty) {
+			// Set value state to error on the control for visual feedback
+			const oControl = oView.byId(sFieldId);
+			if (oControl && oControl.setValueState) {
+				oControl.setValueState(sap.ui.core.ValueState.Error);
+				oControl.setValueStateText(this.getText("fieldRequired") || "Ce champ est obligatoire");
+			}
+			aValidationErrors.push(sFieldLabel);
+		} else {
+			// Clear error state if field is filled
+			const oControl = oView.byId(sFieldId);
+			if (oControl && oControl.setValueState) {
+				oControl.setValueState(sap.ui.core.ValueState.None);
+			}
+		}
+	}.bind(this));			return aValidationErrors;
 		},
 
 		/**

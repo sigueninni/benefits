@@ -2,8 +2,7 @@
     xmlns:core="sap.ui.core"
     xmlns="sap.m"
     xmlns:u="sap.ui.unified"
-    xmlns:form="sap.ui.layout.form"
-    xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
+    xmlns:form="sap.ui.layout.form">
 
     <VBox>
         <Label text="{i18n>attachments}" class="sapUiMediumMarginBottom" />
@@ -11,82 +10,336 @@
         <HBox>
             <!-- Left Column -->
             <VBox class="sapUiMediumMarginEnd" width="50%">
-                <!-- Copy of signed lease agreement -->
+                <!-- Copy of signed lease agreement (001) -->
                 <VBox class="sapUiSmallMarginBottom">
                     <Label text="{i18n>signedLeaseAgreement}" class="sapUiSmallMarginBottom" />
                     <u:FileUploader
-                        id="signedLeaseUpload"
+                        id="001"
                         multiple="true"
-                        uploadUrl="/upload/signedlease"
-                        change="onSignedLeaseFileChange"
+                        change="onAttachmentFileChange"
                         fileType="pdf,jpg,jpeg,png"
                         maximumFileSize="5"
                         buttonText="{i18n>selectFiles}"
                         placeholder="{i18n>chooseSignedLeaseFiles}"
                     />
+                    <List
+                        items="{
+                            path: 'attachments>/items',
+                            filters: [
+                                {path: 'AttType', operator: 'EQ', value1: '001'},
+                                {path: 'toDelete', operator: 'NE', value1: true}
+                            ]
+                        }"
+                        noDataText="{i18n>noFilesAttached}"
+                        class="sapUiSmallMarginTop">
+                        <CustomListItem type="Inactive">
+                            <HBox justifyContent="SpaceBetween" alignItems="Center" width="100%">
+                                <HBox alignItems="Center">
+                                    <core:Icon src="sap-icon://document" class="sapUiTinyMarginEnd" />
+                                    <Text text="{attachments>Filename}.{attachments>Fileext}" />
+                                </HBox>
+                                <FlexBox>
+                                    <Button 
+                                        icon="sap-icon://show" 
+                                        type="Transparent"
+                                        tooltip="{i18n>viewFile}"
+                                        press="onViewAttachment" />
+                                    <Button 
+                                        id="BTNDEL001"
+                                        icon="sap-icon://delete" 
+                                        type="Transparent"
+                                        tooltip="{i18n>deleteFile}"
+                                        press="onRemoveAttachment"
+                                        visible="{attachments>/canDelete001}" />
+                                </FlexBox>
+                            </HBox>
+                        </CustomListItem>
+                    </List>
                 </VBox>
                 
-                <!-- Proof of payment of first month of rent -->
+                <!-- Proof of payment of first month of rent (002) -->
                 <VBox class="sapUiSmallMarginBottom">
                     <Label text="{i18n>proofFirstMonthPayment}" class="sapUiSmallMarginBottom" />
                     <u:FileUploader
-                        id="firstMonthPaymentUpload"
+                        id="002"
                         multiple="true"
-                        uploadUrl="/upload/firstmonthpayment"
-                        change="onFirstMonthPaymentFileChange"
+                        change="onAttachmentFileChange"
                         fileType="pdf,jpg,jpeg,png"
                         maximumFileSize="5"
                         buttonText="{i18n>selectFiles}"
                         placeholder="{i18n>chooseFirstMonthPaymentFiles}"
                     />
+                    <List
+                        items="{
+                            path: 'attachments>/items',
+                            filters: [
+                                {path: 'AttType', operator: 'EQ', value1: '002'},
+                                {path: 'toDelete', operator: 'NE', value1: true}
+                            ]
+                        }"
+                        noDataText="{i18n>noFilesAttached}"
+                        class="sapUiSmallMarginTop">
+                        <CustomListItem type="Inactive">
+                            <HBox justifyContent="SpaceBetween" alignItems="Center" width="100%">
+                                <HBox alignItems="Center">
+                                    <core:Icon src="sap-icon://document" class="sapUiTinyMarginEnd" />
+                                    <Text text="{attachments>Filename}.{attachments>Fileext}" />
+                                </HBox>
+                                <FlexBox>
+                                    <Button 
+                                        icon="sap-icon://show" 
+                                        type="Transparent"
+                                        tooltip="{i18n>viewFile}"
+                                        press="onViewAttachment" />
+                                    <Button 
+                                        id="BTNDEL002"
+                                        icon="sap-icon://delete" 
+                                        type="Transparent"
+                                        tooltip="{i18n>deleteFile}"
+                                        press="onRemoveAttachment"
+                                        visible="{attachments>/canDelete002}" />
+                                </FlexBox>
+                            </HBox>
+                        </CustomListItem>
+                    </List>
                 </VBox>
                 
-                <!-- Brokers fees invoice (optional) -->
+                <!-- Brokers fees invoice (003) -->
                 <VBox class="sapUiSmallMarginBottom">
                     <Label text="{i18n>brokersFeesInvoice}" class="sapUiSmallMarginBottom" />
                     <u:FileUploader
-                        id="brokersInvoiceUpload"
+                        id="003"
                         multiple="true"
-                        uploadUrl="/upload/brokersinvoice"
-                        change="onBrokersInvoiceFileChange"
+                        change="onAttachmentFileChange"
                         fileType="pdf,jpg,jpeg,png"
                         maximumFileSize="5"
                         buttonText="{i18n>selectFiles}"
                         placeholder="{i18n>chooseBrokersInvoiceFiles}"
                     />
+                    <List
+                        items="{
+                            path: 'attachments>/items',
+                            filters: [
+                                {path: 'AttType', operator: 'EQ', value1: '003'},
+                                {path: 'toDelete', operator: 'NE', value1: true}
+                            ]
+                        }"
+                        noDataText="{i18n>noFilesAttached}"
+                        class="sapUiSmallMarginTop">
+                        <CustomListItem type="Inactive">
+                            <HBox justifyContent="SpaceBetween" alignItems="Center" width="100%">
+                                <HBox alignItems="Center">
+                                    <core:Icon src="sap-icon://document" class="sapUiTinyMarginEnd" />
+                                    <Text text="{attachments>Filename}.{attachments>Fileext}" />
+                                </HBox>
+                                <FlexBox>
+                                    <Button 
+                                        icon="sap-icon://show" 
+                                        type="Transparent"
+                                        tooltip="{i18n>viewFile}"
+                                        press="onViewAttachment" />
+                                    <Button 
+                                        id="BTNDEL003"
+                                        icon="sap-icon://delete" 
+                                        type="Transparent"
+                                        tooltip="{i18n>deleteFile}"
+                                        press="onRemoveAttachment"
+                                        visible="{attachments>/canDelete003}" />
+                                </FlexBox>
+                            </HBox>
+                        </CustomListItem>
+                    </List>
                 </VBox>
-            </VBox>
-            
-            <!-- Right Column -->
-            <VBox width="50%">
-                <!-- Proof of payment of brokers fees (optional) -->
+
+                <!-- Proof of payment of brokers fees (006) -->
                 <VBox class="sapUiSmallMarginBottom">
                     <Label text="{i18n>proofBrokersFeesPayment}" class="sapUiSmallMarginBottom" />
                     <u:FileUploader
-                        id="brokersPaymentUpload"
+                        id="006"
                         multiple="true"
-                        uploadUrl="/upload/brokerspayment"
-                        change="onBrokersPaymentFileChange"
+                        change="onAttachmentFileChange"
                         fileType="pdf,jpg,jpeg,png"
                         maximumFileSize="5"
                         buttonText="{i18n>selectFiles}"
                         placeholder="{i18n>chooseBrokersPaymentFiles}"
                     />
+                    <List
+                        items="{
+                            path: 'attachments>/items',
+                            filters: [
+                                {path: 'AttType', operator: 'EQ', value1: '006'},
+                                {path: 'toDelete', operator: 'NE', value1: true}
+                            ]
+                        }"
+                        noDataText="{i18n>noFilesAttached}"
+                        class="sapUiSmallMarginTop">
+                        <CustomListItem type="Inactive">
+                            <HBox justifyContent="SpaceBetween" alignItems="Center" width="100%">
+                                <HBox alignItems="Center">
+                                    <core:Icon src="sap-icon://document" class="sapUiTinyMarginEnd" />
+                                    <Text text="{attachments>Filename}.{attachments>Fileext}" />
+                                </HBox>
+                                <FlexBox>
+                                    <Button 
+                                        icon="sap-icon://show" 
+                                        type="Transparent"
+                                        tooltip="{i18n>viewFile}"
+                                        press="onViewAttachment" />
+                                    <Button 
+                                        id="BTNDEL006"
+                                        icon="sap-icon://delete" 
+                                        type="Transparent"
+                                        tooltip="{i18n>deleteFile}"
+                                        press="onRemoveAttachment"
+                                        visible="{attachments>/canDelete006}" />
+                                </FlexBox>
+                            </HBox>
+                        </CustomListItem>
+                    </List>
                 </VBox>
-                
-                <!-- UNDP resident coordinator approval for d/s A to E -->
+            </VBox>
+            
+            <!-- Right Column -->
+            <VBox width="50%">
+                <!-- UNDP resident coordinator approval (007) -->
                 <VBox class="sapUiSmallMarginBottom">
                     <Label text="{i18n>undpResidentCoordinatorApproval}" class="sapUiSmallMarginBottom" />
                     <u:FileUploader
-                        id="undpApprovalUpload"
+                        id="007"
                         multiple="true"
-                        uploadUrl="/upload/undpapproval"
-                        change="onUndpApprovalFileChange"
+                        change="onAttachmentFileChange"
                         fileType="pdf,jpg,jpeg,png"
                         maximumFileSize="5"
                         buttonText="{i18n>selectFiles}"
                         placeholder="{i18n>chooseUndpApprovalFiles}"
                     />
+                    <List
+                        items="{
+                            path: 'attachments>/items',
+                            filters: [
+                                {path: 'AttType', operator: 'EQ', value1: '007'},
+                                {path: 'toDelete', operator: 'NE', value1: true}
+                            ]
+                        }"
+                        noDataText="{i18n>noFilesAttached}"
+                        class="sapUiSmallMarginTop">
+                        <CustomListItem type="Inactive">
+                            <HBox justifyContent="SpaceBetween" alignItems="Center" width="100%">
+                                <HBox alignItems="Center">
+                                    <core:Icon src="sap-icon://document" class="sapUiTinyMarginEnd" />
+                                    <Text text="{attachments>Filename}.{attachments>Fileext}" />
+                                </HBox>
+                                <FlexBox>
+                                    <Button 
+                                        icon="sap-icon://show" 
+                                        type="Transparent"
+                                        tooltip="{i18n>viewFile}"
+                                        press="onViewAttachment" />
+                                    <Button 
+                                        id="BTNDEL007"
+                                        icon="sap-icon://delete" 
+                                        type="Transparent"
+                                        tooltip="{i18n>deleteFile}"
+                                        press="onRemoveAttachment"
+                                        visible="{attachments>/canDelete007}" />
+                                </FlexBox>
+                            </HBox>
+                        </CustomListItem>
+                    </List>
+                </VBox>
+
+                <!-- Proof of payment after 12 months (008) -->
+                <VBox class="sapUiSmallMarginBottom">
+                    <Label text="{i18n>proofPaymentAfter12Months}" class="sapUiSmallMarginBottom" />
+                    <u:FileUploader
+                        id="008"
+                        multiple="true"
+                        change="onAttachmentFileChange"
+                        fileType="pdf,jpg,jpeg,png"
+                        maximumFileSize="5"
+                        buttonText="{i18n>selectFiles}"
+                        placeholder="{i18n>choosePaymentAfter12MonthsFiles}"
+                    />
+                    <List
+                        items="{
+                            path: 'attachments>/items',
+                            filters: [
+                                {path: 'AttType', operator: 'EQ', value1: '008'},
+                                {path: 'toDelete', operator: 'NE', value1: true}
+                            ]
+                        }"
+                        noDataText="{i18n>noFilesAttached}"
+                        class="sapUiSmallMarginTop">
+                        <CustomListItem type="Inactive">
+                            <HBox justifyContent="SpaceBetween" alignItems="Center" width="100%">
+                                <HBox alignItems="Center">
+                                    <core:Icon src="sap-icon://document" class="sapUiTinyMarginEnd" />
+                                    <Text text="{attachments>Filename}.{attachments>Fileext}" />
+                                </HBox>
+                                <FlexBox>
+                                    <Button 
+                                        icon="sap-icon://show" 
+                                        type="Transparent"
+                                        tooltip="{i18n>viewFile}"
+                                        press="onViewAttachment" />
+                                    <Button 
+                                        id="BTNDEL008"
+                                        icon="sap-icon://delete" 
+                                        type="Transparent"
+                                        tooltip="{i18n>deleteFile}"
+                                        press="onRemoveAttachment"
+                                        visible="{attachments>/canDelete008}" />
+                                </FlexBox>
+                            </HBox>
+                        </CustomListItem>
+                    </List>
+                </VBox>
+
+                <!-- Copy of rent invoice (012) -->
+                <VBox class="sapUiSmallMarginBottom">
+                    <Label text="{i18n>copyOfRentInvoice}" class="sapUiSmallMarginBottom" />
+                    <u:FileUploader
+                        id="012"
+                        multiple="true"
+                        change="onAttachmentFileChange"
+                        fileType="pdf,jpg,jpeg,png"
+                        maximumFileSize="5"
+                        buttonText="{i18n>selectFiles}"
+                        placeholder="{i18n>chooseRentInvoiceFiles}"
+                    />
+                    <List
+                        items="{
+                            path: 'attachments>/items',
+                            filters: [
+                                {path: 'AttType', operator: 'EQ', value1: '012'},
+                                {path: 'toDelete', operator: 'NE', value1: true}
+                            ]
+                        }"
+                        noDataText="{i18n>noFilesAttached}"
+                        class="sapUiSmallMarginTop">
+                        <CustomListItem type="Inactive">
+                            <HBox justifyContent="SpaceBetween" alignItems="Center" width="100%">
+                                <HBox alignItems="Center">
+                                    <core:Icon src="sap-icon://document" class="sapUiTinyMarginEnd" />
+                                    <Text text="{attachments>Filename}.{attachments>Fileext}" />
+                                </HBox>
+                                <FlexBox>
+                                    <Button 
+                                        icon="sap-icon://show" 
+                                        type="Transparent"
+                                        tooltip="{i18n>viewFile}"
+                                        press="onViewAttachment" />
+                                    <Button 
+                                        id="BTNDEL012"
+                                        icon="sap-icon://delete" 
+                                        type="Transparent"
+                                        tooltip="{i18n>deleteFile}"
+                                        press="onRemoveAttachment"
+                                        visible="{attachments>/canDelete012}" />
+                                </FlexBox>
+                            </HBox>
+                        </CustomListItem>
+                    </List>
                 </VBox>
             </VBox>
         </HBox>
