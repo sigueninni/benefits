@@ -94,6 +94,12 @@
                         type="Default"
                         press="onDeleteButtonPress"
                     />
+                    <Button
+                        id="BTNSETCLAIM"
+                        text="{i18n>addClaim}"
+                        type="Default"
+                        press="onAddClaimButtonPress"
+                    />
                     <!--                     <Button
                         icon="sap-icon://expense-report"
                         tooltip="{i18n>costSimulation}"

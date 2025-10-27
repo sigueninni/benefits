@@ -34,10 +34,28 @@
             <items>
                 <ColumnListItem>
                     <cells>
-                        <Text text="{clm>Excos}" />
-                        <ObjectNumber number="{clm>ExamtE}" />
-                        <ObjectNumber number="{clm>Examt}" />
-                        <Text text="{clm>Waers}" />
+                        <Select 
+                            selectedKey="{clm>Excos}" 
+                            items="{expenseTypeModel>/items}"
+                            forceSelection="false"
+                            enabled="{detailView>/claimTableEditable}"
+                        >
+                            <core:Item key="{expenseTypeModel>Id}" text="{expenseTypeModel>Txt}" />
+                        </Select>
+                        <Input 
+                            type="Number" 
+                            value="{clm>ExamtE}" 
+                            enabled="{detailView>/claimTableEditable}"
+                        />
+                        <Input 
+                            type="Number" 
+                            value="{clm>Examt}" 
+                            editable="false" 
+                        />
+                        <Input 
+                            value="{clm>Waers}" 
+                            editable="false" 
+                        />
                     </cells>
                 </ColumnListItem>
             </items>

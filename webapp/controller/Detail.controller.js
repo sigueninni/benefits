@@ -1164,16 +1164,20 @@ if (sRequestType === constants.REQUEST_TYPES.EDUCATION_GRANT) { // Education Gra
 		}
 
 		// Apply table mode based on delete button visibility
+		const oViewModel = this.getModel("detailView");
+		
 		// Claims Table
 		const oClaimTable = this.byId("claimTable");
 		if (oClaimTable) {
 			oClaimTable.setMode(bClaimDeleteVisible ? "Delete" : "None");
+			oViewModel.setProperty("/claimTableEditable", bClaimDeleteVisible);
 		}
 
 		// Advances Table
 		const oAdvanceTable = this.byId("advanceTable");
 		if (oAdvanceTable) {
 			oAdvanceTable.setMode(bAdvanceDeleteVisible ? "Delete" : "None");
+			oViewModel.setProperty("/advanceTableEditable", bAdvanceDeleteVisible);
 		}
 
 		// Call the diagnostic function here
@@ -1569,44 +1573,38 @@ if (sRequestType === constants.REQUEST_TYPES.EDUCATION_GRANT) { // Education Gra
 			// Get CSRF token
 			const sCsrfToken = oCommonModel.getSecurityToken();
 
-			// Create promises for all uploads using fetch + binary
-			const aUploadPromises = aNewAttachments.map(async (oAtt) => {
-				// Construct URL for /Upload action endpoint
-				const sUrl = `/sap/opu/odata/sap/ZHR_BENEFITS_COMMON_SRV/AttachmentSet(Guid=guid'${sGuid}',AttachType='${oAtt.AttType}',IncNb='00')/Upload`;
+			// Create promises for all uploads using fetch + binary - SEQUENTIAL to avoid timing issues
+			const uploadSequentially = async () => {
+				for (const oAtt of aNewAttachments) {
+					const sUrl = `/sap/opu/odata/sap/ZHR_BENEFITS_COMMON_SRV/AttachmentSet(Guid=guid'${sGuid}',AttachType='${oAtt.AttType}',IncNb='00')/Upload`;
 
-				// Prepare Slug header with metadata
-				const sSlug = encodeURIComponent(JSON.stringify({
-					filename: oAtt.Filename,
-					guid: sGuid,
-					attType: oAtt.AttType,
-					incNb: "00"
-				}));
+					try {
+						const response = await fetch(sUrl, {
+							method: "POST",
+							headers: {
+								"x-csrf-token": sCsrfToken,
+								"Content-Type": oAtt.Filetype,
+								"Slug": oAtt.Filename
+							},
+							body: oAtt.Blob
+						});
 
-				try {
-					const response = await fetch(sUrl, {
-						method: "POST",
-						headers: {
-							"x-csrf-token": sCsrfToken,
-							"Content-Type": oAtt.Filetype,
-							"Slug": oAtt.Filename
-						},
-						body: oAtt.Blob  // Binary content
-					}); if (!response.ok) {
-						throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+						if (!response.ok) {
+							throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+						}
+
+						sap.m.MessageToast.show(that.getText("fileUploaded") + ": " + oAtt.Filename);
+
+					} catch (error) {
+						console.error("Upload error for " + oAtt.Filename + ":", error);
+						that._showODataError(that.getText("fileUploadError") + ": " + oAtt.Filename);
+						throw error;
 					}
-
-					sap.m.MessageToast.show(that.getText("fileUploaded") + ": " + oAtt.Filename);
-					return response;
-
-				} catch (error) {
-					console.error("Upload error for " + oAtt.Filename + ":", error);
-					that._showODataError(that.getText("fileUploadError") + ": " + oAtt.Filename);
-					throw error;
 				}
-			});
+			};
 
-			// Wait for all uploads
-			Promise.all(aUploadPromises)
+			// Execute sequential upload
+			uploadSequentially()
 				.then(() => {
 					that._initLocalAttachmentsFromBackend(sGuid);
 				})

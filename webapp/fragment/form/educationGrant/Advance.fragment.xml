@@ -35,9 +35,23 @@
             <items>
                 <ColumnListItem>
                     <cells>
-                        <Text text="{adv>Excos}" />
-                        <ObjectNumber number="{adv>Examt}" />
-                        <Text text="{adv>Waers}" />
+                        <Select 
+                            selectedKey="{adv>Excos}" 
+                            items="{expenseTypeModel>/items}"
+                            forceSelection="false"
+                            enabled="{detailView>/advanceTableEditable}"
+                        >
+                            <core:Item key="{expenseTypeModel>Id}" text="{expenseTypeModel>Txt}" />
+                        </Select>
+                        <Input 
+                            type="Number" 
+                            value="{adv>Examt}" 
+                            enabled="{detailView>/advanceTableEditable}"
+                        />
+                        <Input 
+                            value="{adv>Waers}" 
+                            editable="false" 
+                        />
                     </cells>
                 </ColumnListItem>
             </items>

@@ -26,18 +26,21 @@
 - ~~Rental subsidy~~
 - ~~Vérifier les switchs côté front et mettre booleans côté OData & problème des switchs qui se mettent à true après UI SETTINGS~~
 - ~~Gestion de l'éligibilité~~
+- ~~Gestion des pièces jointes EG ~~
+- ~~Bloquer la creation d'advance si une advance non settled dans le passé~~
 
 ## 📋 Ongoing Tasks
 
-- Gestion des pièces jointes
 - Claim sur Advance 
-- Checker que egyfr si changée, change begda( same pour egyto et endda)
 - Remplir la table ui5pro des fields pour tous les cas
+- Gestion des pièces jointes RS
+- Checker que egyfr si changée, change begda( same pour egyto et endda)
+
 
 ## ⏳ Pending Tasks
 
-- pas de controle retro/futur mais un warning
-- Bloquer la creation d'advance si une advance non settled dans le passé
+
+
 - Attention : le facteur de proration se recalcule si on change egyto... regarder le PAI pour d'autres champs et ajuster au Save (plus simple sinon au changement de date)
 - Améliorer le filtre master pour le case sensitive
 - Tri
