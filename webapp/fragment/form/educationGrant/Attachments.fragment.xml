@@ -11,7 +11,7 @@
             <!-- Left Column -->
             <VBox class="sapUiMediumMarginEnd" width="50%">
                 <!-- Pro-forma Invoice -->
-                <VBox class="sapUiSmallMarginBottom">
+                <VBox id="BOXPROFORMAINVOICE" class="sapUiSmallMarginBottom">
                     <Label text="{i18n>proFormaInvoice}" class="sapUiSmallMarginBottom" />
                     <u:FileUploader
                         id="005"
@@ -58,7 +58,7 @@
                 </VBox>
                 
                 <!-- Payment Receipts -->
-                <VBox class="sapUiSmallMarginBottom">
+                <VBox id="BOXPAYMENTRECEIPT" class="sapUiSmallMarginBottom">
                     <Label text="{i18n>paymentReceipts}" class="sapUiSmallMarginBottom" />
                     <u:FileUploader
                         id="004"
@@ -105,7 +105,7 @@
                 </VBox>
                 
                 <!-- Teacher Diploma -->
-                <VBox class="sapUiSmallMarginBottom">
+                <VBox id="BOXTEACHERDIPLOMA" class="sapUiSmallMarginBottom">
                     <Label text="{i18n>teacherDiploma}" class="sapUiSmallMarginBottom" />
                     <u:FileUploader
                         id="010"
@@ -155,7 +155,7 @@
             <!-- Right Column -->
             <VBox width="50%">
                 <!-- Receipts -->
-                <VBox class="sapUiSmallMarginBottom">
+                <VBox id="BOXRECEIPTS" class="sapUiSmallMarginBottom">
                     <Label text="{i18n>receipts}" class="sapUiSmallMarginBottom" />
                     <u:FileUploader
                         id="009"
@@ -202,7 +202,7 @@
                 </VBox>
                 
                 <!-- Teacher Passport/ID -->
-                <VBox class="sapUiSmallMarginBottom">
+                <VBox id="BOXTEACHERPASSPORT" class="sapUiSmallMarginBottom">
                     <Label text="{i18n>teacherPassportId}" class="sapUiSmallMarginBottom" />
                     <u:FileUploader
                         id="011"

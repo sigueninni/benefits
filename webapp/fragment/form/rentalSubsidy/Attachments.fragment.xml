@@ -11,7 +11,7 @@
             <!-- Left Column -->
             <VBox class="sapUiMediumMarginEnd" width="50%">
                 <!-- Copy of signed lease agreement (001) -->
-                <VBox class="sapUiSmallMarginBottom">
+                <VBox id="BOXSIGNEDLEASE" class="sapUiSmallMarginBottom">
                     <Label text="{i18n>signedLeaseAgreement}" class="sapUiSmallMarginBottom" />
                     <u:FileUploader
                         id="001"
@@ -58,7 +58,7 @@
                 </VBox>
                 
                 <!-- Proof of payment of first month of rent (002) -->
-                <VBox class="sapUiSmallMarginBottom">
+                <VBox id="BOXFIRSTMONTHPAYMENT" class="sapUiSmallMarginBottom">
                     <Label text="{i18n>proofFirstMonthPayment}" class="sapUiSmallMarginBottom" />
                     <u:FileUploader
                         id="002"
@@ -105,7 +105,7 @@
                 </VBox>
                 
                 <!-- Brokers fees invoice (003) -->
-                <VBox class="sapUiSmallMarginBottom">
+                <VBox id="BOXBROKERSINVOICE" class="sapUiSmallMarginBottom">
                     <Label text="{i18n>brokersFeesInvoice}" class="sapUiSmallMarginBottom" />
                     <u:FileUploader
                         id="003"
@@ -152,7 +152,7 @@
                 </VBox>
 
                 <!-- Proof of payment of brokers fees (006) -->
-                <VBox class="sapUiSmallMarginBottom">
+                <VBox id="BOXBROKERSPAYMENT" class="sapUiSmallMarginBottom">
                     <Label text="{i18n>proofBrokersFeesPayment}" class="sapUiSmallMarginBottom" />
                     <u:FileUploader
                         id="006"
@@ -202,7 +202,7 @@
             <!-- Right Column -->
             <VBox width="50%">
                 <!-- UNDP resident coordinator approval (007) -->
-                <VBox class="sapUiSmallMarginBottom">
+                <VBox id="BOXUNDPAPPROVAL" class="sapUiSmallMarginBottom">
                     <Label text="{i18n>undpResidentCoordinatorApproval}" class="sapUiSmallMarginBottom" />
                     <u:FileUploader
                         id="007"
@@ -249,7 +249,7 @@
                 </VBox>
 
                 <!-- Proof of payment after 12 months (008) -->
-                <VBox class="sapUiSmallMarginBottom">
+                <VBox id="BOXPAYMENT12MONTHS" class="sapUiSmallMarginBottom">
                     <Label text="{i18n>proofPaymentAfter12Months}" class="sapUiSmallMarginBottom" />
                     <u:FileUploader
                         id="008"
@@ -296,7 +296,7 @@
                 </VBox>
 
                 <!-- Copy of rent invoice (012) -->
-                <VBox class="sapUiSmallMarginBottom">
+                <VBox id="BOXRENTINVOICE" class="sapUiSmallMarginBottom">
                     <Label text="{i18n>copyOfRentInvoice}" class="sapUiSmallMarginBottom" />
                     <u:FileUploader
                         id="012"

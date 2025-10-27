@@ -20,7 +20,15 @@
     >
         <c:content>
             <c:TimelineItem
-                dateTime="{Date}"
+                dateTime="{
+                    path: 'Date',
+                    type: 'sap.ui.model.type.Date',
+                    formatOptions: {
+                        style: 'medium',
+                        strictParsing: true,
+                        pattern: 'dd/MM/yyyy'
+                    }
+                }"
                 title="{ActorTxt}"
                 userNameClickable="true"
                 userPicture="{Photo}"
