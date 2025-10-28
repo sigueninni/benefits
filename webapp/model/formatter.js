@@ -283,26 +283,54 @@ sap.ui.define([
         },
 
         /**
-         * Formats Info1 field state based on claim/advance status
+         * Formats Info1 field state based on Isadvance and IsClaim flags
          * @param {string} sInfo1 - The Info1 field value
-         * @returns {string} State value for ObjectStatus (Success for Advance, Error for Claim)
+         * @param {boolean} bIsAdvance - Flag indicating if it's an advance
+         * @param {boolean} bIsClaim - Flag indicating if it's a claim
+         * @returns {string} State value for ObjectStatus (Error=Red, Success=Green, Warning=Orange)
          */
-        info1StateText: function (sInfo1) {
+        info1StateText: function (sInfo1, bIsAdvance, bIsClaim) {
             if (!sInfo1) {
                 return "None";
             }
             
-            // Convert to lowercase for case-insensitive comparison
-            const sLowerInfo1 = sInfo1.toLowerCase();
-            
-            if (sLowerInfo1.includes("claim")) {
-                return "Success";   // Rouge pour Claim
-            } else if (sLowerInfo1.includes("advance")) {
-                return "Error"; // Vert pour Advance
-            } else {
-                return "None";    // État par défaut
+            // Advance only (not claim) → Red
+            if (bIsAdvance && !bIsClaim) {
+                return "Error";
             }
+            
+            // Claim only (not advance) → Green
+            if (!bIsAdvance && bIsClaim) {
+                return "Success";
+            }
+            
+            // Both advance and claim → Orange
+            if (bIsAdvance && bIsClaim) {
+                return "Warning";
+            }
+            
+            return "None";
         }
+
+        // /**
+        //  * Formatter for marker flag visibility in Master list
+        //  * @param {boolean} bIsAdvance - Whether it's an advance
+        //  * @param {boolean} bIsClaim - Whether it's a claim
+        //  * @param {string} sRequestStatus - Request status code
+        //  * @returns {boolean} True if marker should be visible
+        //  */
+        // markerFlagVisible: function (bIsAdvance, bIsClaim, sRequestStatus) {
+        //     // Show flag if: Isadvance=true AND (IsClaim=false OR (IsClaim=true AND RequestStatus="02"))
+        //     if (bIsAdvance === true) {
+        //         if (bIsClaim === false) {
+        //             return true;
+        //         }
+        //         if (bIsClaim === true && sRequestStatus === "02") {
+        //             return true;
+        //         }
+        //     }
+        //     return false;
+        // }
 
     };
 

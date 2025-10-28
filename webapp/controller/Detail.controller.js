@@ -772,18 +772,36 @@ sap.ui.define([
 				// Load value help data for dropdown lists based on request type
 				this._loadValueHelpData(sRequestType);
 
-				// Bind Timeline with new request Guid filter
-				this._bindTimelineData(sBenefitRequestId);
-
-				// Load attachments from backend
-				this._initLocalAttachmentsFromBackend(sBenefitRequestId);
-
-				// Load claims and advances based on request type
-if (sRequestType === constants.REQUEST_TYPES.EDUCATION_GRANT) { // Education Grant only
-					this._initLocalAdvFromBackend(sBenefitRequestId);
-					this._initLocalClmFromBackend(sBenefitRequestId);
-				}
+				// Reload auxiliary data (Timeline, Attachments, Claims, Advances)
+				this._reloadAuxiliaryData(sBenefitRequestId, sRequestType);
 			}.bind(this));
+		},
+
+		/**
+		 * Reloads all auxiliary data (Timeline, Attachments, Claims, Advances)
+		 * Reusable method for full data refresh without navigation
+		 * @param {string} sGuid - The request GUID
+		 * @param {string} sRequestType - The request type (optional, will be read from context if not provided)
+		 * @private
+		 */
+		_reloadAuxiliaryData: function (sGuid, sRequestType) {
+			// Get request type from context if not provided
+			if (!sRequestType) {
+				const oContext = this.getView().getBindingContext();
+				sRequestType = oContext ? oContext.getProperty("RequestType") : null;
+			}
+
+			// Bind Timeline with request Guid filter
+			this._bindTimelineData(sGuid);
+
+			// Load attachments from backend
+			this._initLocalAttachmentsFromBackend(sGuid);
+
+			// Load claims and advances based on request type
+			if (sRequestType === constants.REQUEST_TYPES.EDUCATION_GRANT) { // Education Grant only
+				this._initLocalAdvFromBackend(sGuid);
+				this._initLocalClmFromBackend(sGuid);
+			}
 		},
 
 		/**
@@ -1228,6 +1246,64 @@ if (sRequestType === constants.REQUEST_TYPES.EDUCATION_GRANT) { // Education Gra
 			}
 
 			return ""; // No label found
+		},
+
+		/**
+		 * Event handler for Set Claim button (BTNSETCLAIM)
+		 * Calls backend function import addClaimForAdvance to set isClaim flag
+		 * Refreshes header binding to update UI and trigger UI settings reload
+		 * @public
+		 */
+		onSetClaimButtonPress: function () {
+			const oView = this.getView();
+			const oContext = oView.getBindingContext();
+			const oModel = oView.getModel();
+
+			// Validate context availability
+			if (!oContext) {
+				sap.m.MessageBox.error(this.getText("noRequestContext"));
+				return;
+			}
+
+			// Get Guid from binding context
+			const sGuid = oContext.getProperty("Guid");
+
+			// Call function import addClaimForAdvance
+			oModel.callFunction("/addClaimForAdvance", {
+				method: "POST",
+				urlParameters: {
+					Guid: sGuid
+				},
+				success: (oData) => {
+					const oResult = oData?.addClaimForAdvance;
+					const sReturnCode = oResult?.ReturnCode?.trim();
+
+					if (sReturnCode === "0") {
+						// Refresh header binding to update isClaim flag
+						// This will automatically trigger _onBindingChange() -> _getUISettings()
+						const oElementBinding = oView.getElementBinding();
+						if (oElementBinding) {
+							oElementBinding.refresh(true);
+						}
+						
+						// Reload all auxiliary data (Timeline, Attachments, Claims, Advances)
+						const sRequestType = oContext.getProperty("RequestType");
+						this._reloadAuxiliaryData(sGuid, sRequestType);
+					} else {
+						// Display backend error message
+						const sMessage = oResult?.Message || this.getText("setClaimErrorTechnical");
+						sap.m.MessageBox.error(sMessage, {
+							title: this.getText("setClaimErrorTitle"),
+							details: this.getText("setClaimErrorDetails", [sReturnCode])
+						});
+					}
+				},
+				error: (oError) => {
+					sap.m.MessageBox.error(this.getText("setClaimErrorTechnical"), {
+						title: this.getText("setClaimErrorTitle")
+					});
+				}
+			});
 		},
 
 		/**
@@ -1929,9 +2005,13 @@ if (sRequestType === constants.REQUEST_TYPES.EDUCATION_GRANT) { // Education Gra
 					// Navigate to the newly created object
 					const currentUrl = window.location.href;
 					if (currentUrl.includes("DetailOnly")) {
+						// Get current role from URL arguments to preserve context
+						const oArguments = that.getRouter().getRoute("RouteDetailOnly")._oConfig._oRouter._oMatchedRoute.getParameter("arguments") || {};
+						const sCurrentRole = oViewModel.getProperty("/role") || oArguments.role || oData.Objps;
+						
 						that.getRouter().navTo("RouteDetailOnly", {
 							benefitRequestId: oData.Guid,
-							role: oData.Objps,
+							role: sCurrentRole,
 							nextActorCode: oData.NextActor,
 							requestStatus: oData.RequestStatus,
 							requestType: oData.RequestType

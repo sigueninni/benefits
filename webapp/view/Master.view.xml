@@ -94,7 +94,7 @@
                                 text="{Info1}"
                                 visible="{= %{Info1} !== ''}"
                                 state="{
-                                    path: 'Info1',
+                                    parts: ['Info1', 'Isadvance', 'IsClaim'],
                                     formatter: '.formatter.info1StateText'
                                 }"
                             />
@@ -114,7 +114,7 @@
                             <ObjectAttribute text="{Info2}" />
                             <ObjectAttribute text="{Info3}" />
                         </attributes>
-                        <markers >
+                        <markers>
                             <ObjectMarker visible="{Isadvance}" type="Flagged" />
                         </markers>
                     </ObjectListItem>

@@ -98,7 +98,7 @@
                         id="BTNSETCLAIM"
                         text="{i18n>addClaim}"
                         type="Default"
-                        press="onAddClaimButtonPress"
+                        press="onSetClaimButtonPress"
                     />
                     <!--                     <Button
                         icon="sap-icon://expense-report"
@@ -274,25 +274,6 @@
                 </uxap:subSections>
             </uxap:ObjectPageSection>
 
-            <!-- Claims Section -->
-            <uxap:ObjectPageSection
-                id="claimsSection"
-                title="{i18n>Claims}"
-                visible="{= ${Isclaim} &amp;&amp; ${RequestType} === '01' }"
-            >
-                <uxap:subSections>
-                    <uxap:ObjectPageSubSection id="CLAIMSSUBSECTION">
-                        <uxap:blocks>
-                            <core:Fragment
-                                fragmentName="com.un.zhrbenefrequests.fragment.form.educationGrant.Claim"
-                                type="XML"
-                                xmlns:core="sap.ui.core"
-                            />
-                        </uxap:blocks>
-                    </uxap:ObjectPageSubSection>
-                </uxap:subSections>
-            </uxap:ObjectPageSection>
-
             <!-- Advances Section -->
             <uxap:ObjectPageSection
                 id="advancesSection"
@@ -304,6 +285,25 @@
                         <uxap:blocks>
                             <core:Fragment
                                 fragmentName="com.un.zhrbenefrequests.fragment.form.educationGrant.Advance"
+                                type="XML"
+                                xmlns:core="sap.ui.core"
+                            />
+                        </uxap:blocks>
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
+            
+            <!-- Claims Section -->
+            <uxap:ObjectPageSection
+                id="claimsSection"
+                title="{i18n>Claims}"
+                visible="{= ${Isclaim} &amp;&amp; ${RequestType} === '01' }"
+            >
+                <uxap:subSections>
+                    <uxap:ObjectPageSubSection id="CLAIMSSUBSECTION">
+                        <uxap:blocks>
+                            <core:Fragment
+                                fragmentName="com.un.zhrbenefrequests.fragment.form.educationGrant.Claim"
                                 type="XML"
                                 xmlns:core="sap.ui.core"
                             />
