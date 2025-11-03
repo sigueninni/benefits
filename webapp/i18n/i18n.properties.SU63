@@ -1,3 +1,5 @@
+# SAPUI5 TRANSLATION-KEY 005056BE9B021FD098C4860EDED51238
+
 #Texts for manifest.json
 appTitle=Benefit request
 appDescription=Application for Benefit request
@@ -219,7 +221,7 @@ Nationality=Nationality
 gender=Gender
 
 #~~~ Education Grant - Others ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-othersData=Other Data
+othersData=Others Data
 currencyOfPayment=Currency of Payment
 
 #~~~ Education Grant - Claims and Advances ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

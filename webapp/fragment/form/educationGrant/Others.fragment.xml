@@ -20,7 +20,8 @@
         columnsM="2"
     >
         <form:content>
-            <core:Title text="{i18n>othersData}" />
+            <!-- <core:Title text="{i18n>othersData}" /> -->
+            <core:Title text="" />
           
             <Label text="{i18n>currencyOfPayment}" labelFor="TEXT1"/>
             <Select

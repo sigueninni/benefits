@@ -21,7 +21,8 @@
     >
         <form:content>
             <!-- Name .. -->
-            <core:Title text="{i18n>childMasterData}" />
+            <!-- <core:Title text="{i18n>childMasterData}" /> 
+            <core:Title text="" />-->
 
            <!--  <Button
                 class="sapUiSmallMarginBottom"
@@ -41,7 +42,7 @@
                 value="{ToEduGrantDetail/Fanam}"
             />
 
-            <Label                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+            <Label
                 text="{i18n>birthName}"
                 labelFor="FGBNA"
             />

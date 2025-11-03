@@ -149,7 +149,7 @@
                 <Label text="" />
             </l:VerticalLayout> -->
 
-            <l:VerticalLayout>
+            <l:VerticalLayout visible="false">
                 <Label text="{i18n>completeness}" />
                 <ProgressIndicator
                     percentValue="{path: 'Completion', formatter: '.formatter.formatCompletionValue'}"

@@ -22,7 +22,8 @@
     >
         <form:content>
             <!-- Eligibility core Fields -->
-            <core:Title text="{i18n>eligibilitySubtab}" />
+            <!-- <core:Title text="{i18n>eligibilitySubtab}" /> -->
+            <core:Title text="" />
 
             <Label text="{i18n>dependencyStatus}" />
             <Select
@@ -149,7 +150,8 @@
             />
 
             <!-- Attendance Fields -->
-            <core:Title text="{i18n>attendanceSubtab}" />
+            <!-- <core:Title text="{i18n>attendanceSubtab}" /> -->
+            <core:Title text="" />
             <Label text="{i18n>prorationFactor}" />
             <Input
                 id="EGFAC"
@@ -169,7 +171,8 @@
             />
 
             <!-- Entitlment Fields -->
-            <core:Title text="{i18n>entitlementSubtab}" />
+            <!-- <core:Title text="{i18n>entitlementSubtab}" /> -->
+            <core:Title text="" />
             <Label text="{i18n>currency}" />
             <Input
                 id="EGCUR"

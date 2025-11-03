@@ -1083,8 +1083,6 @@ sap.ui.define([
 				continue;
 			}
 
-
-
 			switch (oUIProperty.Property) {
 				case "01":
 					hidden = true; //redundant but ok as Hidden by default

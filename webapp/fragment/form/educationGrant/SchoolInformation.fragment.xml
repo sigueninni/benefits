@@ -20,7 +20,8 @@
         columnsM="2"
     >
         <form:content>
-            <core:Title text="{i18n>schoolLocationData}" />
+            <!-- <core:Title text="{i18n>schoolLocationData}" /> -->
+            <core:Title text="" />
             <!-- 
  
 
@@ -79,7 +80,8 @@
                 />
             </Select>
 
-            <core:Title text="{i18n>schoolLocationAdditional}" />
+            <!-- <core:Title text="{i18n>schoolLocationAdditional}" /> -->
+            <core:Title text="" />
             <Label
                 text="{i18n>schoolType}"
                 labelFor="EGTYP"
@@ -96,28 +98,6 @@
                     key="{schoolTypeAdditModel>Id}"
                 />
             </Select>
-            <Label
-                text="{i18n>firstPostSecondaryDegree}"
-                labelFor="EGFPDA"
-            />
-            <Switch
-                id="EGFPDA"
-                state="{ToEduGrantDetail/Egfpda}"
-                customTextOn="{i18n>yes}"
-                customTextOff="{i18n>no}"
-            />
-            <Label
-                text="{i18n>yearOfEntryPostSecondary}"
-                labelFor="YYPSYEAR"
-            />
-            <Input
-                id="YYPSYEAR"
-                type="Number"
-                value="{ToEduGrantDetail/YyPsYear}"
-                maxLength="4"
-                placeholder="YYYY"
-                width="6rem"
-            />
             <Label
                 text="{i18n>grade}"
                 labelFor="EGGRD"
@@ -147,6 +127,28 @@
                     key="{attendanceTypeModel>Id}"
                 />
             </Select>
+            <Label
+                text="{i18n>firstPostSecondaryDegree}"
+                labelFor="EGFPDA"
+            />
+            <Switch
+                id="EGFPDA"
+                state="{ToEduGrantDetail/Egfpda}"
+                customTextOn="{i18n>yes}"
+                customTextOff="{i18n>no}"
+            />
+            <Label
+                text="{i18n>yearOfEntryPostSecondary}"
+                labelFor="YYPSYEAR"
+            />
+            <Input
+                id="YYPSYEAR"
+                type="Number"
+                value="{ToEduGrantDetail/YyPsYear}"
+                maxLength="4"
+                placeholder="YYYY"
+                width="6rem"
+            />
 
             <!-- Application N°
 Starting from 

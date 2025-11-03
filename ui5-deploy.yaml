@@ -13,7 +13,6 @@ builder:
     - name: deploy-to-abap
       afterTask: generateCachebusterInfo
       configuration:
-        log: 3
         target:
           url: http://hq-sap-d01.hq.int.unesco.org:80/
           client: '350'
@@ -21,6 +20,6 @@ builder:
           name: ZHRBENEFREQ
           description: Benefit Requests
           package: ZHRBENEFITS_FIORI
-          transport: D01K9B0D5B
+          transport: D01K9B0DR6
         exclude:
           - /test/

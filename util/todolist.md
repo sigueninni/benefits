@@ -33,6 +33,7 @@
 
 - Claim sur Advance 
 - Remplir la table ui5pro des fields pour tous les cas
+- remarques sur RS
 - Gestion des pièces jointes RS
 - Checker que egyfr si changée, change begda( same pour egyto et endda)
 

@@ -163,6 +163,18 @@ sap.ui.define([
             },
 
             /**
+             * Event handler for the refresh button in search field
+             * @param {sap.ui.base.Event} oEvent the search event
+             * @public
+             */
+            onRefresh: function (oEvent) {
+                const oList = this.byId("list");
+                if (oList && oList.getBinding("items")) {
+                    oList.getBinding("items").refresh();
+                }
+            },
+
+            /**
              * Event handler for the list updateFinished event
              * Updates the counter in the master view when list changes
              * @param {sap.ui.base.Event} oEvent the updateFinished event
@@ -184,7 +196,9 @@ sap.ui.define([
                     function () {
                         // Selection handling after update finished
                     }.bind(this)
-                );
+                ).catch(function() {
+                    // Ignore error when list is empty
+                });
             },
 
 
@@ -302,10 +316,7 @@ sap.ui.define([
                         }, true);
                     }.bind(this),
                     function (mParams) {
-                        if (mParams.error) {
-                            return;
-                        }
-                        this.getRouter().getTargets().display("detailNoObjectsAvailable");
+                        // Stay on Master view when list is empty - no navigation
                     }.bind(this)
                 );
             },

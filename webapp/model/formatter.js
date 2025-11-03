@@ -22,7 +22,7 @@ sap.ui.define([
                     case constants.REQUEST_STATUS.DRAFT:
                         return "None";
                     case constants.REQUEST_STATUS.SUBMITTED:
-                        return "Warning";
+                        return "Information";
                     case constants.REQUEST_STATUS.APPROVED_HRA:
                         return "Success";
                     case constants.REQUEST_STATUS.REJECTED_HRA:
@@ -30,11 +30,13 @@ sap.ui.define([
                     case constants.REQUEST_STATUS.RETURNED_TO_EMPLOYEE:
                         return "Warning";
                     case constants.REQUEST_STATUS.APPROVED_SENT_TO_H:
-                        return "None";
+                        return "Information";
                     case constants.REQUEST_STATUS.APPROVED_HRO_END:
                         return "Success";
                     case constants.REQUEST_STATUS.RETURNED_TO_HRA:
                         return "Warning";
+                    case constants.REQUEST_STATUS.SUBMITTED_CLAIMS:
+                        return "Information";
                     default:
                         return "None";
                 }
@@ -264,19 +266,21 @@ sap.ui.define([
                 case constants.REQUEST_STATUS.DRAFT:
                     return "Draft";
                 case constants.REQUEST_STATUS.SUBMITTED:
-                    return "Request submitted by employee";
+                    return "Submitted";
                 case constants.REQUEST_STATUS.APPROVED_HRA:
-                    return "Request approved by HRA";
+                    return "Validated by HRA";
                 case constants.REQUEST_STATUS.REJECTED_HRA:
-                    return "Request rejected by HRA";
+                    return "Rejected by HRA";
                 case constants.REQUEST_STATUS.RETURNED_TO_EMPLOYEE:
-                    return "Request sent back to employee";
+                    return "Returned";
                 case constants.REQUEST_STATUS.APPROVED_SENT_TO_H:
-                    return "Request approved by HRA and sent to HRO";
+                    return "Pending HRO";
                 case constants.REQUEST_STATUS.APPROVED_HRO_END:
-                    return "Request approved by HRO, end of process";
+                    return "Approved";
                 case constants.REQUEST_STATUS.RETURNED_TO_HRA:
-                    return "Request sent back to HRA";
+                    return "Returned to HRA";
+                case constants.REQUEST_STATUS.SUBMITTED_CLAIMS:
+                    return "Submitted(Claims)";
                 default:
                     return "Unknown Status (" + sStatusCode + ")";
             }

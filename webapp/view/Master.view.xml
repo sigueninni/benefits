@@ -47,6 +47,7 @@
                             tooltip="{i18n>masterSearchTooltip}"
                             width="100%"
                             liveChange=".onSearch"
+                            search=".onRefresh"
                         />
                         <Button
                             id="createAction"
