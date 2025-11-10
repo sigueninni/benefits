@@ -18,8 +18,8 @@ builder:
           client: '350'
         app:
           name: ZHRBENEFREQ
-          description: Benefit Requests
+          description: My benefit requests
           package: ZHRBENEFITS_FIORI
-          transport: D01K9B0DR6
+          transport: D01K9B0DWN
         exclude:
           - /test/

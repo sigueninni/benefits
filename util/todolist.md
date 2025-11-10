@@ -28,10 +28,13 @@
 - ~~Gestion de l'éligibilité~~
 - ~~Gestion des pièces jointes EG ~~
 - ~~Bloquer la creation d'advance si une advance non settled dans le passé~~
+- ~~Claim sur Advance~~ 
+- ~~Gérer les dates de rétroactivité possibles, création de requête dans le passé etc...~~ 
+- ~~Currency en USD dans claims/advance à rendre modifiable --> KURSB~~
 
 ## 📋 Ongoing Tasks
 
-- Claim sur Advance 
+
 - Remplir la table ui5pro des fields pour tous les cas
 - remarques sur RS
 - Gestion des pièces jointes RS
@@ -40,13 +43,8 @@
 
 ## ⏳ Pending Tasks
 
-
-
 - Attention : le facteur de proration se recalcule si on change egyto... regarder le PAI pour d'autres champs et ajuster au Save (plus simple sinon au changement de date)
 - Améliorer le filtre master pour le case sensitive
-- Tri
-- i18n
-- Gérer les dates de rétroactivité possibles, création de requête dans le passé etc...
 - Exceptions côté backend à gérer côté frontend
 - Corriger les Value Help des eligibility et dependency
 

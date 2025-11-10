@@ -717,8 +717,8 @@ sap.ui.define([
  * @private
  */
 		_submitBenefitRequest: function (sComment) {
-			// Submit the request with status change to "Submitted" status
-			this._saveBenefitRequestObject(constants.REQUEST_STATUS.SUBMITTED, sComment); // Pass comment to save method
+			// Pass empty string to trigger auto-detection of status based on Isclaim and Isadvance
+			this._saveBenefitRequestObject("", sComment);
 		},
 
 
@@ -729,7 +729,7 @@ sap.ui.define([
 		 * @private
 		 */
 		_onObjectMatched: function (oEvent, routeName) {
-			// Only detach previous listeners when navigating to avoid conflicts
+			// detach previous listeners when navigating to avoid conflicts
 			this._detachCompletionListeners();
 
 			// Clear local models when navigating to a different request
@@ -777,34 +777,32 @@ sap.ui.define([
 			}.bind(this));
 		},
 
-		/**
-		 * Reloads all auxiliary data (Timeline, Attachments, Claims, Advances)
-		 * Reusable method for full data refresh without navigation
-		 * @param {string} sGuid - The request GUID
-		 * @param {string} sRequestType - The request type (optional, will be read from context if not provided)
-		 * @private
-		 */
-		_reloadAuxiliaryData: function (sGuid, sRequestType) {
-			// Get request type from context if not provided
-			if (!sRequestType) {
-				const oContext = this.getView().getBindingContext();
-				sRequestType = oContext ? oContext.getProperty("RequestType") : null;
-			}
+	/**
+	 * Reloads all auxiliary data (Timeline, Attachments, Claims, Advances)
+	 * Reusable method for full data refresh without navigation
+	 * @param {string} sGuid - The request GUID
+	 * @param {string} sRequestType - The request type (optional, will be read from context if not provided)
+	 * @private
+	 */
+	_reloadAuxiliaryData: function (sGuid, sRequestType) {
+		// Get request type from context if not provided
+		if (!sRequestType) {
+			const oContext = this.getView().getBindingContext();
+			sRequestType = oContext ? oContext.getProperty("RequestType") : null;
+		}
 
-			// Bind Timeline with request Guid filter
-			this._bindTimelineData(sGuid);
+		// Bind Timeline with request Guid filter
+		this._bindTimelineData(sGuid);
 
-			// Load attachments from backend
-			this._initLocalAttachmentsFromBackend(sGuid);
+		// Load attachments from backend
+		this._initLocalAttachmentsFromBackend(sGuid);
 
-			// Load claims and advances based on request type
-			if (sRequestType === constants.REQUEST_TYPES.EDUCATION_GRANT) { // Education Grant only
-				this._initLocalAdvFromBackend(sGuid);
-				this._initLocalClmFromBackend(sGuid);
-			}
-		},
-
-		/**
+		// Load claims and advances based on request type
+		if (sRequestType === constants.REQUEST_TYPES.EDUCATION_GRANT) { // Education Grant only
+			this._initLocalAdvFromBackend(sGuid);
+			this._initLocalClmFromBackend(sGuid);
+		}
+	},		/**
 		 * Handles binding changes and updates the view state accordingly.
 		 * Navigates to object not found page if no binding context is available.
 		 * @private
@@ -1037,13 +1035,6 @@ sap.ui.define([
 		aFilters.push(new Filter("Actor", FilterOperator.EQ, this.getModel("detailView").getProperty("/role")));
 		aFilters.push(new Filter("Guid", FilterOperator.EQ, oCurrentObject.Guid));
 		
-		console.log("UI Settings Filters:", {
-			RequestType: oCurrentObject.RequestType,
-			Status: oCurrentObject.RequestStatus,
-			Actor: this.getModel("detailView").getProperty("/role"),
-			Guid: oCurrentObject.Guid
-		});
-		
 		//Read entitySet
 		oCommonModel.read("/UI5PropertySet", {
 			filters: aFilters,
@@ -1112,43 +1103,11 @@ sap.ui.define([
 
 		// Track delete button visibility for Attachments (based on FileUploader visibility)
 		const oAttachmentsModel = this.getView().getModel("attachments");
-		// Education Grant
-		if (oUIProperty.Field === "005" && oAttachmentsModel) {
-			oAttachmentsModel.setProperty("/canDelete005", !hidden);
-		}
-		if (oUIProperty.Field === "004" && oAttachmentsModel) {
-			oAttachmentsModel.setProperty("/canDelete004", !hidden);
-		}
-		if (oUIProperty.Field === "010" && oAttachmentsModel) {
-			oAttachmentsModel.setProperty("/canDelete010", !hidden);
-		}
-		if (oUIProperty.Field === "009" && oAttachmentsModel) {
-			oAttachmentsModel.setProperty("/canDelete009", !hidden);
-		}
-		if (oUIProperty.Field === "011" && oAttachmentsModel) {
-			oAttachmentsModel.setProperty("/canDelete011", !hidden);
-		}
-		// Rental Subsidy
-		if (oUIProperty.Field === "001" && oAttachmentsModel) {
-			oAttachmentsModel.setProperty("/canDelete001", !hidden);
-		}
-		if (oUIProperty.Field === "002" && oAttachmentsModel) {
-			oAttachmentsModel.setProperty("/canDelete002", !hidden);
-		}
-		if (oUIProperty.Field === "003" && oAttachmentsModel) {
-			oAttachmentsModel.setProperty("/canDelete003", !hidden);
-		}
-		if (oUIProperty.Field === "006" && oAttachmentsModel) {
-			oAttachmentsModel.setProperty("/canDelete006", !hidden);
-		}
-		if (oUIProperty.Field === "007" && oAttachmentsModel) {
-			oAttachmentsModel.setProperty("/canDelete007", !hidden);
-		}
-		if (oUIProperty.Field === "008" && oAttachmentsModel) {
-			oAttachmentsModel.setProperty("/canDelete008", !hidden);
-		}
-		if (oUIProperty.Field === "012" && oAttachmentsModel) {
-			oAttachmentsModel.setProperty("/canDelete012", !hidden);
+		// List of attachment field IDs (Education Grant + Rental Subsidy)
+		const aAttachmentFields = ["005", "004", "010", "009", "011", "001", "002", "003", "006", "007", "008", "012"];
+		// Set canDelete property dynamically: canDelete + Field ID
+		if (oAttachmentsModel && aAttachmentFields.includes(oUIProperty.Field)) {
+			oAttachmentsModel.setProperty("/canDelete" + oUIProperty.Field, !hidden);
 		}
 
 		// Find the control by its id (which must match Field)
@@ -1246,65 +1205,60 @@ sap.ui.define([
 			return ""; // No label found
 		},
 
-		/**
-		 * Event handler for Set Claim button (BTNSETCLAIM)
-		 * Calls backend function import addClaimForAdvance to set isClaim flag
-		 * Refreshes header binding to update UI and trigger UI settings reload
-		 * @public
-		 */
-		onSetClaimButtonPress: function () {
-			const oView = this.getView();
-			const oContext = oView.getBindingContext();
-			const oModel = oView.getModel();
+	/**
+	 * Event handler for Set Claim button (BTNSETCLAIM)
+	 * Calls backend function import addClaimForAdvance to set isClaim flag
+	 * Refreshes header binding to update UI and trigger UI settings reload
+	 * @public
+	 */
+	onSetClaimButtonPress: function () {
+		const oView = this.getView();
+		const oContext = oView.getBindingContext();
+		const oModel = oView.getModel();
 
-			// Validate context availability
-			if (!oContext) {
-				sap.m.MessageBox.error(this.getText("noRequestContext"));
-				return;
-			}
+		// Get Guid from binding context
+		const sGuid = oContext.getProperty("Guid");
 
-			// Get Guid from binding context
-			const sGuid = oContext.getProperty("Guid");
+		// Call function import addClaimForAdvance
+		oModel.callFunction("/addClaimForAdvance", {
+			method: "POST",
+			urlParameters: {
+				Guid: sGuid
+			},
+			success: (oData) => {
+				const oResult = oData?.addClaimForAdvance;
+				const sReturnCode = oResult?.ReturnCode?.trim();
 
-			// Call function import addClaimForAdvance
-			oModel.callFunction("/addClaimForAdvance", {
-				method: "POST",
-				urlParameters: {
-					Guid: sGuid
-				},
-				success: (oData) => {
-					const oResult = oData?.addClaimForAdvance;
-					const sReturnCode = oResult?.ReturnCode?.trim();
-
-					if (sReturnCode === "0") {
-						// Refresh header binding to update isClaim flag
-						// This will automatically trigger _onBindingChange() -> _getUISettings()
-						const oElementBinding = oView.getElementBinding();
-						if (oElementBinding) {
-							oElementBinding.refresh(true);
-						}
+				if (sReturnCode === "0") {
+					const oElementBinding = oView.getElementBinding();
+					if (oElementBinding) {
+						// Create one-time event handler to reload auxiliary data AFTER refresh completes
+						const fnDataReceived = () => {
+							oElementBinding.detachDataReceived(fnDataReceived);
+							const sRequestType = oContext.getProperty("RequestType");
+							this._reloadAuxiliaryData(sGuid, sRequestType);
+						};
 						
-						// Reload all auxiliary data (Timeline, Attachments, Claims, Advances)
-						const sRequestType = oContext.getProperty("RequestType");
-						this._reloadAuxiliaryData(sGuid, sRequestType);
-					} else {
-						// Display backend error message
-						const sMessage = oResult?.Message || this.getText("setClaimErrorTechnical");
-						sap.m.MessageBox.error(sMessage, {
-							title: this.getText("setClaimErrorTitle"),
-							details: this.getText("setClaimErrorDetails", [sReturnCode])
-						});
+						// Attach event handler BEFORE calling refresh
+						oElementBinding.attachDataReceived(fnDataReceived);
+						oElementBinding.refresh(true);
 					}
-				},
-				error: (oError) => {
-					sap.m.MessageBox.error(this.getText("setClaimErrorTechnical"), {
-						title: this.getText("setClaimErrorTitle")
+				} else {
+					// Display backend error message
+					const sMessage = oResult?.Message || this.getText("setClaimErrorTechnical");
+					sap.m.MessageBox.error(sMessage, {
+						title: this.getText("setClaimErrorTitle"),
+						details: this.getText("setClaimErrorDetails", [sReturnCode])
 					});
 				}
-			});
-		},
-
-		/**
+			},
+			error: (oError) => {
+				sap.m.MessageBox.error(this.getText("setClaimErrorTechnical"), {
+					title: this.getText("setClaimErrorTitle")
+				});
+			}
+		});
+	},		/**
 		 * Binds the view to the object path. Makes sure that detail view displays
 		 * a busy indicator while data for the corresponding element binding is loaded.
 		 * @function
@@ -1531,46 +1485,44 @@ sap.ui.define([
 			});
 		},
 
-		/**
-		 * Reads ReqEGClaimSet from backend and populates local "clm" model
-		 * @param {string} sGuid - The request GUID
-		 * @private
-		 */
-		_initLocalClmFromBackend: function (sGuid) {
-			const oModel = this.getView().getModel();
-			const oClmModel = this.getView().getModel("clm");
+	/**
+	 * Reads ReqEGClaimSet from backend and populates local "clm" model
+	 * @param {string} sGuid - The request GUID
+	 * @private
+	 */
+	_initLocalClmFromBackend: function (sGuid) {
+		const oModel = this.getView().getModel();
+		const oClmModel = this.getView().getModel("clm");
 
-			// If request is not yet persisted, leave empty
-			if (!sGuid || sGuid === "00000000-0000-0000-0000-000000000000") {
+		// If request is not yet persisted, leave empty
+		if (!sGuid || sGuid === "00000000-0000-0000-0000-000000000000") {
+			oClmModel.setProperty("/items", []);
+			return;
+		}
+
+		// Create filter for Guid (same approach as Timeline)
+		const oFilter = new Filter("Guid", FilterOperator.EQ, sGuid);
+
+		// Read claims from ReqEGClaimSet entity set with GUID filter
+		oModel.read("/ReqEGClaimSet", {
+			filters: [oFilter],
+			success: (oData) => {
+				const aClaims = (oData && oData.results) ? oData.results : [];
+				// Normalize data (keep string format for Edm.Decimal)
+				const items = aClaims.map(x => ({
+					Excos: x.Excos || "",
+					ExamtE: (x.ExamtE != null ? String(x.ExamtE) : "0.000"),  // ExamtE = Expense Amount
+					Examt: (x.Examt != null ? String(x.Examt) : "0.000"),     // Examt = Advance Amount
+					Waers: x.Waers || ""
+				}));
+				oClmModel.setProperty("/items", items);
+			},
+			error: () => {
+				// On read error, keep table empty
 				oClmModel.setProperty("/items", []);
-				return;
 			}
-
-			// Create filter for Guid (same approach as Timeline)
-			const oFilter = new Filter("Guid", FilterOperator.EQ, sGuid);
-
-			// Read claims from ReqEGClaimSet entity set with GUID filter
-			oModel.read("/ReqEGClaimSet", {
-				filters: [oFilter],
-				success: (oData) => {
-					const aClaims = (oData && oData.results) ? oData.results : [];
-					// Normalize data (keep string format for Edm.Decimal)
-					const items = aClaims.map(x => ({
-						Excos: x.Excos || "",
-						ExamtE: (x.ExamtE != null ? String(x.ExamtE) : "0.000"),  // ExamtE = Expense Amount
-						Examt: (x.Examt != null ? String(x.Examt) : "0.000"),     // Examt = Advance Amount
-						Waers: x.Waers || ""
-					}));
-					oClmModel.setProperty("/items", items);
-				},
-				error: () => {
-					// On read error, keep table empty
-					oClmModel.setProperty("/items", []);
-				}
-			});
-		},
-
-		/**
+		});
+	},		/**
 		 * Reads AttachmentSet from common service backend and populates local "attachments" model
 		 * @param {string} sGuid - The request GUID
 		 * @private
@@ -1905,22 +1857,36 @@ sap.ui.define([
 			});
 		},
 
-		/**
-		 * Private method to save benefit request object.
-		 * Performs deep insert operation to save benefit request with education grant details.
-		 * @param {string} sStatus - Optional status to override the current request status
-		 * @param {string} sComment - Optional comment to store in Note field
-		 * @private
-		 */
-		_saveBenefitRequestObject: function (sStatus, sComment) {
-			const that = this;
-			const oView = this.getView();
-			const oModel = oView.getModel();
-			const oContext = oView.getBindingContext();
-			// set status to saved draft
-			oView.byId("draftIndicator").showDraftSaving();
-
-			if (!oContext) {
+	/**
+	 * Private method to save benefit request object.
+	 * Performs deep insert operation to save benefit request with education grant details.
+	 * @param {string} sStatus - Optional status to override the current request status (empty string triggers auto-detection)
+	 * @param {string} sComment - Optional comment to store in Note field
+	 * @private
+	 */
+	_saveBenefitRequestObject: function (sStatus, sComment) {
+		const that = this;
+		const oView = this.getView();
+		const oModel = oView.getModel();
+		const oContext = oView.getBindingContext();
+		
+		// If sStatus is empty string (called from submit), auto-detect status based on Isclaim and Isadvance
+		if (sStatus === "") {
+			const bIsClaim = oContext.getProperty("Isclaim");
+			const bIsAdvance = oContext.getProperty("Isadvance");
+			
+			// If both Isclaim and Isadvance are true, use SUBMITTED_CLAIMS status
+			if (bIsClaim === true && bIsAdvance === true) {
+				sStatus = constants.REQUEST_STATUS.SUBMITTED_CLAIMS; // "09"
+			} else {
+				sStatus = constants.REQUEST_STATUS.SUBMITTED; // "01"
+			}
+		}
+		// If sStatus is undefined (Save button), don't override status
+		// If sStatus has a value ("01", "09", etc.), use it as-is
+		
+		// set status to saved draft
+		oView.byId("draftIndicator").showDraftSaving();			if (!oContext) {
 				return;
 			}
 
