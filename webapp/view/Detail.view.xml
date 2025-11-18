@@ -94,12 +94,15 @@
                         type="Default"
                         press="onDeleteButtonPress"
                     />
-                    <Button
-                        id="BTNSETCLAIM"
-                        text="{i18n>addClaim}"
-                        type="Default"
-                        press="onSetClaimButtonPress"
-                    />
+                    <!-- Set Claim button: only visible for Education Grant (RequestType = 01) -->
+                    <VBox visible="{= ${RequestType} === '01' }">
+                        <Button
+                            id="BTNSETCLAIM"
+                            text="{i18n>addClaim}"
+                            type="Default"
+                            press="onSetClaimButtonPress"
+                        />
+                    </VBox>
                     <!--                     <Button
                         icon="sap-icon://expense-report"
                         tooltip="{i18n>costSimulation}"
