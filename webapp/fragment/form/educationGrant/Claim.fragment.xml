@@ -18,7 +18,9 @@
                         <Button
                             id="BTNADDCLAIM"
                             type="Default"
+                            text="{i18n>addExpense}"
                             icon="sap-icon://add"
+                            iconFirst="false"
                             tooltip="{i18n>add}"
                             press="onAddClaimButtonPress"
                         />
