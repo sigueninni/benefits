@@ -52,7 +52,10 @@
                         />
                         <Input 
                             value="{adv>Waers}" 
-                            editable="false" 
+                            showValueHelp="true"
+                            valueHelpOnly="true"
+                            valueHelpRequest="onCurrencyValueHelpPressTable"
+                            enabled="{detailView>/advanceTableEditable}"
                         />
                     </cells>
                 </ColumnListItem>

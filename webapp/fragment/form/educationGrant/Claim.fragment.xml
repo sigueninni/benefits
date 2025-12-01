@@ -56,7 +56,10 @@
                         />
                         <Input 
                             value="{clm>Waers}" 
-                            editable="false" 
+                            showValueHelp="true"
+                            valueHelpOnly="true"
+                            valueHelpRequest="onCurrencyValueHelpPressTable"
+                            enabled="{detailView>/claimTableEditable}"
                         />
                     </cells>
                 </ColumnListItem>

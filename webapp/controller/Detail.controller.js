@@ -192,19 +192,19 @@ sap.ui.define([
 				this.fragments._oAddClaimDialog.setModel(oView.getModel("i18n"), "i18n");
 			}
 
-			// Get Egcur from binding context
+			// Get TuitionWaers from binding context
 			const oContext = oView.getBindingContext();
 			const oModel = oView.getModel();
 			const sPath = oContext.getPath() + "/ToEduGrantDetail";
 			const eduGrantDetail = oModel.getProperty(sPath);
-			const sEgcur = eduGrantDetail?.Egcur || "";
+			const sTuitionWaers = eduGrantDetail?.TuitionWaers || "";
 
 			// Create a fresh model for each dialog opening
 			const oDialogModel = new sap.ui.model.json.JSONModel({
 				ExpenseType: "tuition",
 				ExpenseAmount: "",
 				AdvanceAmount: "",
-				Currency: sEgcur
+				Currency: sTuitionWaers
 			});
 			oDialogModel.setDefaultBindingMode(sap.ui.model.BindingMode.TwoWay);
 
@@ -245,18 +245,18 @@ sap.ui.define([
 
 			}
 
-			// Get Egcur from binding context
+			// Get TuitionWaers from binding context
 			const oContext = oView.getBindingContext();
 			const oModel = oView.getModel();
 			const sPath = oContext.getPath() + "/ToEduGrantDetail";
 			const eduGrantDetail = oModel.getProperty(sPath);
-			const sEgcur = eduGrantDetail?.Egcur || "";
+			const sTuitionWaers = eduGrantDetail?.TuitionWaers || "";
 
 			// Create a fresh model with OData property names
 			const oDialogModel = new sap.ui.model.json.JSONModel({
 				Excos: "",      // Expense Type
 				Examt: "",      // Expense Amount
-				Waers: sEgcur,  // Currency initialized from Egcur
+				Waers: sTuitionWaers,  // Currency initialized from TuitionWaers
 				Exdat: new Date() // Date
 			});
 
@@ -417,22 +417,28 @@ sap.ui.define([
 		 * @param {sap.ui.base.Event} oEvent the change event
 		 * @public
 		 */
-		onSchoolTypeChange(oEvent) {
-			const oSelect = oEvent.getSource();
-			const sSelectedKey = oSelect.getSelectedKey();
-			const oContext = this.getView().getBindingContext();
+	onSchoolTypeChange(oEvent) {
+		const oSelect = oEvent.getSource();
+		const sSelectedKey = oSelect.getSelectedKey();
+		const oContext = this.getView().getBindingContext();
 
-			if (oContext) {
-				const oModel = this.getView().getModel();
+		if (oContext) {
+			const oModel = this.getView().getModel();
 
-				// If school type is not primary (0002) or secondary (0003), reset child boarder to false
-				if (sSelectedKey !== "0002" && sSelectedKey !== "0003") {
-					oModel.setProperty("ToEduGrantDetail/Egchbrd", false, oContext);
-				}
+			// If school type is not primary (0002) or secondary (0003), reset child boarder to false
+			if (sSelectedKey !== "0002" && sSelectedKey !== "0003") {
+				oModel.setProperty("ToEduGrantDetail/Egchbrd", false, oContext);
 			}
-		},
-
-		/*************************************************************************************************/
+			
+			// Check if YYPSYEAR should be mandatory for post-secondary types
+			if (this.formatter.isPostSecondary(sSelectedKey)) {
+				this._checkFieldUISettings("YYPSYEAR");
+			} else {
+				// Remove YYPSYEAR from required fields if school type is not post-secondary
+				this._removeFieldFromRequired("YYPSYEAR");
+			}
+		}
+	},		/*************************************************************************************************/
 		/********************************  End of School management ******************************************/
 		/*************************************************************************************************/
 
@@ -552,20 +558,86 @@ sap.ui.define([
 				}
 			}
 
-			// clear filters
-			oEvent.getSource().getBinding("items").filter([]);
-			// destroy the dialog
-			if (this.fragments._oCurrencyDialog) {
-				this.fragments._oCurrencyDialog.destroy();
-				delete this.fragments._oCurrencyDialog;
+		// clear filters
+		oEvent.getSource().getBinding("items").filter([]);
+		// destroy the dialog
+		if (this.fragments._oCurrencyDialog) {
+			this.fragments._oCurrencyDialog.destroy();
+			delete this.fragments._oCurrencyDialog;
+		}
+	},
+
+	/**
+	 * Event handler for currency value help in table rows (Claims/Advances)
+	 * @param {sap.ui.base.Event} oEvent - The button press event
+	 * @public
+	 */
+	onCurrencyValueHelpPressTable: function (oEvent) {
+		const oInput = oEvent.getSource();
+		// Store the input field reference for later update
+		this._sTableCurrencyField = oInput;
+		this._openCurrencyDialogForTable();
+	},
+
+/**
+ * Private method to open currency dialog for table fields
+ * Uses a separate dialog instance with custom confirm handler
+ * @private
+ */
+_openCurrencyDialogForTable: function () {
+	const oView = this.getView();
+	
+	// Destroy previous instance to ensure fresh handler attachment
+	if (this.fragments._oCurrencyDialogTable) {
+		this.fragments._oCurrencyDialogTable.destroy();
+		delete this.fragments._oCurrencyDialogTable;
+	}
+	
+	// Create new dialog with table-specific confirm handler
+	this.fragments._oCurrencyDialogTable = sap.ui.xmlfragment(
+		"tableDialogId",
+		"com.un.zhrbenefrequests.fragment.form.educationGrant.CurrencyChoice", 
+		{
+			onConfirmCurrencySelectDialogPress: this.onConfirmCurrencySelectDialogPressTable.bind(this),
+			onSearchCurrencySelectDialog: this.onSearchCurrencySelectDialog.bind(this)
+		}
+	);
+	
+	this.getView().addDependent(this.fragments._oCurrencyDialogTable);
+	this.fragments._oCurrencyDialogTable.addStyleClass(this.getOwnerComponent().getContentDensityClass());
+	this.fragments._oCurrencyDialogTable.open();
+},	/**
+	 * Event handler for confirming currency selection in table
+	 * Updates the model directly for table row bindings
+	 * @param {sap.ui.base.Event} oEvent - The confirm event
+	 * @public
+	 */
+	onConfirmCurrencySelectDialogPressTable: function (oEvent) {
+		const aContexts = oEvent.getParameter("selectedContexts");
+		
+		if (aContexts && aContexts.length && this._sTableCurrencyField) {
+			let sCurrencyId = aContexts[0].getObject().Id;
+			
+			// Get binding context and update model directly
+			const oBindingContext = this._sTableCurrencyField.getBindingContext("clm") || 
+									this._sTableCurrencyField.getBindingContext("adv");
+			
+			if (oBindingContext) {
+				const sPath = oBindingContext.getPath() + "/Waers";
+				const oModel = oBindingContext.getModel();
+				oModel.setProperty(sPath, sCurrencyId);
 			}
-		},
+		}
+		
+		// clear filters
+		oEvent.getSource().getBinding("items").filter([]);
+		// cleanup
+		this._sTableCurrencyField = null;
+	},
 
-		/*************************************************************************************************/
-		/********************************  End of Currency Management *************************************/
-		/*************************************************************************************************/
-
-		/*************************************************************************************************/
+	/*************************************************************************************************/
+	/********************************  End of Currency Management *************************************/
+	/*************************************************************************************************/		/*************************************************************************************************/
 		/********************************  Begin of Attachment Management ********************************/
 		/*************************************************************************************************/
 
@@ -1157,7 +1229,59 @@ sap.ui.define([
 
 		// Call the diagnostic function here
 		this._logImpactedUIFields(aUIProperties);
-	},		/**
+	},
+
+	/**
+	 * Checks UI settings for a specific field and adds it to required fields if mandatory
+	 * @param {string} sFieldId - The field ID to check
+	 * @private
+	 */
+	_checkFieldUISettings: function (sFieldId) {
+		const oCommonModel = this.getOwnerComponent().getModel("commonModel");
+		const oCurrentObject = this.getBindingDetailObject();
+		
+		let aFilters = [];
+		aFilters.push(new Filter("RequestType", FilterOperator.EQ, oCurrentObject.RequestType));
+		aFilters.push(new Filter("Status", FilterOperator.EQ, oCurrentObject.RequestStatus));
+		aFilters.push(new Filter("Actor", FilterOperator.EQ, this.getModel("detailView").getProperty("/role")));
+		aFilters.push(new Filter("Guid", FilterOperator.EQ, oCurrentObject.Guid));
+		aFilters.push(new Filter("Field", FilterOperator.EQ, sFieldId)); // Filter specific field
+		
+		oCommonModel.read("/UI5PropertySet", {
+			filters: aFilters,
+			success: (oData) => {
+				const aResults = oData?.results || [];
+				if (aResults.length > 0) {
+					const oProperty = aResults[0];
+					const oView = this.getView();
+					const oCtrl = oView.byId(sFieldId);
+					
+					// If property is "04" (Mandatory) and control exists, add to required fields
+					if (oProperty.Property === "04" && oCtrl) {
+						// Remove existing entry if present
+						this._removeFieldFromRequired(sFieldId);
+						// Add to required fields
+						this._aRequiredFields.push({
+							fieldId: sFieldId,
+							label: this._getFieldLabel(sFieldId, oCtrl)
+						});
+					}
+				}
+			},
+			error: this.fError.bind(this)
+		});
+	},
+
+	/**
+	 * Removes a field from the required fields array
+	 * @param {string} sFieldId - The field ID to remove
+	 * @private
+	 */
+	_removeFieldFromRequired: function (sFieldId) {
+		this._aRequiredFields = this._aRequiredFields.filter(field => field.fieldId !== sFieldId);
+	},
+
+	/**
 		 * Gets the field label for a given field ID by searching for associated Label controls
 		 * @param {string} sFieldId - The field ID
 		 * @param {sap.ui.core.Control} oControl - The control (optional)
@@ -1944,6 +2068,12 @@ sap.ui.define([
 					that.addSuccessMessage(
 						that.getText("requestSavedSuccessfully")
 					);
+					// Show toast message if this was a submit action (status was provided)
+					if (sStatus) {
+						sap.m.MessageToast.show(that.getText("requestSubmittedSuccessfully"), {
+							duration: 3000
+						});
+					}
 					that._resetValidationChecks && that._resetValidationChecks();
 					oView.byId("draftIndicator").showDraftSaved();
 					// Reset pending changes because the new object has been created
@@ -2617,16 +2747,14 @@ sap.ui.define([
 		 * @returns {boolean} True if the field is an exception
 		 * @private
 		 */
-		_isUISettingsException: function (sFieldId) {
-			// List of fields that have custom visibility/editability management
-			const aExceptions = [
-				"EGSAR"  // Handled separately in _loadSchoolDetails, controlled by EGDIS switch
-				// Add more exceptions here in the future
-			];
-			return aExceptions.includes(sFieldId);
-		},
-
-		_resetVisibility: function (oField) {
+	_isUISettingsException: function (sFieldId) {
+		// List of fields that have custom visibility/editability management
+		const aExceptions = [
+			"EGSAR",     // Handled separately in _loadSchoolDetails, controlled by EGDIS switch
+			"YYPSYEAR"   // Conditional visibility based on EGTYP (Post-secondary only)
+		];
+		return aExceptions.includes(sFieldId);
+	},		_resetVisibility: function (oField) {
 			const oView = this.getView();
 
 			// Skip fields that have custom visibility management

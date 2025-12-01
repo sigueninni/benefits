@@ -140,6 +140,7 @@
             <Label
                 text="{i18n>yearOfEntryPostSecondary}"
                 labelFor="YYPSYEAR"
+                visible="{path: 'ToEduGrantDetail/Egtyp', formatter: '.formatter.isPostSecondary'}"
             />
             <Input
                 id="YYPSYEAR"
@@ -148,6 +149,8 @@
                 maxLength="4"
                 placeholder="YYYY"
                 width="6rem"
+                required="true"
+                visible="{path: 'ToEduGrantDetail/Egtyp', formatter: '.formatter.isPostSecondary'}"
             />
 
             <!-- Application N°

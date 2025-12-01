@@ -314,7 +314,7 @@ sap.ui.define([
             }
             
             return "None";
-        }
+        },
 
         // /**
         //  * Formatter for marker flag visibility in Master list
@@ -335,6 +335,15 @@ sap.ui.define([
         //     }
         //     return false;
         // }
+
+        /**
+         * Checks if the school type is post-secondary (0004, 0005, 0006, or 0007)
+         * @param {string} sSchoolType - The school type code
+         * @returns {boolean} True if post-secondary
+         */
+        isPostSecondary: function(sSchoolType) {
+            return ['0004', '0005', '0006', '0007'].includes(sSchoolType);
+        }
 
     };
 
