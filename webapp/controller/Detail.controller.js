@@ -380,6 +380,104 @@ sap.ui.define([
 				// Clear all school-related fields when no school is selected
 				this._clearSchoolFields();
 			}
+		},
+
+		/**
+		 * Event handler when user types manually in School field
+		 * Clears the school ID and allows free text entry
+		 * @param {sap.ui.base.Event} oEvent - The event object
+		 * @public
+		 */
+		onSchoolInputChange: function(oEvent) {
+			const sValue = oEvent.getParameter("value");
+			const oModel = this.getView().getModel();
+			const oContext = this.getView().getBindingContext();
+
+			if (oContext) {
+				const sEduGrantDetailPath = oContext.getPath() + "/ToEduGrantDetail";
+				
+				// Clear the school ID when typing manually
+				oModel.setProperty(sEduGrantDetailPath + "/Egssl", "");
+				
+				// The value is already bound to Egsna, so it updates automatically
+				// If user clears the field, also clear other school-related fields
+				if (!sValue) {
+					this._clearSchoolFields();
+				}
+			}
+		},
+
+		/**
+		 * Event handler when user clicks on School Value Help
+		 * Opens a SelectDialog with searchable school list
+		 * @param {sap.ui.base.Event} oEvent - The event object
+		 * @public
+		 */
+		onSchoolValueHelpPress: function(oEvent) {
+			const oInput = oEvent.getSource();
+			const oModel = this.getView().getModel("schoolListModel");
+			const aItems = oModel.getProperty("/items") || [];
+
+			if (!this._oSchoolSelectDialog) {
+				this._oSchoolSelectDialog = new sap.m.SelectDialog({
+					title: this.getText("selectSchool"),
+					confirm: this.onConfirmSchoolSelectDialogPress.bind(this),
+					search: function(oEvent) {
+						const sValue = oEvent.getParameter("value");
+						const oFilter = new sap.ui.model.Filter("Txt", sap.ui.model.FilterOperator.Contains, sValue);
+						const oBinding = oEvent.getSource().getBinding("items");
+						oBinding.filter([oFilter]);
+					},
+					cancel: function() {
+						this._oSchoolSelectDialog.getBinding("items").filter([]);
+					}.bind(this)
+				});
+
+				const oItemTemplate = new sap.m.StandardListItem({
+					title: "{schoolListModel>Txt}"
+				});
+
+				this._oSchoolSelectDialog.bindAggregation("items", {
+					path: "schoolListModel>/items",
+					template: oItemTemplate
+				});
+
+				this.getView().addDependent(this._oSchoolSelectDialog);
+			}
+
+			this._oSchoolSelectDialog.open();
+		},
+
+		/**
+		 * Event handler when user confirms school selection in the dialog
+		 * Updates the school ID in binding context and loads school details
+		 * @param {sap.ui.base.Event} oEvent - The event object
+		 * @public
+		 */
+		onConfirmSchoolSelectDialogPress: function(oEvent) {
+			const oSelectedItem = oEvent.getParameter("selectedItem");
+			
+			if (oSelectedItem) {
+				const oContext = oSelectedItem.getBindingContext("schoolListModel");
+				const sSchoolId = oContext.getProperty("Id");
+				const sSchoolName = oContext.getProperty("Txt");
+
+				const oModel = this.getView().getModel();
+				const oBindingContext = this.getView().getBindingContext();
+				
+				if (oBindingContext) {
+					const sEduGrantDetailPath = oBindingContext.getPath() + "/ToEduGrantDetail";
+					
+					// Set the school ID in the model
+					oModel.setProperty(sEduGrantDetailPath + "/Egssl", sSchoolId);
+					
+					// Load school details (will populate Egsna and other fields)
+					this._loadSchoolDetails(sSchoolId);
+				}
+			}
+
+			// Clear the search filter
+			this._oSchoolSelectDialog.getBinding("items").filter([]);
 		},		/**
 		 * Event handler for the Cancel button in the floating footer bar
 		 * Discards all unsaved changes and refreshes data from backend
@@ -650,8 +748,12 @@ _openCurrencyDialogForTable: function () {
 	 */
 	onAttachmentFileChange: function (oEvent) {
 		const that = this;
-		const oFileUploader = oEvent.getSource();			// Get attachment type from FileUploader ID (005, 004, 010, 009, 011)
-			const sAttachmentType = oFileUploader.getId().split("--").pop(); // Remove view prefix
+		const oFileUploader = oEvent.getSource();
+		
+		// Get attachment type from FileUploader ID
+		// Education Grant: 005, 004, 010, 009, 011
+		// Rental Subsidy: 001, 002, 003, 006, 007, 008, 012
+		const sAttachmentType = oFileUploader.getId().split("--").pop(); // Remove view prefix
 
 			const domRef = oFileUploader.getFocusDomRef();
 			const aFiles = domRef.files; // Read files IMMEDIATELY
@@ -1908,6 +2010,7 @@ _openCurrencyDialogForTable: function () {
 			if (oContext) {
 				const sEduGrantDetailPath = oContext.getPath() + "/ToEduGrantDetail";				// Clear ALL school-related fields
 				// Basic school information
+				oModel.setProperty(sEduGrantDetailPath + "/Egssl", "");        // School ID
 				oModel.setProperty(sEduGrantDetailPath + "/Egsna", "");        // School Name
 				oModel.setProperty(sEduGrantDetailPath + "/Egsty", "");        // School Type (from backend)
 				oModel.setProperty(sEduGrantDetailPath + "/Ort01", "");        // School City
@@ -2673,8 +2776,17 @@ _openCurrencyDialogForTable: function () {
 			sValue = findPropertyCaseInsensitive(oRequestData, sFieldId);
 		}
 
+		// Special handling for EGSSL: if ID is empty, check the school name (Egsna) instead
+		// This allows manual entry without selecting from the value help
+		// COMMENTED OUT - To be activated if manual school entry should be allowed
+		// if (sFieldId === "EGSSL" && (!sValue || sValue.trim() === "")) {
+		// 	sValue = findPropertyCaseInsensitive(oDetailObject, "EGSNA");
+		// }
+
 		// Special handling for FileUploader controls (attachments)
-		const aFileUploaderIds = ["005", "004", "010", "009", "011"];
+		// Education Grant: 005, 004, 010, 009, 011
+		// Rental Subsidy: 001, 002, 003, 006, 007, 008, 012
+		const aFileUploaderIds = ["005", "004", "010", "009", "011", "001", "002", "003", "006", "007", "008", "012"];
 		if (aFileUploaderIds.includes(sFieldId)) {
 			// Check in attachments model instead of OData model
 			const oAttachmentsModel = oView.getModel("attachments");

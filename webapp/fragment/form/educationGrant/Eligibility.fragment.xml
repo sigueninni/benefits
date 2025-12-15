@@ -63,7 +63,7 @@
                     text="{i18n>eligible}"
                 />
                 <core:Item
-                    key="2"
+                    key="X"
                     text="{i18n>notEligible}"
                 />
             </Select>

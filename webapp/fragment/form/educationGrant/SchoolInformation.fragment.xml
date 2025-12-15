@@ -35,23 +35,14 @@
                 text="{i18n>school}"
                 labelFor="EGSSL"
             />
-            <Select
+            <Input
                 id="EGSSL"
-                items="{schoolListModel>/items}"
-                selectedKey="{ToEduGrantDetail/Egssl}"
-                forceSelection="false"
-                change="onSchoolChange"
-            >
-                <!-- Empty option -->
-                <core:Item
-                    key=""
-                    text=""
-                />
-                <core:Item
-                    text="{schoolListModel>Txt}"
-                    key="{schoolListModel>Id}"
-                />
-            </Select>
+                value="{ToEduGrantDetail/Egsna}"
+                valueHelpRequest="onSchoolValueHelpPress"
+                showValueHelp="true"
+                placeholder="{i18n>selectSchool}"
+                change="onSchoolInputChange"
+            />
 
             <Label
                 text="{i18n>schoolName}"
@@ -61,6 +52,7 @@
                 id="EGSNA"
                 type="Text"
                 value="{ToEduGrantDetail/Egsna}"
+                editable="false"
             />
 
             <Label

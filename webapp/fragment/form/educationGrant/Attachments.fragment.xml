@@ -202,7 +202,7 @@
                 </VBox>
                 
                 <!-- Teacher Passport/ID -->
-                <VBox id="BOXTEACHERPASSPORT" class="sapUiSmallMarginBottom">
+                <!-- <VBox id="BOXTEACHERPASSPORT" class="sapUiSmallMarginBottom">
                     <Label text="{i18n>teacherPassportId}" class="sapUiSmallMarginBottom" />
                     <u:FileUploader
                         id="011"
@@ -246,7 +246,7 @@
                             </HBox>
                         </CustomListItem>
                     </List>
-                </VBox>
+                </VBox> -->
             </VBox>
         </HBox>
     </VBox>
