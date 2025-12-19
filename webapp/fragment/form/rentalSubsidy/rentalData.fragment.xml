@@ -30,6 +30,7 @@
                 forceSelection="false"
                 items="{applicationReasonModel>/items}"
                 selectedKey="{ToRentalSubsidyDetail/Preas}"
+                change="onApplicationReasonChange"
             >
                 <core:Item 
                     key="{applicationReasonModel>Id}" 

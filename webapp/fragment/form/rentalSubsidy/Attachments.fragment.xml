@@ -296,7 +296,7 @@
                 </VBox>
 
                 <!-- Copy of rent invoice (012) -->
-                <VBox id="BOXRENTINVOICE" class="sapUiSmallMarginBottom">
+                <VBox id="BOXRENTINVOIC" class="sapUiSmallMarginBottom">
                     <Label text="{i18n>copyOfRentInvoice}" class="sapUiSmallMarginBottom" />
                     <u:FileUploader
                         id="012"

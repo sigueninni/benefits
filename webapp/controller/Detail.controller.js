@@ -591,6 +591,17 @@ sap.ui.define([
 			this._openCurrencyDialogRS(sFieldId);
 		},
 
+		/**
+		 * Event handler when Application Reason changes in Rental Subsidy
+		 * Automatically saves the request as draft 
+		 * @param {sap.ui.base.Event} oEvent - The change event
+		 * @public
+		 */
+		onApplicationReasonChange: function(oEvent) {
+			// Save automatically when application reason changes
+			this._saveBenefitRequestObject();
+		},
+
 
 
 		/**
