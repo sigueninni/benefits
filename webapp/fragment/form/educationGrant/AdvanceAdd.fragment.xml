@@ -33,7 +33,11 @@
                 <core:Item key="{expenseTypeModel>Id}" text="{expenseTypeModel>Txt}" />
             </Select>
             <Label text="{i18n>expenseAmount}" />
-            <Input id="amountAdvanceAdd" type="Number" value="{advanceModel>/Examt}" />
+            <Input 
+                id="amountAdvanceAdd" 
+                type="Number" 
+                value="{advanceModel>/Examt}" 
+            />
             <Label text="{i18n>currency}" />
             <Input 
                 id="currencyAdvanceAdd" 

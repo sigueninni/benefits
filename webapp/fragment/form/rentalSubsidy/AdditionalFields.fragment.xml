@@ -26,16 +26,24 @@
             <Switch id="RSSCR" state="{ToRentalSubsidyDetail/Rsscr}" customTextOn="{i18n>yes}" customTextOff="{i18n>no}" enabled="true" />
 
             <Label text="{i18n>periodConsumptionYears}" />
-            <Input id="DSYRS" type="Number" value="{ToRentalSubsidyDetail/Dsyrs}" />
+            <Input id="DSYRS" type="Number" 
+                value="{ToRentalSubsidyDetail/Dsyrs}" 
+            />
 
             <Label text="{i18n>periodConsumptionMonths}" />
-            <Input id="DSMNT" type="Number" value="{ToRentalSubsidyDetail/Dsmnt}" />
+            <Input id="DSMNT" type="Number" 
+                value="{ToRentalSubsidyDetail/Dsmnt}" 
+            />
 
             <Label text="{i18n>periodConsumptionDays}" />
-            <Input id="DSDAY" type="Number" value="{ToRentalSubsidyDetail/Dsday}" />
+            <Input id="DSDAY" type="Number" 
+                value="{ToRentalSubsidyDetail/Dsday}" 
+            />
 
             <Label text="{i18n>lwopCalendarDays}" />
-            <Input id="DSCLWOP" type="Number" value="{ToRentalSubsidyDetail/Dsclwop}" />
+            <Input id="DSCLWOP" type="Number" 
+                value="{ToRentalSubsidyDetail/Dsclwop}" 
+            />
 
             <!-- Additional Fields not in SAP -->
             <!-- <core:Title text="{i18n>householdInfo}" /> -->

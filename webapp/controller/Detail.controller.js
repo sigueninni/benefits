@@ -505,8 +505,8 @@ sap.ui.define([
 
 				// Reload claims and advances based on request type
 				if (sRequestType === constants.REQUEST_TYPES.EDUCATION_GRANT) { // Education Grant
-					this._initLocalClaimsFromBackend(sGuid);
-					this._initLocalAdvancesFromBackend(sGuid);
+					this._initLocalClmFromBackend(sGuid);
+					this._initLocalAdvFromBackend(sGuid);
 				}
 			}
 		},		/**
@@ -560,6 +560,58 @@ sap.ui.define([
 		/*************************************************************************************************/
 		/********************************  Begin of Currency Management ***********************************/
 		/*************************************************************************************************/
+
+		/**
+		 * Event handler for Brokers Fee Pay Date change.
+		 * Validates that the selected date is not before the request start date (Begda).
+		 * @param {sap.ui.base.Event} oEvent - The date change event
+		 * @public
+		 */
+		onBrokersFeePayDateChange: function (oEvent) {
+			const oDatePicker = oEvent.getSource();
+			const oSelectedDate = oDatePicker.getDateValue();
+			
+			if (!oSelectedDate) {
+				// No date selected, clear error state
+				oDatePicker.setValueState("None");
+				oDatePicker.setValueStateText("");
+				return;
+			}
+			
+			// Get the request start date (Begda) from the binding context
+			const oView = this.getView();
+			const oContext = oView.getBindingContext();
+			
+			if (!oContext) {
+				return;
+			}
+			
+			const oBegda = oContext.getProperty("Begda");
+			
+			if (!oBegda) {
+				return;
+			}
+			
+			// Convert to Date objects for comparison (strip time part)
+			const selectedDate = new Date(oSelectedDate.getFullYear(), oSelectedDate.getMonth(), oSelectedDate.getDate());
+			const startDate = new Date(oBegda.getFullYear(), oBegda.getMonth(), oBegda.getDate());
+			
+			// Validate: Brokers Fee Pay Date must be >= Start Date
+			if (selectedDate < startDate) {
+				oDatePicker.setValueState("Error");
+				oDatePicker.setValueStateText(this.getText("brokersFeePayDateError"));
+				
+				// Clear the invalid date
+				oDatePicker.setDateValue(null);
+				
+				// Show error message
+				sap.m.MessageBox.error(this.getText("brokersFeePayDateError"));
+			} else {
+				// Valid date
+				oDatePicker.setValueState("None");
+				oDatePicker.setValueStateText("");
+			}
+		},
 
 		/**
 		 * Event handler for currency value help button press.
@@ -1034,6 +1086,19 @@ _openCurrencyDialogForTable: function () {
 		},
 
 		/**
+		 * Helper function to parse float values with comma or dot as decimal separator
+		 * @param {string|number} value - The value to parse
+		 * @returns {number} - Parsed float value
+		 * @private
+		 */
+	_parseAmount: function(value) {
+		if (!value) return 0;
+		// Convert to string and replace comma with dot for parseFloat
+		const normalizedValue = String(value).replace(',', '.');
+		return parseFloat(normalizedValue) || 0;
+	},
+
+	/**
 		 * Confirms the addition of a new claim
 		 * Adds entry to local JSON model "clm"
 		 * @private
@@ -1041,8 +1106,16 @@ _openCurrencyDialogForTable: function () {
 	_onConfirmAddClaim: function () {
 		const oDialogModel = this.fragments._oAddClaimDialog.getModel("claimModel");
 		const oClaimData = oDialogModel.getData();			// Format amounts as string for Edm.Decimal
-			const sExpenseAmount = oClaimData.ExpenseAmount ? parseFloat(oClaimData.ExpenseAmount).toFixed(3) : "0.000";
-			const sAdvanceAmount = oClaimData.AdvanceAmount ? parseFloat(oClaimData.AdvanceAmount).toFixed(3) : "0.000";
+			const sExpenseAmount = oClaimData.ExpenseAmount ? this._parseAmount(oClaimData.ExpenseAmount).toFixed(2) : "0.00";
+			const sAdvanceAmount = oClaimData.AdvanceAmount ? this._parseAmount(oClaimData.AdvanceAmount).toFixed(2) : "0.00";
+
+			// Check for empty/zero amount or empty currency
+			const bEmptyAmount = !oClaimData.ExpenseAmount || this._parseAmount(oClaimData.ExpenseAmount) === 0;
+			const bEmptyCurrency = !oClaimData.Currency || oClaimData.Currency.trim() === "";
+			
+			if (bEmptyAmount || bEmptyCurrency) {
+				sap.m.MessageBox.warning(this.getText("warningEmptyAmountOrCurrency"));
+			}
 
 			// Create a new claim entry
 			const oNewClaim = {
@@ -1070,7 +1143,15 @@ _openCurrencyDialogForTable: function () {
 	_onConfirmAddAdvance: function () {
 		const oDialogModel = this.fragments._oAddAdvanceDialog.getModel("advanceModel");
 		const oAdvanceData = oDialogModel.getData();			// Format amount as string for Edm.Decimal
-			const sAmount = oAdvanceData.Examt ? parseFloat(oAdvanceData.Examt).toFixed(3) : "0.000";
+			const sAmount = oAdvanceData.Examt ? this._parseAmount(oAdvanceData.Examt).toFixed(2) : "0.00";
+
+			// Check for empty/zero amount or empty currency
+			const bEmptyAmount = !oAdvanceData.Examt || this._parseAmount(oAdvanceData.Examt) === 0;
+			const bEmptyCurrency = !oAdvanceData.Waers || oAdvanceData.Waers.trim() === "";
+			
+			if (bEmptyAmount || bEmptyCurrency) {
+				sap.m.MessageBox.warning(this.getText("warningEmptyAmountOrCurrency"));
+			}
 
 			// Create a new advance entry
 			const oNewAdvance = {
@@ -1708,7 +1789,7 @@ _openCurrencyDialogForTable: function () {
 					// Normalize data (keep string format for Edm.Decimal)
 					const items = aAdvances.map(x => ({
 						Excos: x.Excos || "",
-						Examt: (x.Examt != null ? String(x.Examt) : "0.000"),
+						Examt: (x.Examt != null ? String(x.Examt) : "0.00"),
 						Waers: x.Waers || "",
 						/* 				// Convert to JS Date if necessary
 										Exdat: x.Exdat ? new Date(x.Exdat) : new Date() */
@@ -1748,8 +1829,8 @@ _openCurrencyDialogForTable: function () {
 				// Normalize data (keep string format for Edm.Decimal)
 				const items = aClaims.map(x => ({
 					Excos: x.Excos || "",
-					ExamtE: (x.ExamtE != null ? String(x.ExamtE) : "0.000"),  // ExamtE = Expense Amount
-					Examt: (x.Examt != null ? String(x.Examt) : "0.000"),     // Examt = Advance Amount
+					ExamtE: (x.ExamtE != null ? String(x.ExamtE) : "0.00"),  // ExamtE = Expense Amount
+					Examt: (x.Examt != null ? String(x.Examt) : "0.00"),     // Examt = Advance Amount
 					Waers: x.Waers || ""
 				}));
 				oClmModel.setProperty("/items", items);
@@ -2151,31 +2232,57 @@ _openCurrencyDialogForTable: function () {
 			const oClmModel = oView.getModel("clm");
 			const aClaims = oClmModel.getProperty("/items") || [];
 
-			// Build the object for deep insert with new GUID
-			const oDeepInsertData = {
-				// Header properties - new GUID
-				...oRequestData,
-				// Deep insert association with form data
-				ToEduGrantDetail: {
-					...oEduGrantDetail,
-				},
-				ToRentalSubsidyDetail: {
-					...oRentalSubsidy,
-				},
-				// Deep insert association for advances from local model
-				ToEduGrantAdvances: aAdvances,
-				// Deep insert association for claims from local model
-				ToEduGrantClaims: aClaims
-			};
+		// Normalize amounts in advances (replace comma with dot for backend)
+		const aNormalizedAdvances = aAdvances.map(adv => ({
+			...adv,
+			Examt: adv.Examt ? String(adv.Examt).replace(',', '.') : adv.Examt
+		}));
 
-			// Override status if provided as parameter
-			if (sStatus) {
-				oDeepInsertData.RequestStatus = sStatus;
-			}
+		// Normalize amounts in claims (replace comma with dot for backend)
+		const aNormalizedClaims = aClaims.map(clm => ({
+			...clm,
+			ExamtE: clm.ExamtE ? String(clm.ExamtE).replace(',', '.') : clm.ExamtE,
+			Examt: clm.Examt ? String(clm.Examt).replace(',', '.') : clm.Examt
+		}));
 
-			// Use create() for deep insert of a new record
-			oModel.create("/RequestHeaderSet", oDeepInsertData, {
-				success: function (oData, oResponse) {
+		// Normalize amounts in Rental Subsidy (replace comma with dot for backend)
+		const oNormalizedRentalSubsidy = oRentalSubsidy ? {
+			...oRentalSubsidy,
+			Betrg: oRentalSubsidy.Betrg ? String(oRentalSubsidy.Betrg).replace(',', '.') : oRentalSubsidy.Betrg,
+			Rsamt: oRentalSubsidy.Rsamt ? String(oRentalSubsidy.Rsamt).replace(',', '.') : oRentalSubsidy.Rsamt,
+			Rsbfa: oRentalSubsidy.Rsbfa ? String(oRentalSubsidy.Rsbfa).replace(',', '.') : oRentalSubsidy.Rsbfa,
+			Rsdep: oRentalSubsidy.Rsdep ? String(oRentalSubsidy.Rsdep).replace(',', '.') : oRentalSubsidy.Rsdep,
+			Rsdas: oRentalSubsidy.Rsdas ? String(oRentalSubsidy.Rsdas).replace(',', '.') : oRentalSubsidy.Rsdas,
+			Rsnbr: oRentalSubsidy.Rsnbr ? String(oRentalSubsidy.Rsnbr).replace(',', '.') : oRentalSubsidy.Rsnbr,
+			Dsyrs: oRentalSubsidy.Dsyrs ? String(oRentalSubsidy.Dsyrs).replace(',', '.') : oRentalSubsidy.Dsyrs,
+			Dsmnt: oRentalSubsidy.Dsmnt ? String(oRentalSubsidy.Dsmnt).replace(',', '.') : oRentalSubsidy.Dsmnt,
+			Dsday: oRentalSubsidy.Dsday ? String(oRentalSubsidy.Dsday).replace(',', '.') : oRentalSubsidy.Dsday,
+			Dsclwop: oRentalSubsidy.Dsclwop ? String(oRentalSubsidy.Dsclwop).replace(',', '.') : oRentalSubsidy.Dsclwop
+		} : oRentalSubsidy;
+
+		// Build the object for deep insert with new GUID
+		const oDeepInsertData = {
+			// Header properties - new GUID
+			...oRequestData,
+			// Deep insert association with form data
+			ToEduGrantDetail: {
+				...oEduGrantDetail,
+			},
+			ToRentalSubsidyDetail: oNormalizedRentalSubsidy,
+			// Deep insert association for advances from local model
+			ToEduGrantAdvances: aNormalizedAdvances,
+			// Deep insert association for claims from local model
+			ToEduGrantClaims: aNormalizedClaims
+		};
+
+		// Override status if provided as parameter
+		if (sStatus) {
+			oDeepInsertData.RequestStatus = sStatus;
+		}
+
+		// Use create() for deep insert of a new record
+		oModel.create("/RequestHeaderSet", oDeepInsertData, {
+			success: function (oData, oResponse) {
 					oViewModel.setProperty("/busy", false);
 					// Success - clean messages and indicate save
 					that.clearMessages();

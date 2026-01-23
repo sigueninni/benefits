@@ -33,9 +33,18 @@
                 <core:Item key="{expenseTypeModel>Id}" text="{expenseTypeModel>Txt}" />
             </Select>
             <Label text="{i18n>expenseAmount}" />
-            <Input id="expenseAmountAdd" type="Number" value="{claimModel>/ExpenseAmount}" />
+            <Input 
+                id="expenseAmountAdd" 
+                type="Number" 
+                value="{claimModel>/ExpenseAmount}" 
+            />
             <Label text="{i18n>advanceAmount}" />
-            <Input id="advanceAmountAdd" type="Number" value="{claimModel>/AdvanceAmount}" editable="false" enabled="false" />
+            <Input 
+                id="advanceAmountAdd" 
+                type="Number" 
+                value="{claimModel>/AdvanceAmount}" 
+                editable="false" 
+                enabled="false" />
             <Label text="{i18n>currency}" />
             <Input 
                 id="currencyAdd" 

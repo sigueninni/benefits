@@ -249,7 +249,7 @@ Grade-->
             />
             <DatePicker
                 id="EGYFR"
-                value="{ path: 'ToEduGrantDetail/Egyfr', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy' }}"
+                value="{ path: 'ToEduGrantDetail/Egyfr', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy', UTC: true }}"
             />
 
             <Label
@@ -258,7 +258,7 @@ Grade-->
             />
             <DatePicker
                 id="EGYTO"
-                value="{ path: 'ToEduGrantDetail/Egyto', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy' }}"
+                value="{ path: 'ToEduGrantDetail/Egyto', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true, relative: false, pattern: 'dd/MM/yyyy', UTC: true }}"
             />
         </form:content>
     </form:SimpleForm>
