@@ -141,15 +141,35 @@ sap.ui.define([
                 let aFilters = [];
                 const sQuery = oEvent.getSource().getValue();
                 if (sQuery && sQuery.length > 0) {
+                    const sQueryLower = sQuery.toLowerCase();
+                    
                     const aOrFilters = [
-                        // Note: Date fields (Begda, Endda) don't support Contains operator
-                        // new Filter("Begda", FilterOperator.Contains, sQuery),
-                        // new Filter("Endda", FilterOperator.Contains, sQuery),
-                        new Filter("RequestKey", FilterOperator.Contains, sQuery),
-                        new Filter("RequestStatusTxt", FilterOperator.Contains, sQuery),
-                        new Filter("Info2", FilterOperator.Contains, sQuery),
-                        new Filter("Info3", FilterOperator.Contains, sQuery)
+                        new Filter({
+                            path: "RequestKey",
+                            test: function(sValue) {
+                                return sValue && sValue.toLowerCase().indexOf(sQueryLower) !== -1;
+                            }
+                        }),
+                        new Filter({
+                            path: "RequestStatusTxt",
+                            test: function(sValue) {
+                                return sValue && sValue.toLowerCase().indexOf(sQueryLower) !== -1;
+                            }
+                        }),
+                        new Filter({
+                            path: "Info2",
+                            test: function(sValue) {
+                                return sValue && sValue.toLowerCase().indexOf(sQueryLower) !== -1;
+                            }
+                        }),
+                        new Filter({
+                            path: "Info3",
+                            test: function(sValue) {
+                                return sValue && sValue.toLowerCase().indexOf(sQueryLower) !== -1;
+                            }
+                        })
                     ];
+                    
                     aFilters.push(new Filter({
                         filters: aOrFilters,
                         and: false // This creates OR logic

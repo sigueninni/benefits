@@ -1786,10 +1786,10 @@ _openCurrencyDialogForTable: function () {
 				filters: [oFilter],
 				success: (oData) => {
 					const aAdvances = (oData && oData.results) ? oData.results : [];
-					// Normalize data (keep string format for Edm.Decimal)
+					// Normalize data - convert to number to remove trailing zeros, then to string
 					const items = aAdvances.map(x => ({
 						Excos: x.Excos || "",
-						Examt: (x.Examt != null ? String(x.Examt) : "0.00"),
+						Examt: (x.Examt != null ? String(parseFloat(String(x.Examt).replace(',', '.'))) : "0"),
 						Waers: x.Waers || "",
 						/* 				// Convert to JS Date if necessary
 										Exdat: x.Exdat ? new Date(x.Exdat) : new Date() */
@@ -1826,11 +1826,11 @@ _openCurrencyDialogForTable: function () {
 			filters: [oFilter],
 			success: (oData) => {
 				const aClaims = (oData && oData.results) ? oData.results : [];
-				// Normalize data (keep string format for Edm.Decimal)
+				// Normalize data - convert to number to remove trailing zeros, then to string
 				const items = aClaims.map(x => ({
 					Excos: x.Excos || "",
-					ExamtE: (x.ExamtE != null ? String(x.ExamtE) : "0.00"),  // ExamtE = Expense Amount
-					Examt: (x.Examt != null ? String(x.Examt) : "0.00"),     // Examt = Advance Amount
+					ExamtE: (x.ExamtE != null ? String(parseFloat(String(x.ExamtE).replace(',', '.'))) : "0"),
+					Examt: (x.Examt != null ? String(parseFloat(String(x.Examt).replace(',', '.'))) : "0"),
 					Waers: x.Waers || ""
 				}));
 				oClmModel.setProperty("/items", items);
