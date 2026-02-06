@@ -20,6 +20,6 @@ builder:
           name: ZHRBENEFREQ
           description: My benefit requests
           package: ZHRBENEFITS_FIORI
-          transport: D01K9B0EKS
+          transport: D01K9B0EOL
         exclude:
           - /test/

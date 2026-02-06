@@ -229,12 +229,18 @@ sap.ui.define([
        */
             _openChildDialog: function () {
 
-                if (!this.fragments._oChildTableSelectDialog) {
-                    this.fragments._oChildTableSelectDialog = sap.ui.xmlfragment("com.un.zhrbenefrequests.fragment.form.educationGrant.ChildTableSelectDialog", this);
-                    this.getView().addDependent(this.fragments._oChildTableSelectDialog);
-                    // forward compact/cozy style into Dialog
-                    this.fragments._oChildTableSelectDialog.addStyleClass(this.getOwnerComponent().getContentDensityClass());
+                // Destroy existing dialog if it exists
+                if (this.fragments._oChildTableSelectDialog) {
+                    this.fragments._oChildTableSelectDialog.destroy();
+                    delete this.fragments._oChildTableSelectDialog;
                 }
+                
+                // Always create a fresh dialog
+                this.fragments._oChildTableSelectDialog = sap.ui.xmlfragment("com.un.zhrbenefrequests.fragment.form.educationGrant.ChildTableSelectDialog", this);
+                this.getView().addDependent(this.fragments._oChildTableSelectDialog);
+                // forward compact/cozy style into Dialog
+                this.fragments._oChildTableSelectDialog.addStyleClass(this.getOwnerComponent().getContentDensityClass());
+                
                 this.fragments._oChildTableSelectDialog.open();
             },
 
@@ -267,6 +273,11 @@ sap.ui.define([
                 if (aContexts && aContexts.length) {
                     const selectedChild = aContexts[0].getObject();
                     this._createRequest(selectedChild.Famsa, selectedChild.Objps);
+                    
+                    // Close child dialog after creating request
+                    if (this.fragments._oChildTableSelectDialog) {
+                        this.fragments._oChildTableSelectDialog.close();
+                    }
                 }
             },
 
@@ -343,13 +354,17 @@ sap.ui.define([
 
             onCreateButtonPress: function () {
 
-                // Open the TypeReq fragment dialog
-                if (!this.fragments._oTypeReqDialog) {
-                    this.fragments._oTypeReqDialog = sap.ui.xmlfragment("com.un.zhrbenefrequests.fragment.TypeReq", this);
-                    this.getView().addDependent(this.fragments._oTypeReqDialog);
-                    // forward compact/cozy style into Dialog
-                    this.fragments._oTypeReqDialog.addStyleClass(this.getOwnerComponent().getContentDensityClass());
+                // Destroy existing dialog if it exists
+                if (this.fragments._oTypeReqDialog) {
+                    this.fragments._oTypeReqDialog.destroy();
+                    delete this.fragments._oTypeReqDialog;
                 }
+                
+                // Always create a fresh TypeReq dialog
+                this.fragments._oTypeReqDialog = sap.ui.xmlfragment("com.un.zhrbenefrequests.fragment.TypeReq", this);
+                this.getView().addDependent(this.fragments._oTypeReqDialog);
+                // forward compact/cozy style into Dialog
+                this.fragments._oTypeReqDialog.addStyleClass(this.getOwnerComponent().getContentDensityClass());
 
                 // Create and set the type model for visibility binding with default value
                 const oTypeModel = new JSONModel({
@@ -529,6 +544,12 @@ sap.ui.define([
                             this.getOwnerComponent().oListSelector.selectAListItem(sNewItemPath);
                         }.bind(this), 300);
 
+                        // Cleanup child dialog
+                        if (this.fragments._oChildTableSelectDialog) {
+                            this.fragments._oChildTableSelectDialog.destroy();
+                            delete this.fragments._oChildTableSelectDialog;
+                        }
+                        
                         // Cleanup type dialog
                         this.fragments._oTypeReqDialog?.close();
                         this.fragments._oTypeReqDialog?.destroy();
